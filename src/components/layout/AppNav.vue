@@ -14,9 +14,9 @@ const links = [
       v-for="link in links"
       :key="link.to"
       :to="link.to"
-      class="flex flex-1 flex-col items-center gap-1 py-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-      active-class="!text-white [&>div]:bg-emerald-600"
-      :exact-active-class="link.exact ? '!text-white [&>div]:bg-emerald-600' : ''"
+      class="flex flex-1 flex-col items-center gap-1 py-3 text-xs font-medium text-foreground/60 transition-colors hover:text-foreground"
+      active-class="!text-primary [&>div]:bg-primary/15"
+      :exact-active-class="link.exact ? '!text-primary [&>div]:bg-primary/15' : ''"
     >
       <div class="rounded-full p-2 transition-colors">
         <component :is="link.icon" class="size-5" />
