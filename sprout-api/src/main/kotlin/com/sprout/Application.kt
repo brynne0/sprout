@@ -20,6 +20,7 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import org.flywaydb.core.Flyway
 
 @Serializable
@@ -47,9 +48,11 @@ fun main() {
     val googleClientSecret = System.getenv("GOOGLE_CLIENT_SECRET")
     val frontendUrl = System.getenv("FRONTEND_URL")
 
+    val json = Json { ignoreUnknownKeys = true }
+
     val httpClient = HttpClient(ClientCIO) {
         install(ClientContentNegotiation) {
-            json()
+            json(json)
         }
     }
 
