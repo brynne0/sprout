@@ -8,6 +8,10 @@ const router = createRouter({
       path: '/',
       component: () => import('@/views/YourGarden.vue'),
     },
+    {
+      path: '/calendar',
+      component: () => import('@/views/CalendarView.vue'),
+    },
     { path: '/login', component: () => import('@/views/LoginView.vue') },
     { path: '/auth/callback', component: () => import('@/views/AuthCallback.vue') },
   ],
