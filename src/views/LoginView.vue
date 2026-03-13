@@ -10,7 +10,7 @@
 
     <a
       href="http://localhost:8080/auth/google"
-      class="flex w-full items-center justify-center gap-3 rounded-xl border border-primary bg-card px-12 py-3 text-sm font-semibold transition-colors hover:bg-muted max-w-2xs"
+      class="flex w-full items-center justify-center gap-3 rounded-xl border border-primary bg-card px-12 py-2 text-sm font-semibold transition-colors hover:bg-muted max-w-2xs"
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-5 shrink-0">
         <path
