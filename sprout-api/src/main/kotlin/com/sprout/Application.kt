@@ -34,7 +34,7 @@ fun main() {
             jwt("auth-jwt") {
                 realm = "sprout"
                 verifier(
-                    jwkProvider = JwkProviderBuilder("$keycloakUrl/realms/sprout/protocol/openid-connect/certs").build(),
+                   jwkProvider = JwkProviderBuilder(java.net.URL("$keycloakUrl/realms/sprout/protocol/openid-connect/certs")).build(),
                     issuer = "$keycloakUrl/realms/sprout"
                 )
                 validate { credential ->
