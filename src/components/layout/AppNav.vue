@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import { Sprout, Calendar } from 'lucide-vue-next'
+import SettingsMenu from '@/components/layout/SettingsMenu.vue'
 
 const links = [
   { to: '/', label: 'Your Garden', icon: Sprout, exact: true },
@@ -25,5 +26,7 @@ const links = [
         {{ link.label }}
       </div>
     </RouterLink>
+
+    <SettingsMenu />
   </nav>
 </template>
