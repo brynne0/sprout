@@ -1,10 +1,10 @@
 .PHONY: dev stop
 
 dev:
-	docker compose -f sprout-api/docker-compose.yaml up -d
-	cd sprout-api && ./gradlew run &
+	docker compose up -d
+	export $(shell cat .env | xargs) && cd sprout-api && ./gradlew run &
 	npm run dev
 
 stop:
-	docker compose -f sprout-api/docker-compose.yaml down
-	@pkill -f "GradleWorkerMain" || true
+	docker compose down
+	@lsof -i :8080 -t | xargs kill 2>/dev/null || true

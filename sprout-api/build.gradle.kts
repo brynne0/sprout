@@ -27,4 +27,8 @@ dependencies {
 
     // Logging
     implementation("ch.qos.logback:logback-classic:1.5.12")
+
+    // Keycloak
+    implementation("io.ktor:ktor-server-auth")
+    implementation("io.ktor:ktor-server-auth-jwt")
 }
