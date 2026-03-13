@@ -10,6 +10,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Combobox } from '@/components/ui/combobox'
+import { Button } from '@/components/ui/button'
 
 interface Plant {
   id: string
@@ -34,11 +45,30 @@ onMounted(async () => {
   <main>
     <div class="flex items-center justify-between mb-4">
       <h1 class="text-3xl font-bold tracking-tight text-primary">Your Garden</h1>
-      <button
-        class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground"
-      >
-        <Plus :size="18" />
-      </button>
+      <Dialog>
+        <form>
+          <DialogTrigger as-child>
+            <button
+              class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground"
+            >
+              <Plus :size="18" />
+            </button>
+          </DialogTrigger>
+          <DialogContent class="sm:max-w-106.25">
+            <DialogHeader>
+              <DialogTitle>Add Plant</DialogTitle>
+            </DialogHeader>
+            <Combobox> </Combobox>
+
+            <DialogFooter>
+              <DialogClose as-child>
+                <Button variant="outline"> Cancel </Button>
+              </DialogClose>
+              <Button type="submit"> Add Plant </Button>
+            </DialogFooter>
+          </DialogContent>
+        </form>
+      </Dialog>
     </div>
     <Table>
       <TableHeader>
