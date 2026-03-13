@@ -1,5 +1,7 @@
 CREATE TABLE users (
     id UUID PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    name VARCHAR(255),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -15,7 +17,8 @@ CREATE TABLE plant_catalog (
     harvest_windows JSONB,
     transplant_windows JSONB,
     harvest TEXT,
-    transplant_time TEXT
+    transplant_time TEXT,
+    source VARCHAR(255)
 );
 
 CREATE TABLE plants (

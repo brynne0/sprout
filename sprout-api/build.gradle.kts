@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.0.21"
+    kotlin("plugin.serialization") version "2.0.21"
     id("io.ktor.plugin") version "3.1.1"
     application
 }
@@ -28,7 +29,10 @@ dependencies {
     // Logging
     implementation("ch.qos.logback:logback-classic:1.5.12")
 
-    // Keycloak
+    // Auth
     implementation("io.ktor:ktor-server-auth")
     implementation("io.ktor:ktor-server-auth-jwt")
+    implementation("io.ktor:ktor-client-core")
+    implementation("io.ktor:ktor-client-cio")
+    implementation("io.ktor:ktor-client-content-negotiation")
 }
