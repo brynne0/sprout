@@ -24,6 +24,15 @@ import kotlinx.serialization.json.Json
 import org.flywaydb.core.Flyway
 
 @Serializable
+data class PlantResponse(
+    val id: String,
+    val name: String,
+    val variety: String? = null,
+    val sowDate: String,
+    val notes: String? = null,
+)
+
+@Serializable
 data class GoogleUserInfo(
     val id: String,
     val email: String,
@@ -127,7 +136,35 @@ fun main() {
 
             authenticate("auth-jwt") {
                 get("/api/plants") {
-                    call.respondText("ok")
+                    val userId = call.principal<JWTPrincipal>()!!.subject!!
+
+                    val plants = dataSource.connection.use { conn ->
+                        conn.prepareStatement(
+                            """
+                            SELECT p.id, pc.name, pc.variety, p.sow_date, p.notes
+                            FROM plants p
+                            JOIN plant_catalog pc ON p.catalog_id = pc.id
+                            WHERE p.user_id = ?::uuid
+                            ORDER BY p.sow_date
+                            """.trimIndent()
+                        ).use { stmt ->
+                            stmt.setString(1, userId)
+                            val rs = stmt.executeQuery()
+                            buildList {
+                                while (rs.next()) {
+                                    add(PlantResponse(
+                                        id = rs.getString("id"),
+                                        name = rs.getString("name"),
+                                        variety = rs.getString("variety"),
+                                        sowDate = rs.getDate("sow_date").toString(),
+                                        notes = rs.getString("notes"),
+                                    ))
+                                }
+                            }
+                        }
+                    }
+
+                    call.respond(plants)
                 }
             }
         }
