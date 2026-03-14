@@ -2,7 +2,8 @@
 
 dev:
 	docker compose up -d
-	export $(shell cat .env | xargs) && cd sprout-api && ./gradlew run &
+	npm run generate
+	cd sprout-api && npm start &
 	npm run dev
 
 stop:

@@ -19,7 +19,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Combobox } from '@/components/ui/combobox'
+import {
+  Combobox,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '@/components/ui/combobox'
 import { Button } from '@/components/ui/button'
 
 interface Plant {
@@ -30,14 +36,28 @@ interface Plant {
   notes: string | null
 }
 
+interface CatalogPlant {
+  id: string
+  name: string
+  variety: string | null
+}
+
 const { token } = useAuth()
 const plants = ref<Plant[]>([])
+const catalogPlants = ref<CatalogPlant[]>([])
+const selectedCatalogId = ref<string>('')
 
 onMounted(async () => {
-  const res = await fetch('http://localhost:8080/api/plants', {
-    headers: { Authorization: `Bearer ${token.value}` },
-  })
-  plants.value = await res.json()
+  const [plantsRes, catalogRes] = await Promise.all([
+    fetch('http://localhost:8080/api/plants', {
+      headers: { Authorization: `Bearer ${token.value}` },
+    }),
+    fetch('http://localhost:8080/api/catalog', {
+      headers: { Authorization: `Bearer ${token.value}` },
+    }),
+  ])
+  plants.value = await plantsRes.json()
+  catalogPlants.value = await catalogRes.json()
 })
 </script>
 
@@ -58,7 +78,15 @@ onMounted(async () => {
             <DialogHeader>
               <DialogTitle>Add Plant</DialogTitle>
             </DialogHeader>
-            <Combobox> </Combobox>
+            <Combobox v-model="selectedCatalogId" :items="catalogPlants.map(p => p.name)">
+              <ComboboxInput placeholder="Search plants..." />
+              <ComboboxList>
+                <ComboboxEmpty>No plants found.</ComboboxEmpty>
+                <ComboboxItem v-for="plant in catalogPlants" :key="plant.id" :value="plant.id">
+                  {{ plant.name }}{{ plant.variety ? ` — ${plant.variety}` : '' }}
+                </ComboboxItem>
+              </ComboboxList>
+            </Combobox>
 
             <DialogFooter>
               <DialogClose as-child>

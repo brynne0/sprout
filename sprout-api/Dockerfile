@@ -1,9 +1,12 @@
-FROM gradle:8.5-jdk21 AS build
-WORKDIR /app
-COPY . .
-RUN gradle buildFatJar --no-daemon
+FROM node:20-alpine
 
-FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+COPY . .
+
+EXPOSE 8080
+
+CMD ["node", "src/app.js"]

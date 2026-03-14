@@ -40,3 +40,9 @@ __screenshots__/
 
 # Environment variables
 .env
+
+# Generated API client
+src/client/
+
+# Kotlin/Gradle leftovers
+.gradle/
