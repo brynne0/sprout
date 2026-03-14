@@ -28,48 +28,59 @@ import {
   ComboboxList,
 } from '@/components/ui/combobox'
 import { Button } from '@/components/ui/button'
-
-interface Plant {
-  id: string
-  name: string
-  variety: string | null
-  sowDate: string
-  notes: string | null
-}
-
-interface CatalogPlant {
-  id: string
-  name: string
-}
+import type { Plant, CatalogPlant } from '@/client'
+import { getApiPlants, postApiPlants, getApiCatalog } from '@/client'
+import { client } from '@/client/client.gen'
 
 const { token } = useAuth()
+
+client.setConfig({
+  baseUrl: import.meta.env.VITE_API_URL,
+  auth: () => token.value ?? '',
+})
+
 const plants = ref<Plant[]>([])
 const catalogPlants = ref<CatalogPlant[]>([])
 const selectedCatalogId = ref<string>('')
 const searchTerm = ref('')
+const sowDate = ref('')
+const notes = ref('')
+const dialogOpen = ref(false)
+
 const filteredCatalogPlants = computed(() =>
   catalogPlants.value.filter((p) => p.name.toLowerCase().includes(searchTerm.value.toLowerCase())),
 )
 
 onMounted(async () => {
-  const [plantsRes, catalogRes] = await Promise.all([
-    fetch('http://localhost:8080/api/plants', {
-      headers: { Authorization: `Bearer ${token.value}` },
-    }),
-    fetch('http://localhost:8080/api/catalog', {
-      headers: { Authorization: `Bearer ${token.value}` },
-    }),
-  ])
-  plants.value = await plantsRes.json()
-  catalogPlants.value = await catalogRes.json()
+  const [plantsRes, catalogRes] = await Promise.all([getApiPlants(), getApiCatalog()])
+  plants.value = plantsRes.data ?? []
+  catalogPlants.value = catalogRes.data ?? []
 })
+
+async function addPlant() {
+  await postApiPlants({
+    body: {
+      catalogId: selectedCatalogId.value,
+      sowDate: sowDate.value,
+      notes: notes.value || undefined,
+    },
+  })
+
+  const res = await getApiPlants()
+  plants.value = res.data ?? []
+
+  selectedCatalogId.value = ''
+  sowDate.value = ''
+  notes.value = ''
+  dialogOpen.value = false
+}
 </script>
 
 <template>
   <main>
     <div class="flex items-center justify-between mb-4">
       <h1 class="text-3xl font-bold tracking-tight text-primary">Your Garden</h1>
-      <Dialog>
+      <Dialog v-model:open="dialogOpen">
         <form>
           <DialogTrigger as-child>
             <button
@@ -86,6 +97,7 @@ onMounted(async () => {
               <ComboboxAnchor class="w-full">
                 <ComboboxInput
                   placeholder="Search plants..."
+                  :display-value="(id: string) => catalogPlants.find((p) => p.id === id)?.name ?? ''"
                   @input="searchTerm = ($event.target as HTMLInputElement).value"
                 />
               </ComboboxAnchor>
@@ -94,18 +106,21 @@ onMounted(async () => {
                 <ComboboxItem
                   v-for="plant in filteredCatalogPlants"
                   :key="plant.id"
-                  :value="plant.name"
+                  :value="plant.id"
                 >
                   {{ plant.name }}
                 </ComboboxItem>
               </ComboboxList>
             </Combobox>
 
+            <input type="date" v-model="sowDate" />
+            <textarea v-model="notes" placeholder="Notes (optional)" />
+
             <DialogFooter>
               <DialogClose as-child>
                 <Button variant="outline"> Cancel </Button>
               </DialogClose>
-              <Button type="submit"> Add Plant </Button>
+              <Button type="button" @click="addPlant">Add Plant</Button>
             </DialogFooter>
           </DialogContent>
         </form>
