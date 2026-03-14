@@ -56,6 +56,8 @@ const searchTerm = ref('')
 const notes = ref('')
 const dialogOpen = ref(false)
 
+const canSubmit = computed(() => !!selectedCatalogId.value && !!date.value)
+
 const filteredCatalogPlants = computed(() =>
   catalogPlants.value.filter((p) => p.name.toLowerCase().includes(searchTerm.value.toLowerCase())),
 )
@@ -157,7 +159,7 @@ async function addPlant() {
               <DialogClose as-child>
                 <Button variant="outline"> Cancel </Button>
               </DialogClose>
-              <Button type="button" @click="addPlant">Add Plant</Button>
+              <Button type="button" :disabled="!canSubmit" @click="addPlant">Add Plant</Button>
             </DialogFooter>
           </DialogContent>
         </form>
