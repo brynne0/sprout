@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import Fastify from 'fastify'
+import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
 import { runner as migrate } from 'node-pg-migrate'
 import { fileURLToPath } from 'url'
@@ -9,6 +10,8 @@ import plantRoutes from './routes/plants.js'
 import catalogRoutes from './routes/catalog.js'
 
 const app = Fastify({ logger: true })
+
+app.register(cors, { origin: 'http://localhost:5173' })
 
 app.register(jwt, {
   secret: process.env.JWT_SECRET,

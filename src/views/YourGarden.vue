@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { Plus } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 import {
@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dialog'
 import {
   Combobox,
+  ComboboxAnchor,
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
@@ -39,13 +40,16 @@ interface Plant {
 interface CatalogPlant {
   id: string
   name: string
-  variety: string | null
 }
 
 const { token } = useAuth()
 const plants = ref<Plant[]>([])
 const catalogPlants = ref<CatalogPlant[]>([])
 const selectedCatalogId = ref<string>('')
+const searchTerm = ref('')
+const filteredCatalogPlants = computed(() =>
+  catalogPlants.value.filter((p) => p.name.toLowerCase().includes(searchTerm.value.toLowerCase())),
+)
 
 onMounted(async () => {
   const [plantsRes, catalogRes] = await Promise.all([
@@ -78,12 +82,21 @@ onMounted(async () => {
             <DialogHeader>
               <DialogTitle>Add Plant</DialogTitle>
             </DialogHeader>
-            <Combobox v-model="selectedCatalogId" :items="catalogPlants.map(p => p.name)">
-              <ComboboxInput placeholder="Search plants..." />
-              <ComboboxList>
+            <Combobox v-model="selectedCatalogId" open-on-focus ignore-filter>
+              <ComboboxAnchor class="w-full">
+                <ComboboxInput
+                  placeholder="Search plants..."
+                  @input="searchTerm = ($event.target as HTMLInputElement).value"
+                />
+              </ComboboxAnchor>
+              <ComboboxList class="w-(--reka-combobox-trigger-width)">
                 <ComboboxEmpty>No plants found.</ComboboxEmpty>
-                <ComboboxItem v-for="plant in catalogPlants" :key="plant.id" :value="plant.id">
-                  {{ plant.name }}{{ plant.variety ? ` — ${plant.variety}` : '' }}
+                <ComboboxItem
+                  v-for="plant in filteredCatalogPlants"
+                  :key="plant.id"
+                  :value="plant.name"
+                >
+                  {{ plant.name }}
                 </ComboboxItem>
               </ComboboxList>
             </Combobox>
