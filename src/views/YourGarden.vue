@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { Plus, CalendarIcon } from 'lucide-vue-next'
+import { Plus, CalendarIcon, Sprout } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 import {
   Table,
@@ -27,6 +27,14 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import type { Plant, CatalogPlant } from '@/client'
@@ -71,11 +79,13 @@ onMounted(async () => {
 function formatDate(dateStr: string | null | undefined) {
   if (!dateStr) return '—'
   const d = new Date(String(dateStr).slice(0, 10) + 'T00:00:00')
-  return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
+  return isNaN(d.getTime())
+    ? dateStr
+    : d.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
 }
 
 async function addPlant() {
@@ -103,7 +113,7 @@ async function addPlant() {
       <h1 class="text-3xl font-bold tracking-tight text-primary">Your Garden</h1>
       <Dialog v-model:open="dialogOpen">
         <form>
-          <DialogTrigger as-child>
+          <DialogTrigger v-if="plants.length > 0" as-child>
             <button
               class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground"
             >
@@ -175,7 +185,7 @@ async function addPlant() {
         </form>
       </Dialog>
     </div>
-    <Table>
+    <Table v-if="plants.length > 0">
       <TableHeader>
         <TableRow>
           <TableHead class="w-25">Plant Name</TableHead>
@@ -193,5 +203,22 @@ async function addPlant() {
         </TableRow>
       </TableBody>
     </Table>
+
+    <div v-else class="flex items-center justify-center min-h-[60vh]">
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia>
+          <Sprout />
+        </EmptyMedia>
+        <EmptyTitle>No Plants Yet</EmptyTitle>
+        <EmptyDescription>
+          You haven't added any plants yet. Get started by adding your first plant.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button @click="dialogOpen = true">Add Plant</Button>
+      </EmptyContent>
+    </Empty>
+    </div>
   </main>
 </template>
