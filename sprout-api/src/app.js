@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import Fastify from 'fastify'
 import jwt from '@fastify/jwt'
-import migrate from 'node-pg-migrate'
+import { runner as migrate } from 'node-pg-migrate'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import authRoutes from './routes/auth.js'
