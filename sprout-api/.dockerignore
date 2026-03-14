@@ -1,0 +1,24 @@
+# flyctl launch added from .gitignore
+# Gradle
+**/.gradle
+**/build
+
+# Kotlin compiler
+**/.kotlin
+
+# IntelliJ / IDE
+**/.idea
+**/*.iml
+**/*.iws
+**/*.ipr
+**/out
+
+# Compiled
+**/*.class
+**/*.jar
+
+# OS
+**/.DS_Store
+
+**/.env
+fly.toml
