@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { Plus } from 'lucide-vue-next'
+import { Plus, CalendarIcon } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 import {
   Table,
@@ -28,9 +28,19 @@ import {
   ComboboxList,
 } from '@/components/ui/combobox'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import type { Plant, CatalogPlant } from '@/client'
 import { getApiPlants, postApiPlants, getApiCatalog } from '@/client'
 import { client } from '@/client/client.gen'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { cn } from '@/lib/utils'
+import { DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
+import type { DateValue } from 'reka-ui'
+
+const df = new DateFormatter('en-US', { dateStyle: 'long' })
+const date = ref<DateValue>()
+const defaultPlaceholder = today(getLocalTimeZone())
 
 const { token } = useAuth()
 
@@ -43,7 +53,6 @@ const plants = ref<Plant[]>([])
 const catalogPlants = ref<CatalogPlant[]>([])
 const selectedCatalogId = ref<string>('')
 const searchTerm = ref('')
-const sowDate = ref('')
 const notes = ref('')
 const dialogOpen = ref(false)
 
@@ -61,7 +70,7 @@ async function addPlant() {
   await postApiPlants({
     body: {
       catalogId: selectedCatalogId.value,
-      sowDate: sowDate.value,
+      sowDate: date.value?.toString() ?? '',
       notes: notes.value || undefined,
     },
   })
@@ -70,7 +79,7 @@ async function addPlant() {
   plants.value = res.data ?? []
 
   selectedCatalogId.value = ''
-  sowDate.value = ''
+  date.value = undefined
   notes.value = ''
   dialogOpen.value = false
 }
@@ -97,7 +106,9 @@ async function addPlant() {
               <ComboboxAnchor class="w-full">
                 <ComboboxInput
                   placeholder="Search plants..."
-                  :display-value="(id: string) => catalogPlants.find((p) => p.id === id)?.name ?? ''"
+                  :display-value="
+                    (id: string) => catalogPlants.find((p) => p.id === id)?.name ?? ''
+                  "
                   @input="searchTerm = ($event.target as HTMLInputElement).value"
                 />
               </ComboboxAnchor>
@@ -113,8 +124,34 @@ async function addPlant() {
               </ComboboxList>
             </Combobox>
 
-            <input type="date" v-model="sowDate" />
-            <textarea v-model="notes" placeholder="Notes (optional)" />
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium">Sow Date</label>
+              <Popover>
+                <PopoverTrigger as-child>
+                  <Button
+                    variant="outline"
+                    :class="
+                      cn(
+                        'w-full justify-start text-left font-normal',
+                        !date && 'text-muted-foreground',
+                      )
+                    "
+                  >
+                    <CalendarIcon class="mr-2 h-4 w-4" />
+                    {{ date ? df.format(date.toDate(getLocalTimeZone())) : 'Pick a date' }}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-auto p-0">
+                  <Calendar
+                    v-model="date"
+                    :initial-focus="true"
+                    :default-placeholder="defaultPlaceholder"
+                    layout="month-and-year"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <Input v-model="notes" placeholder="Notes (optional)" />
 
             <DialogFooter>
               <DialogClose as-child>
