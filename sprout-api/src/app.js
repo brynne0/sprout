@@ -1,7 +1,6 @@
 import 'dotenv/config'
 import Fastify from 'fastify'
 import jwt from '@fastify/jwt'
-import pg from 'pg'
 import migrate from 'node-pg-migrate'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
@@ -34,7 +33,6 @@ const start = async () => {
       migrationsTable: 'migrations',
       dir: join(dirname(fileURLToPath(import.meta.url)), '../db/migrations'),
       direction: 'up',
-      dbClient: new pg.Client({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: true } }),
     })
     await app.listen({ port: process.env.PORT || 8080, host: '0.0.0.0' })
   } catch (err) {
