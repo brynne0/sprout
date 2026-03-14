@@ -34,7 +34,7 @@ const start = async () => {
       dir: join(dirname(fileURLToPath(import.meta.url)), '../db/migrations'),
       direction: 'up',
     })
-    await app.listen({ port: process.env.PORT || 8080, host: '0.0.0.0' })
+    app.listen({ port: process.env.PORT || 8080, host: '0.0.0.0' })
   } catch (err) {
     app.log.error(err)
     process.exit(1)
