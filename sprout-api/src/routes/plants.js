@@ -6,7 +6,11 @@ export default async function plantRoutes(app) {
   app.get('/plants', auth, async (request, reply) => {
     const userId = request.user.sub
     const result = await pool.query(
-      'SELECT * FROM plants WHERE user_id = $1 ORDER BY created_at DESC',
+      `SELECT p.id, pc.name, p.variety, p.sow_date AS "sowDate", p.notes
+       FROM plants p
+       JOIN plant_catalog pc ON pc.id = p.catalog_id
+       WHERE p.user_id = $1
+       ORDER BY p.created_at DESC`,
       [userId]
     )
     reply.send(result.rows)

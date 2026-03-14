@@ -68,6 +68,16 @@ onMounted(async () => {
   catalogPlants.value = catalogRes.data ?? []
 })
 
+function formatDate(dateStr: string | null | undefined) {
+  if (!dateStr) return '—'
+  const d = new Date(String(dateStr).slice(0, 10) + 'T00:00:00')
+  return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
 async function addPlant() {
   await postApiPlants({
     body: {
@@ -169,7 +179,7 @@ async function addPlant() {
       <TableHeader>
         <TableRow>
           <TableHead class="w-25">Plant Name</TableHead>
-          <TableHead>Variety</TableHead>
+          <!-- <TableHead>Variety</TableHead> -->
           <TableHead>Sowing Date</TableHead>
           <TableHead>Notes</TableHead>
         </TableRow>
@@ -177,8 +187,8 @@ async function addPlant() {
       <TableBody>
         <TableRow v-for="plant in plants" :key="plant.id">
           <TableCell class="font-medium">{{ plant.name }}</TableCell>
-          <TableCell>{{ plant.variety ?? '—' }}</TableCell>
-          <TableCell>{{ plant.sowDate }}</TableCell>
+          <!-- <TableCell>{{ plant.variety ?? '—' }}</TableCell> -->
+          <TableCell>{{ formatDate(plant.sowDate) }}</TableCell>
           <TableCell>{{ plant.notes ?? '—' }}</TableCell>
         </TableRow>
       </TableBody>
