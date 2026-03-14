@@ -1,6 +1,10 @@
 import 'dotenv/config'
 import Fastify from 'fastify'
 import jwt from '@fastify/jwt'
+import pg from 'pg'
+import migrate from 'node-pg-migrate'
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
 import authRoutes from './routes/auth.js'
 import plantRoutes from './routes/plants.js'
 import catalogRoutes from './routes/catalog.js'
@@ -25,6 +29,13 @@ app.register(catalogRoutes, { prefix: '/api' })
 
 const start = async () => {
   try {
+    await migrate({
+      databaseUrl: process.env.DATABASE_URL,
+      migrationsTable: 'migrations',
+      dir: join(dirname(fileURLToPath(import.meta.url)), '../db/migrations'),
+      direction: 'up',
+      dbClient: new pg.Client({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: true } }),
+    })
     await app.listen({ port: process.env.PORT || 8080, host: '0.0.0.0' })
   } catch (err) {
     app.log.error(err)
