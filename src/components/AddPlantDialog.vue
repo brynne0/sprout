@@ -348,7 +348,7 @@ async function addPlant() {
             <!-- Sowing windows -->
             <Field>
               <FieldLabel>Sowing windows</FieldLabel>
-              <div class="flex flex-wrap gap-2">
+              <div v-if="sowingWindows.length" class="flex flex-wrap gap-2">
                 <span
                   v-for="(w, i) in sowingWindows"
                   :key="i"
@@ -366,8 +366,8 @@ async function addPlant() {
               </div>
               <Popover v-model:open="showSowingPicker">
                 <PopoverTrigger as-child>
-                  <Button type="button" variant="outline" size="sm" class="mt-1 w-full">
-                    <Plus class="mr-1 h-3 w-3" /> Add sowing window
+                  <Button type="button" variant="outline" size="sm" class="w-full">
+                    <Plus /> Add sowing window
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
@@ -390,7 +390,7 @@ async function addPlant() {
             <!-- Harvest windows -->
             <Field>
               <FieldLabel>Harvest windows</FieldLabel>
-              <div class="flex flex-wrap gap-2">
+              <div v-if="harvestWindows.length" class="flex flex-wrap gap-2">
                 <span
                   v-for="(w, i) in harvestWindows"
                   :key="i"
@@ -408,8 +408,8 @@ async function addPlant() {
               </div>
               <Popover v-model:open="showHarvestPicker">
                 <PopoverTrigger as-child>
-                  <Button type="button" variant="outline" size="sm" class="mt-1 w-full">
-                    <Plus class="mr-1 h-3 w-3" /> Add harvest window
+                  <Button type="button" variant="outline" size="sm" class="w-full">
+                    <Plus /> Add harvest window
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
@@ -432,7 +432,7 @@ async function addPlant() {
             <!-- Transplant windows -->
             <Field>
               <FieldLabel>Transplant windows</FieldLabel>
-              <div class="flex flex-wrap gap-2">
+              <div v-if="transplantWindows.length" class="flex flex-wrap gap-2">
                 <span
                   v-for="(w, i) in transplantWindows"
                   :key="i"
@@ -450,8 +450,8 @@ async function addPlant() {
               </div>
               <Popover v-model:open="showTransplantPicker">
                 <PopoverTrigger as-child>
-                  <Button type="button" variant="outline" size="sm" class="mt-1 w-full">
-                    <Plus class="mr-1 h-3 w-3" /> Add transplant window
+                  <Button type="button" variant="outline" size="sm" class="w-full">
+                    <Plus /> Add transplant window
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent class="w-auto p-0">
