@@ -166,6 +166,7 @@ async function addPlant() {
                       :value="plant.name"
                       @select="() => selectPlant(plant.id)"
                     >
+                      {{ plant.name }}
                       <Check
                         :class="
                           cn(
@@ -174,7 +175,6 @@ async function addPlant() {
                           )
                         "
                       />
-                      {{ plant.name }}
                     </CommandItem>
                   </CommandGroup>
                 </CommandList>
