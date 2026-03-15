@@ -62,9 +62,14 @@ const catalogPlants = ref<CatalogPlant[]>([])
 const selectedCatalogId = ref<string>('')
 const searchTerm = ref('')
 const notes = ref('')
+const nameOverride = ref('')
+const variety = ref('')
+const sowingWindowsOverride = ref<{ start: string; end: string }[] | undefined>(undefined)
+const harvestWindowsOverride = ref<{ start: string; end: string }[] | undefined>(undefined)
+const transplantWindowsOverride = ref<{ start: string; end: string }[] | undefined>(undefined)
 const dialogOpen = ref(false)
 
-const canSubmit = computed(() => !!selectedCatalogId.value && !!date.value)
+const canSubmit = computed(() => (!!selectedCatalogId.value || !!nameOverride.value) && !!date.value)
 
 const filteredCatalogPlants = computed(() =>
   catalogPlants.value.filter((p) => p.name.toLowerCase().includes(searchTerm.value.toLowerCase())),
@@ -91,9 +96,14 @@ function formatDate(dateStr: string | null | undefined) {
 async function addPlant() {
   await postApiPlants({
     body: {
-      catalogId: selectedCatalogId.value,
+      catalogId: selectedCatalogId.value || undefined,
+      nameOverride: nameOverride.value || undefined,
+      variety: variety.value || undefined,
       sowDate: date.value?.toString() ?? '',
       notes: notes.value || undefined,
+      sowingWindowsOverride: sowingWindowsOverride.value,
+      harvestWindowsOverride: harvestWindowsOverride.value,
+      transplantWindowsOverride: transplantWindowsOverride.value,
     },
   })
 
@@ -101,6 +111,11 @@ async function addPlant() {
   plants.value = res.data ?? []
 
   selectedCatalogId.value = ''
+  nameOverride.value = ''
+  variety.value = ''
+  sowingWindowsOverride.value = undefined
+  harvestWindowsOverride.value = undefined
+  transplantWindowsOverride.value = undefined
   date.value = undefined
   notes.value = ''
   dialogOpen.value = false

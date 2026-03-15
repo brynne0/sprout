@@ -24,9 +24,15 @@ CREATE TABLE plant_catalog (
 CREATE TABLE plants (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    catalog_id UUID NOT NULL REFERENCES plant_catalog(id),
+    catalog_id UUID REFERENCES plant_catalog(id),
     sow_date DATE NOT NULL,
+    name_override VARCHAR(255), 
     variety VARCHAR(255),
+    sowing_windows_override JSONB,
+    harvest_windows_override JSONB,
+    transplant_windows_override JSONB,
     notes TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT plants_must_have_name
+        CHECK (catalog_id IS NOT NULL OR name_override IS NOT NULL)
 );

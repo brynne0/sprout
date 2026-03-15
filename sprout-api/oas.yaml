@@ -146,11 +146,22 @@ components:
         sowDate:
           type: string
           format: date
+        sowingWindows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Window'
+        harvestWindows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Window'
+        transplantWindows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Window'
         notes:
           type: string
       required:
         - id
-        - catalogId
         - name
         - sowDate
 
@@ -160,15 +171,28 @@ components:
         catalogId:
           type: string
           format: uuid
+        nameOverride:
+          type: string
         variety:
           type: string
         sowDate:
           type: string
           format: date
+        sowingWindowsOverride:
+          type: array
+          items:
+            $ref: '#/components/schemas/Window'
+        harvestWindowsOverride:
+          type: array
+          items:
+            $ref: '#/components/schemas/Window'
+        transplantWindowsOverride:
+          type: array
+          items:
+            $ref: '#/components/schemas/Window'
         notes:
           type: string
       required:
-        - catalogId
         - sowDate
 
     CatalogPlant:
@@ -214,14 +238,14 @@ components:
     Window:
       type: object
       properties:
-        monthStart:
-          type: number
-          minimum: 1
-          maximum: 12
-        monthEnd:
-          type: number
-          minimum: 1
-          maximum: 12
+        start:
+          type: string
+          pattern: '^\d{2}-\d{2}$'
+          description: Start of window as MM-DD (e.g. "01-15")
+        end:
+          type: string
+          pattern: '^\d{2}-\d{2}$'
+          description: End of window as MM-DD (e.g. "03-31")
       required:
-        - monthStart
-        - monthEnd
+        - start
+        - end
