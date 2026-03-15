@@ -372,7 +372,7 @@ async function addPlant() {
                 class="mt-1 w-full"
                 @click="showSowingPicker = true"
               >
-                <Plus class="mr-1 h-3 w-3" /> Add sowing window
+                <Plus /> Add sowing window
               </Button>
             </Field>
 
@@ -408,7 +408,7 @@ async function addPlant() {
                 class="mt-1 w-full"
                 @click="showHarvestPicker = true"
               >
-                <Plus class="mr-1 h-3 w-3" /> Add harvest window
+                <Plus /> Add harvest window
               </Button>
             </Field>
 
@@ -444,7 +444,7 @@ async function addPlant() {
                 class="mt-1 w-full"
                 @click="showTransplantPicker = true"
               >
-                <Plus class="mr-1 h-3 w-3" /> Add transplant window
+                <Plus /> Add transplant window
               </Button>
             </Field>
           </FieldGroup>
