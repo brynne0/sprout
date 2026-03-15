@@ -19,6 +19,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from '@/components/ui/combobox'
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import type { CatalogPlant } from '@/client'
@@ -61,9 +62,7 @@ const transplantWindowsOverride = ref<{ start: string; end: string }[] | undefin
 const canSubmit = computed(() => !!selectedCatalogId.value && !!date.value)
 
 const filteredCatalogPlants = computed(() =>
-  catalogPlants.value.filter((p) =>
-    p.name.toLowerCase().includes(searchTerm.value.toLowerCase()),
-  ),
+  catalogPlants.value.filter((p) => p.name.toLowerCase().includes(searchTerm.value.toLowerCase())),
 )
 
 onMounted(async () => {
@@ -108,62 +107,79 @@ async function addPlant() {
         <slot />
       </DialogTrigger>
     </slot>
+
     <DialogContent class="sm:max-w-106.25">
       <DialogHeader>
         <DialogTitle>Add Plant</DialogTitle>
       </DialogHeader>
+      <form>
+        <FieldGroup>
+          <Field>
+            <FieldLabel> Plantname </FieldLabel>
 
-      <Combobox v-model="selectedCatalogId" open-on-focus ignore-filter>
-        <ComboboxAnchor class="w-full">
-          <ComboboxInput
-            placeholder="Search plants..."
-            :display-value="(id: string) => catalogPlants.find((p) => p.id === id)?.name ?? ''"
-            @input="searchTerm = ($event.target as HTMLInputElement).value"
-          />
-        </ComboboxAnchor>
-        <ComboboxList class="w-(--reka-combobox-trigger-width)">
-          <ComboboxEmpty>No plants found.</ComboboxEmpty>
-          <ComboboxItem
-            v-for="plant in filteredCatalogPlants"
-            :key="plant.id"
-            :value="plant.id"
-          >
-            {{ plant.name }}
-          </ComboboxItem>
-        </ComboboxList>
-      </Combobox>
+            <Combobox v-model="selectedCatalogId" open-on-focus ignore-filter>
+              <ComboboxAnchor class="w-full">
+                <ComboboxInput
+                  placeholder="Search plants..."
+                  :display-value="
+                    (id: string) => catalogPlants.find((p) => p.id === id)?.name ?? ''
+                  "
+                  @input="searchTerm = ($event.target as HTMLInputElement).value"
+                />
+              </ComboboxAnchor>
+              <ComboboxList class="w-(--reka-combobox-trigger-width)">
+                <ComboboxEmpty>No plants found.</ComboboxEmpty>
+                <ComboboxItem
+                  v-for="plant in filteredCatalogPlants"
+                  :key="plant.id"
+                  :value="plant.id"
+                >
+                  {{ plant.name }}
+                </ComboboxItem>
+              </ComboboxList>
+            </Combobox>
+          </Field>
 
-      <div class="flex flex-col gap-1.5">
-        <label class="text-sm font-medium">Sow Date</label>
-        <Popover>
-          <PopoverTrigger as-child>
-            <Button
-              variant="outline"
-              :class="cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')"
-            >
-              <CalendarIcon class="mr-2 h-4 w-4" />
-              {{ date ? df.format(date.toDate(getLocalTimeZone())) : 'Pick a date' }}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent class="w-auto p-0">
-            <Calendar
-              v-model="date"
-              :initial-focus="true"
-              :default-placeholder="defaultPlaceholder"
-              layout="month-and-year"
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
+          <Field>
+            <FieldLabel>Sow Date</FieldLabel>
+            <Popover>
+              <PopoverTrigger as-child>
+                <Button
+                  variant="outline"
+                  :class="
+                    cn(
+                      'w-full justify-start text-left font-normal',
+                      !date && 'text-muted-foreground',
+                    )
+                  "
+                >
+                  <CalendarIcon class="mr-2 h-4 w-4" />
+                  {{ date ? df.format(date.toDate(getLocalTimeZone())) : 'Pick a date' }}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent class="w-auto p-0">
+                <Calendar
+                  v-model="date"
+                  :initial-focus="true"
+                  :default-placeholder="defaultPlaceholder"
+                  layout="month-and-year"
+                />
+              </PopoverContent>
+            </Popover>
+          </Field>
 
-      <Input v-model="notes" placeholder="Notes (optional)" />
+          <Field>
+            <Input v-model="notes" placeholder="Description (optional)" />
+          </Field>
 
-      <DialogFooter>
-        <DialogClose as-child>
-          <Button variant="outline">Cancel</Button>
-        </DialogClose>
-        <Button type="button" :disabled="!canSubmit" @click="addPlant">Add Plant</Button>
-      </DialogFooter>
+          <DialogFooter>
+            <DialogClose as-child>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button type="button" :disabled="!canSubmit" @click="addPlant">Add Plant</Button>
+          </DialogFooter>
+        </FieldGroup>
+      </form>
     </DialogContent>
   </Dialog>
 </template>
