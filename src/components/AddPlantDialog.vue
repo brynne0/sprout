@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { CalendarIcon, ChevronDown, ChevronsUpDown, Check, Plus, X } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 import {
@@ -97,28 +97,33 @@ function formatWindow(w: Window): string {
   return `${sd} ${MONTHS[sm - 1]} → ${ed} ${MONTHS[em - 1]}`
 }
 
-// Auto-confirm when a complete range is picked
-watch(stagingSowing, (range) => {
-  if (range?.start && range?.end) {
-    sowingWindows.value.push({ start: toMonthDay(range.start), end: toMonthDay(range.end) })
+function confirmSowingWindow() {
+  if (stagingSowing.value?.start && stagingSowing.value?.end) {
+    sowingWindows.value.push({
+      start: toMonthDay(stagingSowing.value.start),
+      end: toMonthDay(stagingSowing.value.end),
+    })
     stagingSowing.value = undefined
-    showSowingPicker.value = false
   }
-})
-watch(stagingHarvest, (range) => {
-  if (range?.start && range?.end) {
-    harvestWindows.value.push({ start: toMonthDay(range.start), end: toMonthDay(range.end) })
+}
+function confirmHarvestWindow() {
+  if (stagingHarvest.value?.start && stagingHarvest.value?.end) {
+    harvestWindows.value.push({
+      start: toMonthDay(stagingHarvest.value.start),
+      end: toMonthDay(stagingHarvest.value.end),
+    })
     stagingHarvest.value = undefined
-    showHarvestPicker.value = false
   }
-})
-watch(stagingTransplant, (range) => {
-  if (range?.start && range?.end) {
-    transplantWindows.value.push({ start: toMonthDay(range.start), end: toMonthDay(range.end) })
+}
+function confirmTransplantWindow() {
+  if (stagingTransplant.value?.start && stagingTransplant.value?.end) {
+    transplantWindows.value.push({
+      start: toMonthDay(stagingTransplant.value.start),
+      end: toMonthDay(stagingTransplant.value.end),
+    })
     stagingTransplant.value = undefined
-    showTransplantPicker.value = false
   }
-})
+}
 
 const selectedPlantName = computed(
   () =>
@@ -359,21 +364,27 @@ async function addPlant() {
                   </button>
                 </span>
               </div>
-              <RangeCalendar
-                v-if="showSowingPicker"
-                v-model="stagingSowing"
-                class="rounded-md border shadow-sm"
-              />
-              <Button
-                v-if="!showSowingPicker"
-                type="button"
-                variant="outline"
-                size="sm"
-                class="mt-1 w-full"
-                @click="showSowingPicker = true"
-              >
-                <Plus /> Add sowing window
-              </Button>
+              <Popover v-model:open="showSowingPicker">
+                <PopoverTrigger as-child>
+                  <Button type="button" variant="outline" size="sm" class="mt-1 w-full">
+                    <Plus class="mr-1 h-3 w-3" /> Add sowing window
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-auto p-0">
+                  <RangeCalendar v-model="stagingSowing" />
+                  <div class="p-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      class="w-full"
+                      :disabled="!stagingSowing?.start || !stagingSowing?.end"
+                      @click="confirmSowingWindow"
+                    >
+                      Add window
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </Field>
 
             <!-- Harvest windows -->
@@ -395,21 +406,27 @@ async function addPlant() {
                   </button>
                 </span>
               </div>
-              <RangeCalendar
-                v-if="showHarvestPicker"
-                v-model="stagingHarvest"
-                class="rounded-md border shadow-sm"
-              />
-              <Button
-                v-if="!showHarvestPicker"
-                type="button"
-                variant="outline"
-                size="sm"
-                class="mt-1 w-full"
-                @click="showHarvestPicker = true"
-              >
-                <Plus /> Add harvest window
-              </Button>
+              <Popover v-model:open="showHarvestPicker">
+                <PopoverTrigger as-child>
+                  <Button type="button" variant="outline" size="sm" class="mt-1 w-full">
+                    <Plus class="mr-1 h-3 w-3" /> Add harvest window
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-auto p-0">
+                  <RangeCalendar v-model="stagingHarvest" />
+                  <div class="p-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      class="w-full"
+                      :disabled="!stagingHarvest?.start || !stagingHarvest?.end"
+                      @click="confirmHarvestWindow"
+                    >
+                      Add window
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </Field>
 
             <!-- Transplant windows -->
@@ -431,21 +448,27 @@ async function addPlant() {
                   </button>
                 </span>
               </div>
-              <RangeCalendar
-                v-if="showTransplantPicker"
-                v-model="stagingTransplant"
-                class="rounded-md border shadow-sm"
-              />
-              <Button
-                v-if="!showTransplantPicker"
-                type="button"
-                variant="outline"
-                size="sm"
-                class="mt-1 w-full"
-                @click="showTransplantPicker = true"
-              >
-                <Plus /> Add transplant window
-              </Button>
+              <Popover v-model:open="showTransplantPicker">
+                <PopoverTrigger as-child>
+                  <Button type="button" variant="outline" size="sm" class="mt-1 w-full">
+                    <Plus class="mr-1 h-3 w-3" /> Add transplant window
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-auto p-0">
+                  <RangeCalendar v-model="stagingTransplant" />
+                  <div class="p-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      class="w-full"
+                      :disabled="!stagingTransplant?.start || !stagingTransplant?.end"
+                      @click="confirmTransplantWindow"
+                    >
+                      Add window
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </Field>
           </FieldGroup>
         </CollapsibleContent>
