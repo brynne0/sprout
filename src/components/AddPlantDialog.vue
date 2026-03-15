@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { CalendarIcon, ChevronDown, ChevronsUpDown, Check } from 'lucide-vue-next'
+import { ref, computed, onMounted, watch } from 'vue'
+import { CalendarIcon, ChevronDown, ChevronsUpDown, Check, Plus, X } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 import {
   Dialog,
@@ -19,6 +19,8 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
+import { RangeCalendar } from '@/components/ui/range-calendar'
+import type { DateRange } from 'reka-ui'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
@@ -67,7 +69,55 @@ const overrides = ref({
   seedToHarvest: '',
   sowingToTransplant: '',
   harvest: '',
-  // window overrides to be added when month range picker is built
+})
+
+// Window arrays (confirmed selections)
+type Window = { start: string; end: string }
+const sowingWindows = ref<Window[]>([])
+const harvestWindows = ref<Window[]>([])
+const transplantWindows = ref<Window[]>([])
+
+// Staging — one calendar open at a time per type
+const stagingSowing = ref<DateRange | undefined>()
+const stagingHarvest = ref<DateRange | undefined>()
+const stagingTransplant = ref<DateRange | undefined>()
+const showSowingPicker = ref(false)
+const showHarvestPicker = ref(false)
+const showTransplantPicker = ref(false)
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+function toMonthDay(d: DateValue): string {
+  return `${String(d.month).padStart(2, '0')}-${String(d.day).padStart(2, '0')}`
+}
+
+function formatWindow(w: Window): string {
+  const [sm = 1, sd = 1] = w.start.split('-').map(Number)
+  const [em = 1, ed = 1] = w.end.split('-').map(Number)
+  return `${sd} ${MONTHS[sm - 1]} → ${ed} ${MONTHS[em - 1]}`
+}
+
+// Auto-confirm when a complete range is picked
+watch(stagingSowing, (range) => {
+  if (range?.start && range?.end) {
+    sowingWindows.value.push({ start: toMonthDay(range.start), end: toMonthDay(range.end) })
+    stagingSowing.value = undefined
+    showSowingPicker.value = false
+  }
+})
+watch(stagingHarvest, (range) => {
+  if (range?.start && range?.end) {
+    harvestWindows.value.push({ start: toMonthDay(range.start), end: toMonthDay(range.end) })
+    stagingHarvest.value = undefined
+    showHarvestPicker.value = false
+  }
+})
+watch(stagingTransplant, (range) => {
+  if (range?.start && range?.end) {
+    transplantWindows.value.push({ start: toMonthDay(range.start), end: toMonthDay(range.end) })
+    stagingTransplant.value = undefined
+    showTransplantPicker.value = false
+  }
 })
 
 const selectedPlantName = computed(
@@ -78,9 +128,12 @@ const selectedPlantName = computed(
 const canSubmit = computed(() => !!selectedCatalogId.value && !!date.value)
 
 const cleanedOverrides = computed(() => {
-  const result = Object.fromEntries(
+  const result: Record<string, unknown> = Object.fromEntries(
     Object.entries(overrides.value).filter(([, v]) => v !== '' && v != null),
   )
+  if (sowingWindows.value.length) result.sowingWindows = sowingWindows.value
+  if (harvestWindows.value.length) result.harvestWindows = harvestWindows.value
+  if (transplantWindows.value.length) result.transplantWindows = transplantWindows.value
   return Object.keys(result).length > 0 ? result : undefined
 })
 
@@ -109,6 +162,15 @@ function reset() {
     sowingToTransplant: '',
     harvest: '',
   }
+  sowingWindows.value = []
+  harvestWindows.value = []
+  transplantWindows.value = []
+  stagingSowing.value = undefined
+  stagingHarvest.value = undefined
+  stagingTransplant.value = undefined
+  showSowingPicker.value = false
+  showHarvestPicker.value = false
+  showTransplantPicker.value = false
 }
 
 async function addPlant() {
@@ -170,7 +232,7 @@ async function addPlant() {
                       <Check
                         :class="
                           cn(
-                            'mr-2 h-4 w-4',
+                            'ml-auto h-4 w-4',
                             selectedCatalogId === plant.id ? 'opacity-100' : 'opacity-0',
                           )
                         "
@@ -277,7 +339,114 @@ async function addPlant() {
                 placeholder="e.g. Pick regularly to encourage pods"
               />
             </Field>
-            <!-- Sowing, harvest, and transplant window overrides to be added with month range picker -->
+
+            <!-- Sowing windows -->
+            <Field>
+              <FieldLabel>Sowing windows</FieldLabel>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  v-for="(w, i) in sowingWindows"
+                  :key="i"
+                  class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
+                >
+                  {{ formatWindow(w) }}
+                  <button
+                    type="button"
+                    class="text-muted-foreground hover:text-foreground"
+                    @click="sowingWindows.splice(i, 1)"
+                  >
+                    <X class="h-3 w-3" />
+                  </button>
+                </span>
+              </div>
+              <RangeCalendar
+                v-if="showSowingPicker"
+                v-model="stagingSowing"
+                class="rounded-md border shadow-sm"
+              />
+              <Button
+                v-if="!showSowingPicker"
+                type="button"
+                variant="outline"
+                size="sm"
+                class="mt-1 w-full"
+                @click="showSowingPicker = true"
+              >
+                <Plus class="mr-1 h-3 w-3" /> Add sowing window
+              </Button>
+            </Field>
+
+            <!-- Harvest windows -->
+            <Field>
+              <FieldLabel>Harvest windows</FieldLabel>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  v-for="(w, i) in harvestWindows"
+                  :key="i"
+                  class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
+                >
+                  {{ formatWindow(w) }}
+                  <button
+                    type="button"
+                    class="text-muted-foreground hover:text-foreground"
+                    @click="harvestWindows.splice(i, 1)"
+                  >
+                    <X class="h-3 w-3" />
+                  </button>
+                </span>
+              </div>
+              <RangeCalendar
+                v-if="showHarvestPicker"
+                v-model="stagingHarvest"
+                class="rounded-md border shadow-sm"
+              />
+              <Button
+                v-if="!showHarvestPicker"
+                type="button"
+                variant="outline"
+                size="sm"
+                class="mt-1 w-full"
+                @click="showHarvestPicker = true"
+              >
+                <Plus class="mr-1 h-3 w-3" /> Add harvest window
+              </Button>
+            </Field>
+
+            <!-- Transplant windows -->
+            <Field>
+              <FieldLabel>Transplant windows</FieldLabel>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  v-for="(w, i) in transplantWindows"
+                  :key="i"
+                  class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
+                >
+                  {{ formatWindow(w) }}
+                  <button
+                    type="button"
+                    class="text-muted-foreground hover:text-foreground"
+                    @click="transplantWindows.splice(i, 1)"
+                  >
+                    <X class="h-3 w-3" />
+                  </button>
+                </span>
+              </div>
+              <RangeCalendar
+                v-if="showTransplantPicker"
+                v-model="stagingTransplant"
+                class="rounded-md border shadow-sm"
+              />
+              <Button
+                v-if="!showTransplantPicker"
+                type="button"
+                variant="outline"
+                size="sm"
+                class="mt-1 w-full"
+                @click="showTransplantPicker = true"
+              >
+                <Plus class="mr-1 h-3 w-3" /> Add transplant window
+              </Button>
+            </Field>
           </FieldGroup>
         </CollapsibleContent>
       </Collapsible>
