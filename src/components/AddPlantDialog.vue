@@ -1,24 +1,25 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { CalendarIcon } from 'lucide-vue-next'
+import { CalendarIcon, ChevronDown, ChevronsUpDown, Check } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 import {
   Dialog,
   DialogClose,
-  DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogScrollContent,
 } from '@/components/ui/dialog'
 import {
-  Combobox,
-  ComboboxAnchor,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from '@/components/ui/combobox'
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -39,6 +40,9 @@ const dialogOpen = computed({
   set: (val) => emit('update:open', val),
 })
 
+const comboboxOpen = ref(false)
+const showOverrides = ref(false)
+
 const { token } = useAuth()
 
 client.setConfig({
@@ -51,34 +55,60 @@ const defaultPlaceholder = today(getLocalTimeZone())
 
 const catalogPlants = ref<CatalogPlant[]>([])
 const selectedCatalogId = ref('')
-const searchTerm = ref('')
 const date = ref<DateValue>()
 const notes = ref('')
 const variety = ref('')
-const sowingWindowsOverride = ref<{ start: string; end: string }[] | undefined>(undefined)
-const harvestWindowsOverride = ref<{ start: string; end: string }[] | undefined>(undefined)
-const transplantWindowsOverride = ref<{ start: string; end: string }[] | undefined>(undefined)
+
+const overrides = ref({
+  description: '',
+  position: '',
+  hardiness: '',
+  spacing: '',
+  seedToHarvest: '',
+  sowingToTransplant: '',
+  harvest: '',
+  // window overrides to be added when month range picker is built
+})
+
+const selectedPlantName = computed(
+  () =>
+    catalogPlants.value.find((p) => p.id === selectedCatalogId.value)?.name ?? 'Select plant...',
+)
 
 const canSubmit = computed(() => !!selectedCatalogId.value && !!date.value)
 
-const filteredCatalogPlants = computed(() =>
-  catalogPlants.value.filter((p) => p.name.toLowerCase().includes(searchTerm.value.toLowerCase())),
-)
+const cleanedOverrides = computed(() => {
+  const result = Object.fromEntries(
+    Object.entries(overrides.value).filter(([, v]) => v !== '' && v != null),
+  )
+  return Object.keys(result).length > 0 ? result : undefined
+})
 
 onMounted(async () => {
   const res = await getApiCatalog()
   catalogPlants.value = res.data ?? []
 })
 
+function selectPlant(id: string) {
+  selectedCatalogId.value = id
+  comboboxOpen.value = false
+}
+
 function reset() {
   selectedCatalogId.value = ''
-  searchTerm.value = ''
   date.value = undefined
   notes.value = ''
   variety.value = ''
-  sowingWindowsOverride.value = undefined
-  harvestWindowsOverride.value = undefined
-  transplantWindowsOverride.value = undefined
+  showOverrides.value = false
+  overrides.value = {
+    description: '',
+    position: '',
+    hardiness: '',
+    spacing: '',
+    seedToHarvest: '',
+    sowingToTransplant: '',
+    harvest: '',
+  }
 }
 
 async function addPlant() {
@@ -88,9 +118,7 @@ async function addPlant() {
       variety: variety.value || undefined,
       sowDate: date.value?.toString() ?? '',
       notes: notes.value || undefined,
-      sowingWindowsOverride: sowingWindowsOverride.value,
-      harvestWindowsOverride: harvestWindowsOverride.value,
-      transplantWindowsOverride: transplantWindowsOverride.value,
+      overrides: cleanedOverrides.value,
     },
   })
 
@@ -102,84 +130,164 @@ async function addPlant() {
 
 <template>
   <Dialog v-model:open="dialogOpen">
-    <slot name="trigger">
-      <DialogTrigger as-child>
-        <slot />
-      </DialogTrigger>
-    </slot>
+    <DialogTrigger as-child>
+      <slot />
+    </DialogTrigger>
 
-    <DialogContent class="sm:max-w-106.25">
+    <DialogScrollContent class="sm:max-w-106.25">
       <DialogHeader>
         <DialogTitle>Add Plant</DialogTitle>
       </DialogHeader>
-      <form>
-        <FieldGroup>
-          <Field>
-            <FieldLabel> Plantname </FieldLabel>
 
-            <Combobox v-model="selectedCatalogId" open-on-focus ignore-filter>
-              <ComboboxAnchor class="w-full">
-                <ComboboxInput
-                  placeholder="Search plants..."
-                  :display-value="
-                    (id: string) => catalogPlants.find((p) => p.id === id)?.name ?? ''
-                  "
-                  @input="searchTerm = ($event.target as HTMLInputElement).value"
-                />
-              </ComboboxAnchor>
-              <ComboboxList class="w-(--reka-combobox-trigger-width)">
-                <ComboboxEmpty>No plants found.</ComboboxEmpty>
-                <ComboboxItem
-                  v-for="plant in filteredCatalogPlants"
-                  :key="plant.id"
-                  :value="plant.id"
-                >
-                  {{ plant.name }}
-                </ComboboxItem>
-              </ComboboxList>
-            </Combobox>
-          </Field>
+      <FieldGroup>
+        <Field>
+          <FieldLabel>Plant name</FieldLabel>
+          <Popover v-model:open="comboboxOpen">
+            <PopoverTrigger as-child>
+              <Button
+                variant="outline"
+                role="combobox"
+                :aria-expanded="comboboxOpen"
+                class="w-full justify-between"
+              >
+                {{ selectedPlantName }}
+                <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="w-[--reka-popover-trigger-width] p-0">
+              <Command>
+                <CommandInput placeholder="Search plants..." />
+                <CommandList>
+                  <CommandEmpty>No plants found.</CommandEmpty>
+                  <CommandGroup>
+                    <CommandItem
+                      v-for="plant in catalogPlants"
+                      :key="plant.id"
+                      :value="plant.name"
+                      @select="() => selectPlant(plant.id)"
+                    >
+                      <Check
+                        :class="
+                          cn(
+                            'mr-2 h-4 w-4',
+                            selectedCatalogId === plant.id ? 'opacity-100' : 'opacity-0',
+                          )
+                        "
+                      />
+                      {{ plant.name }}
+                    </CommandItem>
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </Field>
 
-          <Field>
-            <FieldLabel>Sow Date</FieldLabel>
-            <Popover>
-              <PopoverTrigger as-child>
-                <Button
-                  variant="outline"
-                  :class="
-                    cn(
-                      'w-full justify-start text-left font-normal',
-                      !date && 'text-muted-foreground',
-                    )
-                  "
-                >
-                  <CalendarIcon class="mr-2 h-4 w-4" />
-                  {{ date ? df.format(date.toDate(getLocalTimeZone())) : 'Pick a date' }}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent class="w-auto p-0">
-                <Calendar
-                  v-model="date"
-                  :initial-focus="true"
-                  :default-placeholder="defaultPlaceholder"
-                  layout="month-and-year"
-                />
-              </PopoverContent>
-            </Popover>
-          </Field>
+        <Field>
+          <FieldLabel for="variety">Variety</FieldLabel>
+          <Input id="variety" v-model="variety" placeholder="e.g. Cherry, Roma" />
+        </Field>
 
-          <Field>
-            <Input v-model="notes" placeholder="Description (optional)" />
-          </Field>
+        <Field>
+          <FieldLabel>Sow Date</FieldLabel>
+          <Popover>
+            <PopoverTrigger as-child>
+              <Button
+                variant="outline"
+                :class="
+                  cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')
+                "
+              >
+                <CalendarIcon class="mr-2 h-4 w-4" />
+                {{ date ? df.format(date.toDate(getLocalTimeZone())) : 'Pick a date' }}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="w-auto p-0">
+              <Calendar
+                v-model="date"
+                :initial-focus="true"
+                :default-placeholder="defaultPlaceholder"
+                layout="month-and-year"
+              />
+            </PopoverContent>
+          </Popover>
+        </Field>
 
-          <DialogFooter>
-            <DialogClose as-child>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button type="button" :disabled="!canSubmit" @click="addPlant">Add Plant</Button>
-          </DialogFooter>
-        </FieldGroup>
-      </form>
-    </DialogContent>
+        <Field>
+          <FieldLabel for="notes">Notes</FieldLabel>
+          <Input id="notes" v-model="notes" placeholder="Optional" />
+        </Field>
+      </FieldGroup>
+
+      <Collapsible v-model:open="showOverrides">
+        <CollapsibleTrigger class="flex items-center gap-1 text-sm text-muted-foreground">
+          <ChevronDown
+            class="h-4 w-4 transition-transform"
+            :class="showOverrides ? 'rotate-180' : ''"
+          />
+          Customise details
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <FieldGroup class="mt-3">
+            <Field>
+              <FieldLabel for="description">Description</FieldLabel>
+              <Input
+                id="description"
+                v-model="overrides.description"
+                placeholder="Override catalog description"
+              />
+            </Field>
+            <Field>
+              <FieldLabel for="position">Position</FieldLabel>
+              <Input id="position" v-model="overrides.position" placeholder="e.g. Full sun" />
+            </Field>
+            <Field>
+              <FieldLabel for="hardiness">Hardiness</FieldLabel>
+              <Input
+                id="hardiness"
+                v-model="overrides.hardiness"
+                placeholder="e.g. Hardy to -5°C"
+              />
+            </Field>
+            <Field>
+              <FieldLabel for="spacing">Spacing</FieldLabel>
+              <Input id="spacing" v-model="overrides.spacing" placeholder="e.g. 30cm apart" />
+            </Field>
+            <Field>
+              <FieldLabel for="seedToHarvest">Seed to harvest</FieldLabel>
+              <Input
+                id="seedToHarvest"
+                v-model="overrides.seedToHarvest"
+                placeholder="e.g. 3 months"
+              />
+            </Field>
+            <Field>
+              <FieldLabel for="sowingToTransplant">Sowing to transplant</FieldLabel>
+              <Input
+                id="sowingToTransplant"
+                v-model="overrides.sowingToTransplant"
+                placeholder="e.g. 4-6 weeks"
+              />
+            </Field>
+            <Field>
+              <FieldLabel for="harvest">Harvest notes</FieldLabel>
+              <Input
+                id="harvest"
+                v-model="overrides.harvest"
+                placeholder="e.g. Pick regularly to encourage pods"
+              />
+            </Field>
+            <!-- Sowing, harvest, and transplant window overrides to be added with month range picker -->
+          </FieldGroup>
+        </CollapsibleContent>
+      </Collapsible>
+
+      <DialogFooter>
+        <DialogClose as-child>
+          <Button variant="outline">Cancel</Button>
+        </DialogClose>
+        <Button type="button" :disabled="!canSubmit" @click="addPlant">Add Plant</Button>
+      </DialogFooter>
+    </DialogScrollContent>
   </Dialog>
 </template>

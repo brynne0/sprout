@@ -146,6 +146,22 @@ components:
         sowDate:
           type: string
           format: date
+        notes:
+          type: string
+        description:
+          type: string
+        position:
+          type: string
+        hardiness:
+          type: string
+        spacing:
+          type: string
+        seedToHarvest:
+          type: string
+        sowingToTransplant:
+          type: string
+        harvest:
+          type: string
         sowingWindows:
           type: array
           items:
@@ -158,8 +174,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        notes:
-          type: string
       required:
         - id
         - name
@@ -178,22 +192,43 @@ components:
         sowDate:
           type: string
           format: date
-        sowingWindowsOverride:
-          type: array
-          items:
-            $ref: '#/components/schemas/Window'
-        harvestWindowsOverride:
-          type: array
-          items:
-            $ref: '#/components/schemas/Window'
-        transplantWindowsOverride:
-          type: array
-          items:
-            $ref: '#/components/schemas/Window'
         notes:
           type: string
+        overrides:
+          $ref: '#/components/schemas/PlantOverrides'
       required:
         - sowDate
+
+    PlantOverrides:
+      type: object
+      description: Optional overrides for catalog fields (e.g. from a seed packet)
+      properties:
+        description:
+          type: string
+        position:
+          type: string
+        hardiness:
+          type: string
+        spacing:
+          type: string
+        seedToHarvest:
+          type: string
+        sowingToTransplant:
+          type: string
+        harvest:
+          type: string
+        sowingWindows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Window'
+        harvestWindows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Window'
+        transplantWindows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Window'
 
     CatalogPlant:
       type: object
