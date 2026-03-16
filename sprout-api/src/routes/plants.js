@@ -3,7 +3,7 @@ import pool from '../db.js'
 const PLANT_SELECT = `
   SELECT
     p.id,
-    p.catalog_id,
+    p.catalogue_id,
     COALESCE(p.name_override, pc.name) AS name,
     p.variety,
     p.sow_date,
@@ -19,7 +19,7 @@ const PLANT_SELECT = `
     COALESCE(p.overrides->'harvest_windows', pc.harvest_windows) AS harvest_windows,
     COALESCE(p.overrides->'transplant_windows', pc.transplant_windows) AS transplant_windows
   FROM plants p
-  LEFT JOIN plant_catalog pc ON pc.id = p.catalog_id`
+  LEFT JOIN plant_catalogue pc ON pc.id = p.catalogue_id`
 
 export default async function plantRoutes(app) {
   const auth = { onRequest: [app.authenticate] }
@@ -35,64 +35,66 @@ export default async function plantRoutes(app) {
 
   app.post('/plants', auth, async (request, reply) => {
     const userId = request.user.sub
-    const { catalog_id, sow_date, notes, name_override, variety, overrides } = request.body
+    const { catalogue_id, sow_date, notes, name_override, variety, overrides } = request.body
     const result = await pool.query(
-      `INSERT INTO plants (user_id, catalog_id, sow_date, notes, name_override, variety, overrides)
+      `INSERT INTO plants (user_id, catalogue_id, sow_date, notes, name_override, variety, overrides)
        VALUES ($1,$2,$3,$4,$5,$6,$7)
        RETURNING id`,
       [
-        userId, catalog_id ?? null, sow_date, notes ?? null,
-        name_override ?? null, variety ?? null,
+        userId,
+        catalogue_id ?? null,
+        sow_date,
+        notes ?? null,
+        name_override ?? null,
+        variety ?? null,
         overrides ? JSON.stringify(overrides) : null,
       ],
     )
-    const inserted = await pool.query(
-      `${PLANT_SELECT} WHERE p.id = $1`,
-      [result.rows[0].id],
-    )
+    const inserted = await pool.query(`${PLANT_SELECT} WHERE p.id = $1`, [result.rows[0].id])
     reply.code(201).send(inserted.rows[0])
   })
 
   app.get('/plants/:id', auth, async (request, reply) => {
     const userId = request.user.sub
-    const result = await pool.query(
-      `${PLANT_SELECT} WHERE p.id = $1 AND p.user_id = $2`,
-      [request.params.id, userId],
-    )
+    const result = await pool.query(`${PLANT_SELECT} WHERE p.id = $1 AND p.user_id = $2`, [
+      request.params.id,
+      userId,
+    ])
     if (!result.rows[0]) return reply.code(404).send({ error: 'Not found' })
     reply.send(result.rows[0])
   })
 
   app.put('/plants/:id', auth, async (request, reply) => {
     const userId = request.user.sub
-    const { catalog_id, sow_date, notes, name_override, variety, overrides } = request.body
+    const { catalogue_id, sow_date, notes, name_override, variety, overrides } = request.body
     const result = await pool.query(
       `UPDATE plants SET
-         catalog_id = $1, sow_date = $2, notes = $3,
+         catalogue_id = $1, sow_date = $2, notes = $3,
          name_override = $4, variety = $5, overrides = $6
        WHERE id = $7 AND user_id = $8
        RETURNING id`,
       [
-        catalog_id ?? null, sow_date, notes ?? null,
-        name_override ?? null, variety ?? null,
+        catalogue_id ?? null,
+        sow_date,
+        notes ?? null,
+        name_override ?? null,
+        variety ?? null,
         overrides ? JSON.stringify(overrides) : null,
-        request.params.id, userId,
+        request.params.id,
+        userId,
       ],
     )
     if (!result.rows[0]) return reply.code(404).send({ error: 'Not found' })
-    const updated = await pool.query(
-      `${PLANT_SELECT} WHERE p.id = $1`,
-      [result.rows[0].id],
-    )
+    const updated = await pool.query(`${PLANT_SELECT} WHERE p.id = $1`, [result.rows[0].id])
     reply.send(updated.rows[0])
   })
 
   app.delete('/plants/:id', auth, async (request, reply) => {
     const userId = request.user.sub
-    await pool.query(
-      'DELETE FROM plants WHERE id = $1 AND user_id = $2',
-      [request.params.id, userId],
-    )
+    await pool.query('DELETE FROM plants WHERE id = $1 AND user_id = $2', [
+      request.params.id,
+      userId,
+    ])
     reply.code(204).send()
   })
 }

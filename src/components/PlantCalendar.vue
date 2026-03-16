@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date'
-import type { CatalogPlant } from '@/client'
+import type { CataloguePlant } from '@/client'
 
-const props = withDefaults(defineProps<{ plants: CatalogPlant[]; showSowDot?: boolean }>(), {
+const props = withDefaults(defineProps<{ plants: CataloguePlant[]; showSowDot?: boolean }>(), {
   showSowDot: false,
 })
 

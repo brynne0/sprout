@@ -74,20 +74,20 @@ paths:
         '204':
           description: Plant deleted
 
-  /api/catalog:
+  /api/catalogue:
     get:
-      summary: Get all catalog plants
+      summary: Get all catalogue plants
       responses:
         '200':
-          description: A list of all available plants in the catalog
+          description: A list of all available plants in the catalogue
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CatalogPlant'
+                  $ref: '#/components/schemas/CataloguePlant'
 
-  /api/catalog/{id}:
+  /api/catalogue/{id}:
     parameters:
       - name: id
         in: path
@@ -96,14 +96,14 @@ paths:
           type: string
           format: uuid
     get:
-      summary: Get a catalog plant
+      summary: Get a catalogue plant
       responses:
         '200':
-          description: The fetched catalog plant
+          description: The fetched catalogue plant
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CatalogPlant'
+                $ref: '#/components/schemas/CataloguePlant'
 
   /auth/google:
     get:
@@ -136,7 +136,7 @@ components:
         id:
           type: string
           format: uuid
-        catalog_id:
+        catalogue_id:
           type: string
           format: uuid
         name:
@@ -182,7 +182,7 @@ components:
     PlantInput:
       type: object
       properties:
-        catalog_id:
+        catalogue_id:
           type: string
           format: uuid
         name_override:
@@ -201,7 +201,7 @@ components:
 
     PlantOverrides:
       type: object
-      description: Optional overrides for catalog fields (e.g. from a seed packet)
+      description: Optional overrides for catalogue fields (e.g. from a seed packet)
       properties:
         description:
           type: string
@@ -230,7 +230,7 @@ components:
           items:
             $ref: '#/components/schemas/Window'
 
-    CatalogPlant:
+    CataloguePlant:
       type: object
       properties:
         id:

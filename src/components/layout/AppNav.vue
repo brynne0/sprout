@@ -5,7 +5,7 @@ import SettingsMenu from '@/components/layout/SettingsMenu.vue'
 
 const links = [
   { to: '/', label: 'Your Garden', icon: Sprout, exact: true },
-  { to: '/catalog', label: 'Catalog', icon: NotepadText, exact: false },
+  { to: '/catalogue', label: 'Catalogue', icon: NotepadText, exact: false },
 ]
 </script>
 

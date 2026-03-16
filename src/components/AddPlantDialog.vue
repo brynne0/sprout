@@ -25,8 +25,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import type { CatalogPlant } from '@/client'
-import { postApiPlants, getApiCatalog } from '@/client'
+import type { CataloguePlant } from '@/client'
+import { postApiPlants, getApiCatalogue } from '@/client'
 import { client } from '@/client/client.gen'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -55,8 +55,8 @@ client.setConfig({
 const df = new DateFormatter('en-US', { dateStyle: 'long' })
 const defaultPlaceholder = today(getLocalTimeZone())
 
-const catalogPlants = ref<CatalogPlant[]>([])
-const selectedCatalogId = ref('')
+const cataloguePlants = ref<CataloguePlant[]>([])
+const selectedCatalogueId = ref('')
 const date = ref<DateValue>()
 const notes = ref('')
 const variety = ref('')
@@ -127,10 +127,10 @@ function confirmTransplantWindow() {
 
 const selectedPlantName = computed(
   () =>
-    catalogPlants.value.find((p) => p.id === selectedCatalogId.value)?.name ?? 'Select plant...',
+    cataloguePlants.value.find((p) => p.id === selectedCatalogueId.value)?.name ?? 'Select plant...',
 )
 
-const canSubmit = computed(() => !!selectedCatalogId.value && !!date.value)
+const canSubmit = computed(() => !!selectedCatalogueId.value && !!date.value)
 
 const cleanedOverrides = computed(() => {
   const result: Record<string, unknown> = Object.fromEntries(
@@ -143,17 +143,17 @@ const cleanedOverrides = computed(() => {
 })
 
 onMounted(async () => {
-  const res = await getApiCatalog()
-  catalogPlants.value = res.data ?? []
+  const res = await getApiCatalogue()
+  cataloguePlants.value = res.data ?? []
 })
 
 function selectPlant(id: string) {
-  selectedCatalogId.value = id
+  selectedCatalogueId.value = id
   comboboxOpen.value = false
 }
 
 function reset() {
-  selectedCatalogId.value = ''
+  selectedCatalogueId.value = ''
   date.value = undefined
   notes.value = ''
   variety.value = ''
@@ -181,7 +181,7 @@ function reset() {
 async function addPlant() {
   await postApiPlants({
     body: {
-      catalog_id: selectedCatalogId.value || undefined,
+      catalogue_id: selectedCatalogueId.value || undefined,
       variety: variety.value || undefined,
       sow_date: date.value?.toString() ?? '',
       notes: notes.value || undefined,
@@ -228,7 +228,7 @@ async function addPlant() {
                   <CommandEmpty>No plants found.</CommandEmpty>
                   <CommandGroup>
                     <CommandItem
-                      v-for="plant in catalogPlants"
+                      v-for="plant in cataloguePlants"
                       :key="plant.id"
                       :value="plant.name"
                       @select="() => selectPlant(plant.id)"
@@ -238,7 +238,7 @@ async function addPlant() {
                         :class="
                           cn(
                             'ml-auto h-4 w-4',
-                            selectedCatalogId === plant.id ? 'opacity-100' : 'opacity-0',
+                            selectedCatalogueId === plant.id ? 'opacity-100' : 'opacity-0',
                           )
                         "
                       />
@@ -301,7 +301,7 @@ async function addPlant() {
               <Input
                 id="description"
                 v-model="overrides.description"
-                placeholder="Override catalog description"
+                placeholder="Override catalogue description"
               />
             </Field>
             <Field>
