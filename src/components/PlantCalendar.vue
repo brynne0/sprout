@@ -234,7 +234,7 @@ const todayX = computed(() => {
               <div
                 v-for="(b, i) in row.sowingBars"
                 :key="`sow-${i}`"
-                class="absolute rounded-sm bg-green-500/20 border border-green-500/40"
+                class="absolute rounded-sm bg-emerald-500/20 border border-emerald-500/40"
                 :style="{
                   left: b.x + 'px',
                   width: b.width + 'px',
@@ -243,11 +243,11 @@ const todayX = computed(() => {
                 }"
               />
 
-              <!-- Transplant window bands (sky, middle track) -->
+              <!-- Transplant window bands (rose, middle track) -->
               <div
                 v-for="(b, i) in row.transplantBars"
                 :key="`transplant-${i}`"
-                class="absolute rounded-sm bg-sky-500/20 border border-sky-500/40"
+                class="absolute rounded-sm bg-amber-500/20 border border-amber-500/40"
                 :style="{
                   left: b.x + 'px',
                   width: b.width + 'px',
@@ -260,7 +260,7 @@ const todayX = computed(() => {
               <div
                 v-for="(b, i) in row.harvestBars"
                 :key="`harvest-${i}`"
-                class="absolute rounded-sm bg-amber-500/20 border border-amber-500/40"
+                class="absolute rounded-sm bg-rose-500/20 border border-rose-500/40"
                 :style="{
                   left: b.x + 'px',
                   width: b.width + 'px',
@@ -290,25 +290,25 @@ const todayX = computed(() => {
   <!-- Legend -->
   <div
     :class="[
-      'grid gap-2 mt-2 px-4 text-xs text-muted-foreground',
+      'grid justify-items-center gap-2 mt-2 px-4 text-xs text-muted-foreground',
       showSowDot ? 'grid-cols-4' : 'grid-cols-3',
     ]"
   >
     <span class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/40" />
-      Sowing window
-    </span>
-    <span class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 rounded-sm bg-sky-500/20 border border-sky-500/40" />
-      Transplant window
+      Sow
     </span>
     <span class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 rounded-sm bg-amber-500/20 border border-amber-500/40" />
-      Harvest window
+      Transplant
+    </span>
+    <span class="flex items-center gap-1.5">
+      <span class="inline-block w-3 h-3 rounded-sm bg-rose-500/20 border border-rose-500/40" />
+      Harvest
     </span>
     <span v-if="showSowDot" class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 border rounded-sm bg-primary" />
-      Sow date
+      Sown on
     </span>
   </div>
 </template>
