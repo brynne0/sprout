@@ -84,6 +84,7 @@ const stagingTransplant = ref<DateRange | undefined>()
 const showSowingPicker = ref(false)
 const showHarvestPicker = ref(false)
 const showTransplantPicker = ref(false)
+const showSowDatePicker = ref(false)
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -104,6 +105,7 @@ function confirmSowingWindow() {
       end: toMonthDay(stagingSowing.value.end),
     })
     stagingSowing.value = undefined
+    showSowingPicker.value = false
   }
 }
 function confirmHarvestWindow() {
@@ -113,6 +115,7 @@ function confirmHarvestWindow() {
       end: toMonthDay(stagingHarvest.value.end),
     })
     stagingHarvest.value = undefined
+    showHarvestPicker.value = false
   }
 }
 function confirmTransplantWindow() {
@@ -122,12 +125,14 @@ function confirmTransplantWindow() {
       end: toMonthDay(stagingTransplant.value.end),
     })
     stagingTransplant.value = undefined
+    showTransplantPicker.value = false
   }
 }
 
 const selectedPlantName = computed(
   () =>
-    cataloguePlants.value.find((p) => p.id === selectedCatalogueId.value)?.name ?? 'Select plant...',
+    cataloguePlants.value.find((p) => p.id === selectedCatalogueId.value)?.name ??
+    'Select plant...',
 )
 
 const canSubmit = computed(() => !!selectedCatalogueId.value && !!date.value)
@@ -257,7 +262,7 @@ async function addPlant() {
 
         <Field>
           <FieldLabel>Sow Date</FieldLabel>
-          <Popover>
+          <Popover v-model:open="showSowDatePicker">
             <PopoverTrigger as-child>
               <Button
                 variant="outline"
@@ -275,6 +280,7 @@ async function addPlant() {
                 :initial-focus="true"
                 :default-placeholder="defaultPlaceholder"
                 layout="month-and-year"
+                @update:model-value="showSowDatePicker = false"
               />
             </PopoverContent>
           </Popover>
