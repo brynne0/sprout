@@ -9,7 +9,6 @@
     </div>
 
     <a
-      v-if="!isProd"
       :href="`${apiUrl}/auth/google`"
       class="flex w-full items-center justify-center gap-3 rounded-xl border border-primary bg-card px-12 py-2 text-sm font-semibold transition-colors hover:bg-muted max-w-2xs"
     >
@@ -40,5 +39,4 @@
 import { Sprout } from 'lucide-vue-next'
 
 const apiUrl = import.meta.env.VITE_API_URL
-const isProd = import.meta.env.PROD
 </script>
