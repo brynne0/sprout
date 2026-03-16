@@ -9,8 +9,8 @@ const router = createRouter({
       component: () => import('@/views/YourGarden.vue'),
     },
     {
-      path: '/calendar',
-      component: () => import('@/views/CalendarView.vue'),
+      path: '/catalog',
+      component: () => import('@/views/CatalogView.vue'),
     },
     { path: '/login', component: () => import('@/views/LoginView.vue') },
     { path: '/auth/callback', component: () => import('@/views/AuthCallback.vue') },
