@@ -93,7 +93,7 @@ function formatDate(dateStr: string | null | undefined) {
               <TableRow v-for="plant in plants" :key="plant.id">
                 <TableCell class="font-medium">{{ plant.name }}</TableCell>
                 <!-- <TableCell>{{ plant.variety ?? '—' }}</TableCell> -->
-                <TableCell>{{ formatDate(plant.sowDate) }}</TableCell>
+                <TableCell>{{ formatDate(plant.sow_date) }}</TableCell>
                 <TableCell>{{ plant.notes ?? '—' }}</TableCell>
               </TableRow>
             </TableBody>

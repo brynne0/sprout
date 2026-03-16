@@ -120,13 +120,13 @@ const plantRows = computed(() =>
       return {
         plant,
         sowX,
-        sowingBars: (plant.sowingWindows ?? [])
+        sowingBars: (plant.sowing_windows ?? [])
           .map((w) => windowBar(w.start, w.end, baseYear))
           .filter(Boolean) as { x: number; width: number }[],
-        transplantBars: (plant.transplantWindows ?? [])
+        transplantBars: (plant.transplant_windows ?? [])
           .map((w) => windowBar(w.start, w.end, baseYear))
           .filter(Boolean) as { x: number; width: number }[],
-        harvestBars: (plant.harvestWindows ?? [])
+        harvestBars: (plant.harvest_windows ?? [])
           .map((w) => windowBar(w.start, w.end, baseYear))
           .filter(Boolean) as { x: number; width: number }[],
       }
@@ -139,11 +139,11 @@ function parseDate(s: string): CalendarDate {
 }
 
 function getAnchorDate(plant: {
-  sowDate?: string
-  sowingWindows?: Array<{ start: string }>
+  sow_date?: string
+  sowing_windows?: Array<{ start: string }>
 }): CalendarDate {
-  if (plant.sowDate) return parseDate(plant.sowDate)
-  const firstWindow = plant.sowingWindows?.[0]
+  if (plant.sow_date) return parseDate(plant.sow_date)
+  const firstWindow = plant.sowing_windows?.[0]
   if (firstWindow) {
     const [m, d] = firstWindow.start.split('-').map(Number)
     return new CalendarDate(today(getLocalTimeZone()).year, m!, d!)

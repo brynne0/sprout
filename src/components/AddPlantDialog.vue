@@ -66,8 +66,8 @@ const overrides = ref({
   position: '',
   hardiness: '',
   spacing: '',
-  seedToHarvest: '',
-  sowingToTransplant: '',
+  seed_to_harvest: '',
+  sowing_to_transplant: '',
   harvest: '',
 })
 
@@ -136,9 +136,9 @@ const cleanedOverrides = computed(() => {
   const result: Record<string, unknown> = Object.fromEntries(
     Object.entries(overrides.value).filter(([, v]) => v !== '' && v != null),
   )
-  if (sowingWindows.value.length) result.sowingWindows = sowingWindows.value
-  if (harvestWindows.value.length) result.harvestWindows = harvestWindows.value
-  if (transplantWindows.value.length) result.transplantWindows = transplantWindows.value
+  if (sowingWindows.value.length) result.sowing_windows = sowingWindows.value
+  if (harvestWindows.value.length) result.harvest_windows = harvestWindows.value
+  if (transplantWindows.value.length) result.transplant_windows = transplantWindows.value
   return Object.keys(result).length > 0 ? result : undefined
 })
 
@@ -163,8 +163,8 @@ function reset() {
     position: '',
     hardiness: '',
     spacing: '',
-    seedToHarvest: '',
-    sowingToTransplant: '',
+    seed_to_harvest: '',
+    sowing_to_transplant: '',
     harvest: '',
   }
   sowingWindows.value = []
@@ -181,9 +181,9 @@ function reset() {
 async function addPlant() {
   await postApiPlants({
     body: {
-      catalogId: selectedCatalogId.value || undefined,
+      catalog_id: selectedCatalogId.value || undefined,
       variety: variety.value || undefined,
-      sowDate: date.value?.toString() ?? '',
+      sow_date: date.value?.toString() ?? '',
       notes: notes.value || undefined,
       overrides: cleanedOverrides.value,
     },
@@ -321,18 +321,18 @@ async function addPlant() {
               <Input id="spacing" v-model="overrides.spacing" placeholder="e.g. 30cm apart" />
             </Field>
             <Field>
-              <FieldLabel for="seedToHarvest">Seed to harvest</FieldLabel>
+              <FieldLabel for="seed_to_harvest">Seed to harvest</FieldLabel>
               <Input
-                id="seedToHarvest"
-                v-model="overrides.seedToHarvest"
+                id="seed_to_harvest"
+                v-model="overrides.seed_to_harvest"
                 placeholder="e.g. 3 months"
               />
             </Field>
             <Field>
-              <FieldLabel for="sowingToTransplant">Sowing to transplant</FieldLabel>
+              <FieldLabel for="sowing_to_transplant">Sowing to transplant</FieldLabel>
               <Input
-                id="sowingToTransplant"
-                v-model="overrides.sowingToTransplant"
+                id="sowing_to_transplant"
+                v-model="overrides.sowing_to_transplant"
                 placeholder="e.g. 4-6 weeks"
               />
             </Field>

@@ -10,11 +10,11 @@ const CATALOG_SELECT = `
     spacing,
     harvest,
     source,
-    seed_to_harvest        AS "seedToHarvest",
-    sowing_to_transplant   AS "sowingToTransplant",
-    sowing_windows         AS "sowingWindows",
-    harvest_windows        AS "harvestWindows",
-    transplant_windows     AS "transplantWindows"
+    seed_to_harvest,
+    sowing_to_transplant,
+    sowing_windows,
+    harvest_windows,
+    transplant_windows
   FROM plant_catalog
 `
 

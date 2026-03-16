@@ -136,14 +136,14 @@ components:
         id:
           type: string
           format: uuid
-        catalogId:
+        catalog_id:
           type: string
           format: uuid
         name:
           type: string
         variety:
           type: string
-        sowDate:
+        sow_date:
           type: string
           format: date
         notes:
@@ -156,40 +156,40 @@ components:
           type: string
         spacing:
           type: string
-        seedToHarvest:
+        seed_to_harvest:
           type: string
-        sowingToTransplant:
+        sowing_to_transplant:
           type: string
         harvest:
           type: string
-        sowingWindows:
+        sowing_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        harvestWindows:
+        harvest_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        transplantWindows:
+        transplant_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
       required:
         - id
         - name
-        - sowDate
+        - sow_date
 
     PlantInput:
       type: object
       properties:
-        catalogId:
+        catalog_id:
           type: string
           format: uuid
-        nameOverride:
+        name_override:
           type: string
         variety:
           type: string
-        sowDate:
+        sow_date:
           type: string
           format: date
         notes:
@@ -197,7 +197,7 @@ components:
         overrides:
           $ref: '#/components/schemas/PlantOverrides'
       required:
-        - sowDate
+        - sow_date
 
     PlantOverrides:
       type: object
@@ -211,21 +211,21 @@ components:
           type: string
         spacing:
           type: string
-        seedToHarvest:
+        seed_to_harvest:
           type: string
-        sowingToTransplant:
+        sowing_to_transplant:
           type: string
         harvest:
           type: string
-        sowingWindows:
+        sowing_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        harvestWindows:
+        harvest_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        transplantWindows:
+        transplant_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
@@ -246,21 +246,21 @@ components:
           type: string
         spacing:
           type: string
-        seedToHarvest:
+        seed_to_harvest:
           type: string
-        sowingToTransplant:
+        sowing_to_transplant:
           type: string
         harvest:
           type: string
-        sowingWindows:
+        sowing_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        harvestWindows:
+        harvest_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        transplantWindows:
+        transplant_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'

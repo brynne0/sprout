@@ -3,21 +3,21 @@ import pool from '../db.js'
 const PLANT_SELECT = `
   SELECT
     p.id,
-    p.catalog_id AS "catalogId",
+    p.catalog_id,
     COALESCE(p.name_override, pc.name) AS name,
     p.variety,
-    p.sow_date AS "sowDate",
+    p.sow_date,
     p.notes,
     COALESCE(p.overrides->>'description', pc.description) AS description,
     COALESCE(p.overrides->>'position', pc.position) AS position,
     COALESCE(p.overrides->>'hardiness', pc.hardiness) AS hardiness,
     COALESCE(p.overrides->>'spacing', pc.spacing) AS spacing,
-    COALESCE(p.overrides->>'seedToHarvest', pc.seed_to_harvest) AS "seedToHarvest",
-    COALESCE(p.overrides->>'sowingToTransplant', pc.sowing_to_transplant) AS "sowingToTransplant",
+    COALESCE(p.overrides->>'seed_to_harvest', pc.seed_to_harvest) AS seed_to_harvest,
+    COALESCE(p.overrides->>'sowing_to_transplant', pc.sowing_to_transplant) AS sowing_to_transplant,
     COALESCE(p.overrides->>'harvest', pc.harvest) AS harvest,
-    COALESCE(p.overrides->'sowingWindows', pc.sowing_windows) AS "sowingWindows",
-    COALESCE(p.overrides->'harvestWindows', pc.harvest_windows) AS "harvestWindows",
-    COALESCE(p.overrides->'transplantWindows', pc.transplant_windows) AS "transplantWindows"
+    COALESCE(p.overrides->'sowing_windows', pc.sowing_windows) AS sowing_windows,
+    COALESCE(p.overrides->'harvest_windows', pc.harvest_windows) AS harvest_windows,
+    COALESCE(p.overrides->'transplant_windows', pc.transplant_windows) AS transplant_windows
   FROM plants p
   LEFT JOIN plant_catalog pc ON pc.id = p.catalog_id`
 
@@ -35,14 +35,14 @@ export default async function plantRoutes(app) {
 
   app.post('/plants', auth, async (request, reply) => {
     const userId = request.user.sub
-    const { catalogId, sowDate, notes, nameOverride, variety, overrides } = request.body
+    const { catalog_id, sow_date, notes, name_override, variety, overrides } = request.body
     const result = await pool.query(
       `INSERT INTO plants (user_id, catalog_id, sow_date, notes, name_override, variety, overrides)
        VALUES ($1,$2,$3,$4,$5,$6,$7)
        RETURNING id`,
       [
-        userId, catalogId ?? null, sowDate, notes ?? null,
-        nameOverride ?? null, variety ?? null,
+        userId, catalog_id ?? null, sow_date, notes ?? null,
+        name_override ?? null, variety ?? null,
         overrides ? JSON.stringify(overrides) : null,
       ],
     )
@@ -65,7 +65,7 @@ export default async function plantRoutes(app) {
 
   app.put('/plants/:id', auth, async (request, reply) => {
     const userId = request.user.sub
-    const { catalogId, sowDate, notes, nameOverride, variety, overrides } = request.body
+    const { catalog_id, sow_date, notes, name_override, variety, overrides } = request.body
     const result = await pool.query(
       `UPDATE plants SET
          catalog_id = $1, sow_date = $2, notes = $3,
@@ -73,8 +73,8 @@ export default async function plantRoutes(app) {
        WHERE id = $7 AND user_id = $8
        RETURNING id`,
       [
-        catalogId ?? null, sowDate, notes ?? null,
-        nameOverride ?? null, variety ?? null,
+        catalog_id ?? null, sow_date, notes ?? null,
+        name_override ?? null, variety ?? null,
         overrides ? JSON.stringify(overrides) : null,
         request.params.id, userId,
       ],
