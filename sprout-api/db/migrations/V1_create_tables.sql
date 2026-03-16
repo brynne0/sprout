@@ -26,11 +26,9 @@ CREATE TABLE plants (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     catalog_id UUID REFERENCES plant_catalog(id),
     sow_date DATE NOT NULL,
-    name_override VARCHAR(255), 
+    name_override VARCHAR(255),
     variety VARCHAR(255),
-    sowing_windows_override JSONB,
-    harvest_windows_override JSONB,
-    transplant_windows_override JSONB,
+    overrides JSONB,
     notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     CONSTRAINT plants_must_have_name
