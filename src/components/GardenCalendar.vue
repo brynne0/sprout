@@ -177,18 +177,13 @@ const todayX = computed(() => {
         </div>
 
         <!-- Plant rows -->
-        <div
-          v-for="row in plantRows"
-          :key="row.plant.id"
-          class="flex divide-x divide-border/40"
-          :style="{ height: ROW_HEIGHT + 'px' }"
-        >
+        <div v-for="row in plantRows" :key="row.plant.id" class="flex divide-x divide-border/40">
           <!-- Sticky name -->
           <div
-            class="sticky left-0 z-11 bg-background shrink-0 px-3 flex flex-col justify-center"
-            :style="{ width: NAME_COL_WIDTH + 'px', height: ROW_HEIGHT + 'px' }"
+            class="sticky left-0 z-11 bg-background shrink-0 p-3 flex flex-col justify-center"
+            :style="{ width: NAME_COL_WIDTH + 'px' }"
           >
-            <span class="text-xs font-medium truncate leading-tight">{{ row.plant.name }}</span>
+            <span class="text-xs font-medium leading-tight">{{ row.plant.name }}</span>
             <span
               v-if="row.plant.variety"
               class="text-[10px] text-muted-foreground truncate leading-tight"
@@ -202,7 +197,7 @@ const todayX = computed(() => {
             class="relative flex divide-x divide-border/40 shrink-0"
             :style="{
               width: timelineMonths.length * MONTH_WIDTH + 'px',
-              height: ROW_HEIGHT + 'px',
+              minHeight: ROW_HEIGHT + 'px',
             }"
           >
             <div
