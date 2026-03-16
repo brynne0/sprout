@@ -161,7 +161,7 @@ const todayX = computed(() => {
           >
             Plant
           </div>
-          <div class="flex divide-border/40">
+          <div class="flex divide-x divide-border/40">
             <div
               v-for="m in timelineMonths"
               :key="`${m.year}-${m.month}`"
