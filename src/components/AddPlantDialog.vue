@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { CalendarIcon, ChevronDown, ChevronsUpDown, Check, Plus, X } from 'lucide-vue-next'
-import { useAuth } from '@/composables/useAuth'
 import {
   Dialog,
   DialogClose,
@@ -27,7 +26,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import type { CataloguePlant } from '@/client'
 import { postApiPlants, getApiCatalogue } from '@/client'
-import { client } from '@/client/client.gen'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
@@ -44,13 +42,6 @@ const dialogOpen = computed({
 
 const comboboxOpen = ref(false)
 const showOverrides = ref(false)
-
-const { token } = useAuth()
-
-client.setConfig({
-  baseUrl: import.meta.env.VITE_API_URL,
-  auth: () => token.value ?? '',
-})
 
 const df = new DateFormatter('en-US', { dateStyle: 'long' })
 const defaultPlaceholder = today(getLocalTimeZone())

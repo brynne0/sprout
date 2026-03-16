@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { Plus, Sprout } from 'lucide-vue-next'
-import { useAuth } from '@/composables/useAuth'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import {
   Empty,
@@ -23,15 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import type { Plant } from '@/client'
 import { getApiPlants } from '@/client'
-import { client } from '@/client/client.gen'
 import AddPlantDialog from '@/components/AddPlantDialog.vue'
-
-const { token } = useAuth()
-
-client.setConfig({
-  baseUrl: import.meta.env.VITE_API_URL,
-  auth: () => token.value ?? '',
-})
 
 const plants = ref<Plant[]>([])
 const dialogOpen = ref(false)
