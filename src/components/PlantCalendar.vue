@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date'
-import type { Plant } from '@/client'
+import type { CatalogPlant } from '@/client'
 
-const props = withDefaults(defineProps<{ plants: Plant[]; showSowDot?: boolean }>(), {
+const props = withDefaults(defineProps<{ plants: CatalogPlant[]; showSowDot?: boolean }>(), {
   showSowDot: false,
 })
 
@@ -29,11 +29,6 @@ const MONTH_LABELS = [
   'Dec',
 ]
 const currentYear = today(getLocalTimeZone()).year
-
-function parseDate(s: string): CalendarDate {
-  const parts = s.substring(0, 10).split('-').map(Number)
-  return new CalendarDate(parts[0]!, parts[1]!, parts[2]!)
-}
 
 function daysInMonth(year: number, month: number): number {
   return new Date(year, month, 0).getDate()
@@ -61,7 +56,7 @@ const timelineMonths = computed(() => {
   let endMonth = 12
 
   for (const plant of props.plants) {
-    const sow = parseDate(plant.sowDate)
+    const sow = getAnchorDate(plant)
     if (sow.year < startYear || (sow.year === startYear && sow.month < startMonth)) {
       startYear = sow.year
       startMonth = sow.month
@@ -117,9 +112,9 @@ function windowBar(
 const plantRows = computed(() =>
   props.plants
     .slice()
-    .sort((a, b) => a.sowDate.localeCompare(b.sowDate))
+    .sort((a, b) => getAnchorDate(a).toString().localeCompare(getAnchorDate(b).toString()))
     .map((plant) => {
-      const sow = parseDate(plant.sowDate)
+      const sow = getAnchorDate(plant)
       const sowX = dateToX(sow)
       const baseYear = sow.year
       return {
@@ -137,6 +132,24 @@ const plantRows = computed(() =>
       }
     }),
 )
+
+function parseDate(s: string): CalendarDate {
+  const parts = s.substring(0, 10).split('-').map(Number)
+  return new CalendarDate(parts[0]!, parts[1]!, parts[2]!)
+}
+
+function getAnchorDate(plant: {
+  sowDate?: string
+  sowingWindows?: Array<{ start: string }>
+}): CalendarDate {
+  if (plant.sowDate) return parseDate(plant.sowDate)
+  const firstWindow = plant.sowingWindows?.[0]
+  if (firstWindow) {
+    const [m, d] = firstWindow.start.split('-').map(Number)
+    return new CalendarDate(today(getLocalTimeZone()).year, m!, d!)
+  }
+  return today(getLocalTimeZone())
+}
 
 const sowingTop = ROW_PADDING
 const transplantTop = ROW_PADDING + TRACK_HEIGHT + TRACK_GAP
@@ -179,11 +192,7 @@ const todayX = computed(() => {
         </div>
 
         <!-- Plant rows -->
-        <div
-          v-for="row in plantRows"
-          :key="row.plant.id"
-          class="flex divide-x divide-border/40"
-        >
+        <div v-for="row in plantRows" :key="row.plant.id" class="flex divide-x divide-border/40">
           <!-- Sticky name -->
           <div
             class="sticky left-0 z-11 bg-background shrink-0 px-3 flex flex-col justify-center"
@@ -191,10 +200,10 @@ const todayX = computed(() => {
           >
             <span class="text-xs font-medium leading-tight">{{ row.plant.name }}</span>
             <span
-              v-if="row.plant.variety"
+              v-if="'variety' in row.plant && (row.plant as { variety?: string }).variety"
               class="text-[10px] text-muted-foreground leading-tight"
             >
-              {{ row.plant.variety }}
+              {{ (row.plant as { variety?: string }).variety }}
             </span>
           </div>
 
@@ -279,7 +288,12 @@ const todayX = computed(() => {
   </div>
 
   <!-- Legend -->
-  <div class="grid grid-cols-4 gap-4 mt-2 px-4 text-xs text-muted-foreground">
+  <div
+    :class="[
+      'grid gap-2 mt-2 px-4 text-xs text-muted-foreground',
+      showSowDot ? 'grid-cols-4' : 'grid-cols-3',
+    ]"
+  >
     <span class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/40" />
       Sowing window
