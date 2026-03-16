@@ -26,10 +26,12 @@ import AddPlantDialog from '@/components/AddPlantDialog.vue'
 
 const plants = ref<Plant[]>([])
 const dialogOpen = ref(false)
+const loading = ref(true)
 
 onMounted(async () => {
   const res = await getApiPlants()
   plants.value = res.data ?? []
+  loading.value = false
 })
 
 async function onPlantAdded() {
@@ -51,7 +53,7 @@ function formatDate(dateStr: string | null | undefined) {
     <header class="flex items-center justify-between mb-4 px-8">
       <h1 class="text-3xl font-bold tracking-tight text-primary">Your Garden</h1>
       <AddPlantDialog
-        v-if="plants.length > 0"
+        v-if="!loading && plants.length > 0"
         v-model:open="dialogOpen"
         @plant-added="onPlantAdded"
       >
@@ -63,7 +65,7 @@ function formatDate(dateStr: string | null | undefined) {
       </AddPlantDialog>
     </header>
 
-    <div v-if="plants.length > 0">
+    <div v-if="!loading && plants.length > 0">
       <Tabs default-value="gardenList">
         <TabsList class="mx-8">
           <TabsTrigger value="gardenList"> Your Plants </TabsTrigger>
@@ -97,7 +99,7 @@ function formatDate(dateStr: string | null | undefined) {
       </Tabs>
     </div>
 
-    <div v-else class="flex items-center justify-center min-h-[70vh]">
+    <div v-else-if="!loading" class="flex items-center justify-center min-h-[70vh]">
       <Empty>
         <EmptyHeader>
           <EmptyMedia>
