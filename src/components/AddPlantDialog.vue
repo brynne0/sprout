@@ -201,7 +201,7 @@ async function addPlant() {
       <slot />
     </DialogTrigger>
 
-    <DialogScrollContent class="sm:max-w-106.25">
+    <DialogScrollContent>
       <DialogHeader>
         <DialogTitle>Add Plant</DialogTitle>
       </DialogHeader>
@@ -221,7 +221,7 @@ async function addPlant() {
                 <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent class="w-[--reka-popover-trigger-width] p-0">
+            <PopoverContent class="p-0">
               <Command>
                 <CommandInput placeholder="Search plants..." />
                 <CommandList>
