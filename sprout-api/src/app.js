@@ -11,7 +11,7 @@ import catalogueRoutes from './routes/catalogue.js'
 
 const app = Fastify({ logger: true })
 
-app.register(cors, { origin: 'http://localhost:5173' })
+app.register(cors, { origin: process.env.FRONTEND_URL })
 
 app.register(jwt, {
   secret: process.env.JWT_SECRET,
