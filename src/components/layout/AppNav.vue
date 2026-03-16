@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import { Sprout, Calendar } from 'lucide-vue-next'
+import { Sprout, NotepadText } from 'lucide-vue-next'
 import SettingsMenu from '@/components/layout/SettingsMenu.vue'
 
 const links = [
   { to: '/', label: 'Your Garden', icon: Sprout, exact: true },
-  { to: '/calendar', label: 'Calendar', icon: Calendar, exact: false },
+  { to: '/catalog', label: 'Catalog', icon: NotepadText, exact: false },
 ]
 </script>
 
