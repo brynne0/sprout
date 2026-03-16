@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import AppNav from '@/components/layout/AppNav.vue'
 
 const route = useRoute()
+const router = useRouter()
 const publicRoutes = ['/login', '/auth/callback']
+
+const routerReady = ref(false)
+router.isReady().then(() => { routerReady.value = true })
 </script>
 
 <template>
@@ -14,7 +19,7 @@ const publicRoutes = ['/login', '/auth/callback']
         : 'min-w-sm pt-[max(2rem,env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))]'
     "
   >
-    <AppNav v-if="!publicRoutes.includes(route.path)" />
+    <AppNav v-if="routerReady && !publicRoutes.includes(route.path)" />
     <RouterView />
   </div>
 </template>
