@@ -3,7 +3,9 @@ import { computed } from 'vue'
 import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date'
 import type { Plant } from '@/client'
 
-const props = defineProps<{ plants: Plant[] }>()
+const props = withDefaults(defineProps<{ plants: Plant[]; showSowDot?: boolean }>(), {
+  showSowDot: false,
+})
 
 const MONTH_WIDTH = 40
 const NAME_COL_WIDTH = 112
@@ -161,7 +163,7 @@ const todayX = computed(() => {
           >
             Plant
           </div>
-          <div class="flex divide-x divide-border/40">
+          <div class="flex divide-border/40">
             <div
               v-for="m in timelineMonths"
               :key="`${m.year}-${m.month}`"
@@ -177,16 +179,20 @@ const todayX = computed(() => {
         </div>
 
         <!-- Plant rows -->
-        <div v-for="row in plantRows" :key="row.plant.id" class="flex divide-x divide-border/40">
+        <div
+          v-for="row in plantRows"
+          :key="row.plant.id"
+          class="flex divide-x divide-border/40"
+        >
           <!-- Sticky name -->
           <div
-            class="sticky left-0 z-11 bg-background shrink-0 p-3 flex flex-col justify-center"
+            class="sticky left-0 z-11 bg-background shrink-0 px-3 flex flex-col justify-center"
             :style="{ width: NAME_COL_WIDTH + 'px' }"
           >
             <span class="text-xs font-medium leading-tight">{{ row.plant.name }}</span>
             <span
               v-if="row.plant.variety"
-              class="text-[10px] text-muted-foreground truncate leading-tight"
+              class="text-[10px] text-muted-foreground leading-tight"
             >
               {{ row.plant.variety }}
             </span>
@@ -228,11 +234,11 @@ const todayX = computed(() => {
                 }"
               />
 
-              <!-- Transplant window bands (amber, middle track) -->
+              <!-- Transplant window bands (sky, middle track) -->
               <div
                 v-for="(b, i) in row.transplantBars"
                 :key="`transplant-${i}`"
-                class="absolute rounded-sm bg-amber-500/20 border border-amber-500/40"
+                class="absolute rounded-sm bg-sky-500/20 border border-sky-500/40"
                 :style="{
                   left: b.x + 'px',
                   width: b.width + 'px',
@@ -241,11 +247,11 @@ const todayX = computed(() => {
                 }"
               />
 
-              <!-- Harvest window bands (orange, bottom track) -->
+              <!-- Harvest window bands (amber, bottom track) -->
               <div
                 v-for="(b, i) in row.harvestBars"
                 :key="`harvest-${i}`"
-                class="absolute rounded-sm bg-orange-500/20 border border-orange-500/40"
+                class="absolute rounded-sm bg-amber-500/20 border border-amber-500/40"
                 :style="{
                   left: b.x + 'px',
                   width: b.width + 'px',
@@ -256,6 +262,7 @@ const todayX = computed(() => {
 
               <!-- Sow date dot -->
               <div
+                v-if="showSowDot"
                 class="absolute rounded-full bg-primary border z-10"
                 :style="{
                   left: row.sowX - 5 + 'px',
@@ -278,14 +285,14 @@ const todayX = computed(() => {
       Sowing window
     </span>
     <span class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 rounded-sm bg-amber-500/20 border border-amber-500/40" />
+      <span class="inline-block w-3 h-3 rounded-sm bg-sky-500/20 border border-sky-500/40" />
       Transplant window
     </span>
     <span class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 rounded-sm bg-orange-500/20 border border-orange-500/40" />
+      <span class="inline-block w-3 h-3 rounded-sm bg-amber-500/20 border border-amber-500/40" />
       Harvest window
     </span>
-    <span class="flex items-center gap-1.5">
+    <span v-if="showSowDot" class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 border rounded-sm bg-primary" />
       Sow date
     </span>

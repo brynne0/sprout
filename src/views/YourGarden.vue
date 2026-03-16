@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { Plus, Sprout } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
 import GardenList from '@/components/GardenList.vue'
-import GardenCalendar from '@/components/GardenCalendar.vue'
+import PlantCalendar from '@/components/PlantCalendar.vue'
 import {
   Empty,
   EmptyContent,
@@ -69,7 +69,7 @@ async function onPlantAdded() {
         </TabsContent>
 
         <TabsContent value="gardenCalendar">
-          <GardenCalendar :plants="plants"> </GardenCalendar>
+          <PlantCalendar :plants="plants" :show-sow-dot="true" />
         </TabsContent>
       </Tabs>
     </div>
