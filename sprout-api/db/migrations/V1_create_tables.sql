@@ -5,7 +5,7 @@ CREATE TABLE users (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE plant_catalog (
+CREATE TABLE plant_catalogue (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -24,7 +24,7 @@ CREATE TABLE plant_catalog (
 CREATE TABLE plants (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    catalog_id UUID REFERENCES plant_catalog(id),
+    catalogue_id UUID REFERENCES plant_catalogue(id),
     sow_date DATE NOT NULL,
     name_override VARCHAR(255),
     variety VARCHAR(255),
@@ -32,5 +32,5 @@ CREATE TABLE plants (
     notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     CONSTRAINT plants_must_have_name
-        CHECK (catalog_id IS NOT NULL OR name_override IS NOT NULL)
+        CHECK (catalogue_id IS NOT NULL OR name_override IS NOT NULL)
 );

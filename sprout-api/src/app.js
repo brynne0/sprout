@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import authRoutes from './routes/auth.js'
 import plantRoutes from './routes/plants.js'
-import catalogRoutes from './routes/catalog.js'
+import catalogueRoutes from './routes/catalogue.js'
 
 const app = Fastify({ logger: true })
 
@@ -27,7 +27,7 @@ app.decorate('authenticate', async (request, reply) => {
 
 app.register(authRoutes, { prefix: '/auth' })
 app.register(plantRoutes, { prefix: '/api' })
-app.register(catalogRoutes, { prefix: '/api' })
+app.register(catalogueRoutes, { prefix: '/api' })
 
 const start = async () => {
   try {

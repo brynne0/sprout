@@ -74,20 +74,20 @@ paths:
         '204':
           description: Plant deleted
 
-  /api/catalog:
+  /api/catalogue:
     get:
-      summary: Get all catalog plants
+      summary: Get all catalogue plants
       responses:
         '200':
-          description: A list of all available plants in the catalog
+          description: A list of all available plants in the catalogue
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CatalogPlant'
+                  $ref: '#/components/schemas/CataloguePlant'
 
-  /api/catalog/{id}:
+  /api/catalogue/{id}:
     parameters:
       - name: id
         in: path
@@ -96,14 +96,14 @@ paths:
           type: string
           format: uuid
     get:
-      summary: Get a catalog plant
+      summary: Get a catalogue plant
       responses:
         '200':
-          description: The fetched catalog plant
+          description: The fetched catalogue plant
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CatalogPlant'
+                $ref: '#/components/schemas/CataloguePlant'
 
   /auth/google:
     get:
@@ -136,14 +136,14 @@ components:
         id:
           type: string
           format: uuid
-        catalogId:
+        catalogue_id:
           type: string
           format: uuid
         name:
           type: string
         variety:
           type: string
-        sowDate:
+        sow_date:
           type: string
           format: date
         notes:
@@ -156,40 +156,40 @@ components:
           type: string
         spacing:
           type: string
-        seedToHarvest:
+        seed_to_harvest:
           type: string
-        sowingToTransplant:
+        sowing_to_transplant:
           type: string
         harvest:
           type: string
-        sowingWindows:
+        sowing_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        harvestWindows:
+        harvest_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        transplantWindows:
+        transplant_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
       required:
         - id
         - name
-        - sowDate
+        - sow_date
 
     PlantInput:
       type: object
       properties:
-        catalogId:
+        catalogue_id:
           type: string
           format: uuid
-        nameOverride:
+        name_override:
           type: string
         variety:
           type: string
-        sowDate:
+        sow_date:
           type: string
           format: date
         notes:
@@ -197,11 +197,11 @@ components:
         overrides:
           $ref: '#/components/schemas/PlantOverrides'
       required:
-        - sowDate
+        - sow_date
 
     PlantOverrides:
       type: object
-      description: Optional overrides for catalog fields (e.g. from a seed packet)
+      description: Optional overrides for catalogue fields (e.g. from a seed packet)
       properties:
         description:
           type: string
@@ -211,26 +211,26 @@ components:
           type: string
         spacing:
           type: string
-        seedToHarvest:
+        seed_to_harvest:
           type: string
-        sowingToTransplant:
+        sowing_to_transplant:
           type: string
         harvest:
           type: string
-        sowingWindows:
+        sowing_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        harvestWindows:
+        harvest_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        transplantWindows:
+        transplant_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
 
-    CatalogPlant:
+    CataloguePlant:
       type: object
       properties:
         id:
@@ -246,21 +246,21 @@ components:
           type: string
         spacing:
           type: string
-        seedToHarvest:
+        seed_to_harvest:
           type: string
-        sowingToTransplant:
+        sowing_to_transplant:
           type: string
         harvest:
           type: string
-        sowingWindows:
+        sowing_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        harvestWindows:
+        harvest_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-        transplantWindows:
+        transplant_windows:
           type: array
           items:
             $ref: '#/components/schemas/Window'

@@ -25,8 +25,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import type { CatalogPlant } from '@/client'
-import { postApiPlants, getApiCatalog } from '@/client'
+import type { CataloguePlant } from '@/client'
+import { postApiPlants, getApiCatalogue } from '@/client'
 import { client } from '@/client/client.gen'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -55,8 +55,8 @@ client.setConfig({
 const df = new DateFormatter('en-US', { dateStyle: 'long' })
 const defaultPlaceholder = today(getLocalTimeZone())
 
-const catalogPlants = ref<CatalogPlant[]>([])
-const selectedCatalogId = ref('')
+const cataloguePlants = ref<CataloguePlant[]>([])
+const selectedCatalogueId = ref('')
 const date = ref<DateValue>()
 const notes = ref('')
 const variety = ref('')
@@ -66,8 +66,8 @@ const overrides = ref({
   position: '',
   hardiness: '',
   spacing: '',
-  seedToHarvest: '',
-  sowingToTransplant: '',
+  seed_to_harvest: '',
+  sowing_to_transplant: '',
   harvest: '',
 })
 
@@ -84,6 +84,7 @@ const stagingTransplant = ref<DateRange | undefined>()
 const showSowingPicker = ref(false)
 const showHarvestPicker = ref(false)
 const showTransplantPicker = ref(false)
+const showSowDatePicker = ref(false)
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -104,6 +105,7 @@ function confirmSowingWindow() {
       end: toMonthDay(stagingSowing.value.end),
     })
     stagingSowing.value = undefined
+    showSowingPicker.value = false
   }
 }
 function confirmHarvestWindow() {
@@ -113,6 +115,7 @@ function confirmHarvestWindow() {
       end: toMonthDay(stagingHarvest.value.end),
     })
     stagingHarvest.value = undefined
+    showHarvestPicker.value = false
   }
 }
 function confirmTransplantWindow() {
@@ -122,38 +125,40 @@ function confirmTransplantWindow() {
       end: toMonthDay(stagingTransplant.value.end),
     })
     stagingTransplant.value = undefined
+    showTransplantPicker.value = false
   }
 }
 
 const selectedPlantName = computed(
   () =>
-    catalogPlants.value.find((p) => p.id === selectedCatalogId.value)?.name ?? 'Select plant...',
+    cataloguePlants.value.find((p) => p.id === selectedCatalogueId.value)?.name ??
+    'Select plant...',
 )
 
-const canSubmit = computed(() => !!selectedCatalogId.value && !!date.value)
+const canSubmit = computed(() => !!selectedCatalogueId.value && !!date.value)
 
 const cleanedOverrides = computed(() => {
   const result: Record<string, unknown> = Object.fromEntries(
     Object.entries(overrides.value).filter(([, v]) => v !== '' && v != null),
   )
-  if (sowingWindows.value.length) result.sowingWindows = sowingWindows.value
-  if (harvestWindows.value.length) result.harvestWindows = harvestWindows.value
-  if (transplantWindows.value.length) result.transplantWindows = transplantWindows.value
+  if (sowingWindows.value.length) result.sowing_windows = sowingWindows.value
+  if (harvestWindows.value.length) result.harvest_windows = harvestWindows.value
+  if (transplantWindows.value.length) result.transplant_windows = transplantWindows.value
   return Object.keys(result).length > 0 ? result : undefined
 })
 
 onMounted(async () => {
-  const res = await getApiCatalog()
-  catalogPlants.value = res.data ?? []
+  const res = await getApiCatalogue()
+  cataloguePlants.value = res.data ?? []
 })
 
 function selectPlant(id: string) {
-  selectedCatalogId.value = id
+  selectedCatalogueId.value = id
   comboboxOpen.value = false
 }
 
 function reset() {
-  selectedCatalogId.value = ''
+  selectedCatalogueId.value = ''
   date.value = undefined
   notes.value = ''
   variety.value = ''
@@ -163,8 +168,8 @@ function reset() {
     position: '',
     hardiness: '',
     spacing: '',
-    seedToHarvest: '',
-    sowingToTransplant: '',
+    seed_to_harvest: '',
+    sowing_to_transplant: '',
     harvest: '',
   }
   sowingWindows.value = []
@@ -181,9 +186,9 @@ function reset() {
 async function addPlant() {
   await postApiPlants({
     body: {
-      catalogId: selectedCatalogId.value || undefined,
+      catalogue_id: selectedCatalogueId.value || undefined,
       variety: variety.value || undefined,
-      sowDate: date.value?.toString() ?? '',
+      sow_date: date.value?.toString() ?? '',
       notes: notes.value || undefined,
       overrides: cleanedOverrides.value,
     },
@@ -228,7 +233,7 @@ async function addPlant() {
                   <CommandEmpty>No plants found.</CommandEmpty>
                   <CommandGroup>
                     <CommandItem
-                      v-for="plant in catalogPlants"
+                      v-for="plant in cataloguePlants"
                       :key="plant.id"
                       :value="plant.name"
                       @select="() => selectPlant(plant.id)"
@@ -238,7 +243,7 @@ async function addPlant() {
                         :class="
                           cn(
                             'ml-auto h-4 w-4',
-                            selectedCatalogId === plant.id ? 'opacity-100' : 'opacity-0',
+                            selectedCatalogueId === plant.id ? 'opacity-100' : 'opacity-0',
                           )
                         "
                       />
@@ -257,7 +262,7 @@ async function addPlant() {
 
         <Field>
           <FieldLabel>Sow Date</FieldLabel>
-          <Popover>
+          <Popover v-model:open="showSowDatePicker">
             <PopoverTrigger as-child>
               <Button
                 variant="outline"
@@ -275,6 +280,7 @@ async function addPlant() {
                 :initial-focus="true"
                 :default-placeholder="defaultPlaceholder"
                 layout="month-and-year"
+                @update:model-value="showSowDatePicker = false"
               />
             </PopoverContent>
           </Popover>
@@ -301,7 +307,7 @@ async function addPlant() {
               <Input
                 id="description"
                 v-model="overrides.description"
-                placeholder="Override catalog description"
+                placeholder="Override catalogue description"
               />
             </Field>
             <Field>
@@ -321,18 +327,18 @@ async function addPlant() {
               <Input id="spacing" v-model="overrides.spacing" placeholder="e.g. 30cm apart" />
             </Field>
             <Field>
-              <FieldLabel for="seedToHarvest">Seed to harvest</FieldLabel>
+              <FieldLabel for="seed_to_harvest">Seed to harvest</FieldLabel>
               <Input
-                id="seedToHarvest"
-                v-model="overrides.seedToHarvest"
+                id="seed_to_harvest"
+                v-model="overrides.seed_to_harvest"
                 placeholder="e.g. 3 months"
               />
             </Field>
             <Field>
-              <FieldLabel for="sowingToTransplant">Sowing to transplant</FieldLabel>
+              <FieldLabel for="sowing_to_transplant">Sowing to transplant</FieldLabel>
               <Input
-                id="sowingToTransplant"
-                v-model="overrides.sowingToTransplant"
+                id="sowing_to_transplant"
+                v-model="overrides.sowing_to_transplant"
                 placeholder="e.g. 4-6 weeks"
               />
             </Field>

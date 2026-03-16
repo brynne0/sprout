@@ -2,8 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { Plus, Sprout } from 'lucide-vue-next'
 import { useAuth } from '@/composables/useAuth'
-import GardenList from '@/components/GardenList.vue'
-import GardenCalendar from '@/components/GardenCalendar.vue'
+import PlantCalendar from '@/components/PlantCalendar.vue'
 import {
   Empty,
   EmptyContent,
@@ -12,6 +11,14 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import type { Plant } from '@/client'
@@ -37,6 +44,14 @@ onMounted(async () => {
 async function onPlantAdded() {
   const res = await getApiPlants()
   plants.value = res.data ?? []
+}
+
+function formatDate(dateStr: string | null | undefined) {
+  if (!dateStr) return '—'
+  const d = new Date(String(dateStr).slice(0, 10) + 'T00:00:00')
+  return isNaN(d.getTime())
+    ? dateStr
+    : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 </script>
 
@@ -65,11 +80,28 @@ async function onPlantAdded() {
         </TabsList>
 
         <TabsContent value="gardenList">
-          <GardenList :plants="plants"></GardenList>
+          <Table v-if="plants.length > 0">
+            <TableHeader>
+              <TableRow>
+                <TableHead class="w-25">Plant Name</TableHead>
+                <!-- <TableHead>Variety</TableHead> -->
+                <TableHead>Sowing Date</TableHead>
+                <TableHead>Notes</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow v-for="plant in plants" :key="plant.id">
+                <TableCell class="font-medium">{{ plant.name }}</TableCell>
+                <!-- <TableCell>{{ plant.variety ?? '—' }}</TableCell> -->
+                <TableCell>{{ formatDate(plant.sow_date) }}</TableCell>
+                <TableCell>{{ plant.notes ?? '—' }}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </TabsContent>
 
         <TabsContent value="gardenCalendar">
-          <GardenCalendar :plants="plants"> </GardenCalendar>
+          <PlantCalendar :plants="plants" :show-sow-dot="true" />
         </TabsContent>
       </Tabs>
     </div>

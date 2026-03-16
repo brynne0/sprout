@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date'
-import type { Plant } from '@/client'
+import type { CataloguePlant } from '@/client'
 
-const props = defineProps<{ plants: Plant[] }>()
+const props = withDefaults(defineProps<{ plants: CataloguePlant[]; showSowDot?: boolean }>(), {
+  showSowDot: false,
+})
 
 const MONTH_WIDTH = 40
 const NAME_COL_WIDTH = 112
@@ -27,11 +29,6 @@ const MONTH_LABELS = [
   'Dec',
 ]
 const currentYear = today(getLocalTimeZone()).year
-
-function parseDate(s: string): CalendarDate {
-  const parts = s.substring(0, 10).split('-').map(Number)
-  return new CalendarDate(parts[0]!, parts[1]!, parts[2]!)
-}
 
 function daysInMonth(year: number, month: number): number {
   return new Date(year, month, 0).getDate()
@@ -59,7 +56,7 @@ const timelineMonths = computed(() => {
   let endMonth = 12
 
   for (const plant of props.plants) {
-    const sow = parseDate(plant.sowDate)
+    const sow = getAnchorDate(plant)
     if (sow.year < startYear || (sow.year === startYear && sow.month < startMonth)) {
       startYear = sow.year
       startMonth = sow.month
@@ -115,26 +112,44 @@ function windowBar(
 const plantRows = computed(() =>
   props.plants
     .slice()
-    .sort((a, b) => a.sowDate.localeCompare(b.sowDate))
+    .sort((a, b) => getAnchorDate(a).toString().localeCompare(getAnchorDate(b).toString()))
     .map((plant) => {
-      const sow = parseDate(plant.sowDate)
+      const sow = getAnchorDate(plant)
       const sowX = dateToX(sow)
       const baseYear = sow.year
       return {
         plant,
         sowX,
-        sowingBars: (plant.sowingWindows ?? [])
+        sowingBars: (plant.sowing_windows ?? [])
           .map((w) => windowBar(w.start, w.end, baseYear))
           .filter(Boolean) as { x: number; width: number }[],
-        transplantBars: (plant.transplantWindows ?? [])
+        transplantBars: (plant.transplant_windows ?? [])
           .map((w) => windowBar(w.start, w.end, baseYear))
           .filter(Boolean) as { x: number; width: number }[],
-        harvestBars: (plant.harvestWindows ?? [])
+        harvestBars: (plant.harvest_windows ?? [])
           .map((w) => windowBar(w.start, w.end, baseYear))
           .filter(Boolean) as { x: number; width: number }[],
       }
     }),
 )
+
+function parseDate(s: string): CalendarDate {
+  const parts = s.substring(0, 10).split('-').map(Number)
+  return new CalendarDate(parts[0]!, parts[1]!, parts[2]!)
+}
+
+function getAnchorDate(plant: {
+  sow_date?: string
+  sowing_windows?: Array<{ start: string }>
+}): CalendarDate {
+  if (plant.sow_date) return parseDate(plant.sow_date)
+  const firstWindow = plant.sowing_windows?.[0]
+  if (firstWindow) {
+    const [m, d] = firstWindow.start.split('-').map(Number)
+    return new CalendarDate(today(getLocalTimeZone()).year, m!, d!)
+  }
+  return today(getLocalTimeZone())
+}
 
 const sowingTop = ROW_PADDING
 const transplantTop = ROW_PADDING + TRACK_HEIGHT + TRACK_GAP
@@ -161,7 +176,7 @@ const todayX = computed(() => {
           >
             Plant
           </div>
-          <div class="flex divide-x divide-border/40">
+          <div class="flex divide-border/40">
             <div
               v-for="m in timelineMonths"
               :key="`${m.year}-${m.month}`"
@@ -180,15 +195,15 @@ const todayX = computed(() => {
         <div v-for="row in plantRows" :key="row.plant.id" class="flex divide-x divide-border/40">
           <!-- Sticky name -->
           <div
-            class="sticky left-0 z-11 bg-background shrink-0 p-3 flex flex-col justify-center"
+            class="sticky left-0 z-11 bg-background shrink-0 px-3 flex flex-col justify-center"
             :style="{ width: NAME_COL_WIDTH + 'px' }"
           >
             <span class="text-xs font-medium leading-tight">{{ row.plant.name }}</span>
             <span
-              v-if="row.plant.variety"
-              class="text-[10px] text-muted-foreground truncate leading-tight"
+              v-if="'variety' in row.plant && (row.plant as { variety?: string }).variety"
+              class="text-[10px] text-muted-foreground leading-tight"
             >
-              {{ row.plant.variety }}
+              {{ (row.plant as { variety?: string }).variety }}
             </span>
           </div>
 
@@ -219,7 +234,7 @@ const todayX = computed(() => {
               <div
                 v-for="(b, i) in row.sowingBars"
                 :key="`sow-${i}`"
-                class="absolute rounded-sm bg-green-500/20 border border-green-500/40"
+                class="absolute rounded-sm bg-emerald-500/20 border border-emerald-500/40"
                 :style="{
                   left: b.x + 'px',
                   width: b.width + 'px',
@@ -228,7 +243,7 @@ const todayX = computed(() => {
                 }"
               />
 
-              <!-- Transplant window bands (amber, middle track) -->
+              <!-- Transplant window bands (rose, middle track) -->
               <div
                 v-for="(b, i) in row.transplantBars"
                 :key="`transplant-${i}`"
@@ -241,11 +256,11 @@ const todayX = computed(() => {
                 }"
               />
 
-              <!-- Harvest window bands (orange, bottom track) -->
+              <!-- Harvest window bands (amber, bottom track) -->
               <div
                 v-for="(b, i) in row.harvestBars"
                 :key="`harvest-${i}`"
-                class="absolute rounded-sm bg-orange-500/20 border border-orange-500/40"
+                class="absolute rounded-sm bg-rose-500/20 border border-rose-500/40"
                 :style="{
                   left: b.x + 'px',
                   width: b.width + 'px',
@@ -256,6 +271,7 @@ const todayX = computed(() => {
 
               <!-- Sow date dot -->
               <div
+                v-if="showSowDot"
                 class="absolute rounded-full bg-primary border z-10"
                 :style="{
                   left: row.sowX - 5 + 'px',
@@ -272,22 +288,27 @@ const todayX = computed(() => {
   </div>
 
   <!-- Legend -->
-  <div class="grid grid-cols-4 gap-4 mt-2 px-4 text-xs text-muted-foreground">
+  <div
+    :class="[
+      'grid justify-items-center gap-2 mt-2 px-4 text-xs text-muted-foreground',
+      showSowDot ? 'grid-cols-4' : 'grid-cols-3',
+    ]"
+  >
     <span class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/40" />
-      Sowing window
+      Sow
     </span>
     <span class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 rounded-sm bg-amber-500/20 border border-amber-500/40" />
-      Transplant window
+      Transplant
     </span>
     <span class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 rounded-sm bg-orange-500/20 border border-orange-500/40" />
-      Harvest window
+      <span class="inline-block w-3 h-3 rounded-sm bg-rose-500/20 border border-rose-500/40" />
+      Harvest
     </span>
-    <span class="flex items-center gap-1.5">
+    <span v-if="showSowDot" class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 border rounded-sm bg-primary" />
-      Sow date
+      Sown on
     </span>
   </div>
 </template>
