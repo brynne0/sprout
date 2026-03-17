@@ -18,6 +18,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
+import { Spinner } from '@/components/ui/spinner'
 import { RangeCalendar } from '@/components/ui/range-calendar'
 import type { DateRange } from 'reka-ui'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
@@ -138,6 +139,8 @@ const cleanedOverrides = computed(() => {
   return Object.keys(result).length > 0 ? result : undefined
 })
 
+const loading = ref(false)
+
 onMounted(async () => {
   const res = await getApiCatalogue()
   cataloguePlants.value = res.data ?? []
@@ -175,6 +178,7 @@ function reset() {
 }
 
 async function addPlant() {
+  loading.value = true
   await postApiPlants({
     body: {
       catalogue_id: selectedCatalogueId.value || undefined,
@@ -184,7 +188,7 @@ async function addPlant() {
       overrides: cleanedOverrides.value,
     },
   })
-
+  loading.value = false
   reset()
   emit('plantAdded')
   emit('update:open', false)
@@ -204,7 +208,7 @@ async function addPlant() {
 
       <FieldGroup>
         <Field>
-          <FieldLabel>Plant name</FieldLabel>
+          <FieldLabel htmlFor="input-required">Plant name<span>*</span> </FieldLabel>
           <Popover v-model:open="comboboxOpen">
             <PopoverTrigger as-child>
               <Button
@@ -252,7 +256,7 @@ async function addPlant() {
         </Field>
 
         <Field>
-          <FieldLabel>Sow Date</FieldLabel>
+          <FieldLabel htmlFor="input-required">Sow Date<span>*</span> </FieldLabel>
           <Popover v-model:open="showSowDatePicker">
             <PopoverTrigger as-child>
               <Button
@@ -475,7 +479,10 @@ async function addPlant() {
         <DialogClose as-child>
           <Button variant="outline">Cancel</Button>
         </DialogClose>
-        <Button type="button" :disabled="!canSubmit" @click="addPlant">Add Plant</Button>
+        <Button type="button" :disabled="!canSubmit || loading" class="px-4!" @click="addPlant">
+          <Spinner v-if="loading" class="animate-spin" />
+          {{ loading ? 'Adding...' : 'Add Plant' }}
+        </Button>
       </DialogFooter>
     </DialogScrollContent>
   </Dialog>
