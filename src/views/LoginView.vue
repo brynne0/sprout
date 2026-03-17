@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen flex-col items-center justify-center gap-8 px-6">
+  <div class="flex h-dvh flex-col items-center justify-center gap-8 px-6 overflow-hidden">
     <div class="flex flex-col items-center gap-2">
       <div class="flex items-center gap-2 text-primary">
         <Sprout class="size-10" />

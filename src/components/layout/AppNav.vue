@@ -11,7 +11,7 @@ const links = [
 
 <template>
   <nav
-    class="fixed bottom-0 left-0 right-0 flex border-t bg-background pb-[env(safe-area-inset-bottom)]"
+    class="fixed bottom-0 left-0 right-0 z-50 flex border-t bg-background pb-[env(safe-area-inset-bottom)]"
   >
     <RouterLink
       v-for="link in links"

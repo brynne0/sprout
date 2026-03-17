@@ -27,7 +27,7 @@ function logout() {
         <Settings class="size-5" />
       </div>
     </DropdownMenuTrigger>
-    <DropdownMenuContent align="end" side="top">
+    <DropdownMenuContent align="end" side="top" class="mr-2">
       <DropdownMenuItem @click="logout">
         <LogOut class="size-4" />
         Log out

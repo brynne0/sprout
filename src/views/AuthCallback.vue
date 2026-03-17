@@ -1,6 +1,6 @@
 <template>
   <div class="flex min-h-screen items-center justify-center">
-    <p class="text-sm text-foreground/60">Signing you in…</p>
+    <p class="text-base font-medium text-foreground/60">Signing you in…</p>
   </div>
 </template>
 
