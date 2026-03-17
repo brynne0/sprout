@@ -155,8 +155,6 @@ const sowingTop = ROW_PADDING
 const transplantTop = ROW_PADDING + TRACK_HEIGHT + TRACK_GAP
 const harvestTop = ROW_PADDING + (TRACK_HEIGHT + TRACK_GAP) * 2
 
-const totalWidth = computed(() => NAME_COL_WIDTH + timelineMonths.value.length * MONTH_WIDTH)
-
 const todayX = computed(() => {
   const t = today(getLocalTimeZone())
   return dateToX(new CalendarDate(t.year, t.month, t.day))
@@ -164,50 +162,48 @@ const todayX = computed(() => {
 </script>
 
 <template>
-  <div class="overflow-x-auto mt-2">
-    <div :style="{ minWidth: totalWidth + 'px' }">
-      <!-- Bordered chart -->
-      <div class="border-y border-border">
+  <div class="flex mt-2">
+    <!-- Fixed name column -->
+    <div class="shrink-0 border-y border-border" :style="{ width: NAME_COL_WIDTH + 'px' }">
+      <!-- Header -->
+      <div class="px-3 py-2 text-xs font-medium text-muted-foreground">Plant</div>
+      <!-- Rows -->
+      <div
+        v-for="row in plantRows"
+        :key="row.plant.id"
+        class="px-3 flex flex-col justify-center border-t border-border/40 first:border-t-0"
+        :style="{ minHeight: ROW_HEIGHT + 'px' }"
+      >
+        <span class="text-xs font-medium leading-tight">{{ row.plant.name }}</span>
+        <span
+          v-if="'variety' in row.plant && (row.plant as { variety?: string }).variety"
+          class="text-[10px] text-muted-foreground leading-tight"
+        >
+          {{ (row.plant as { variety?: string }).variety }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Scrollable timeline -->
+    <div class="overflow-x-auto flex-1 border-y border-l border-border">
+      <div :style="{ minWidth: timelineMonths.length * MONTH_WIDTH + 'px' }">
         <!-- Month header -->
         <div class="flex divide-x border-b border-border/40 divide-border/40">
           <div
-            class="sticky bg-background left-0 z-10 shrink-0 px-3 py-2 text-xs font-medium text-muted-foreground"
-            :style="{ width: NAME_COL_WIDTH + 'px' }"
+            v-for="m in timelineMonths"
+            :key="`${m.year}-${m.month}`"
+            class="shrink-0 text-xs text-muted-foreground py-2 text-center"
+            :style="{ width: MONTH_WIDTH + 'px' }"
           >
-            Plant
-          </div>
-          <div class="flex divide-border/40">
-            <div
-              v-for="m in timelineMonths"
-              :key="`${m.year}-${m.month}`"
-              class="shrink-0 text-xs text-muted-foreground py-2 text-center"
-              :style="{ width: MONTH_WIDTH + 'px' }"
+            {{ MONTH_LABELS[m.month - 1] }}
+            <span v-if="m.year !== currentYear" class="text-[10px]"
+              >'{{ String(m.year).slice(2) }}</span
             >
-              {{ MONTH_LABELS[m.month - 1] }}
-              <span v-if="m.year !== currentYear" class="text-[10px]"
-                >'{{ String(m.year).slice(2) }}</span
-              >
-            </div>
           </div>
         </div>
 
-        <!-- Plant rows -->
-        <div v-for="row in plantRows" :key="row.plant.id" class="flex divide-x divide-border/40">
-          <!-- Sticky name -->
-          <div
-            class="sticky left-0 z-11 bg-background shrink-0 px-3 flex flex-col justify-center"
-            :style="{ width: NAME_COL_WIDTH + 'px' }"
-          >
-            <span class="text-xs font-medium leading-tight">{{ row.plant.name }}</span>
-            <span
-              v-if="'variety' in row.plant && (row.plant as { variety?: string }).variety"
-              class="text-[10px] text-muted-foreground leading-tight"
-            >
-              {{ (row.plant as { variety?: string }).variety }}
-            </span>
-          </div>
-
-          <!-- Timeline: month columns provide grid lines via divide-x -->
+        <!-- Timeline rows -->
+        <div v-for="row in plantRows" :key="row.plant.id">
           <div
             class="relative flex divide-x divide-border/40 shrink-0"
             :style="{
@@ -222,7 +218,7 @@ const todayX = computed(() => {
               :style="{ width: MONTH_WIDTH + 'px' }"
             />
 
-            <!-- Gantt content overlay -->
+        
             <div class="absolute inset-0">
               <!-- Today line -->
               <div
@@ -230,7 +226,7 @@ const todayX = computed(() => {
                 :style="{ left: todayX + 'px' }"
               />
 
-              <!-- Sowing window bands (green, top track) -->
+              <!-- Sowing window bands -->
               <div
                 v-for="(b, i) in row.sowingBars"
                 :key="`sow-${i}`"
@@ -243,7 +239,7 @@ const todayX = computed(() => {
                 }"
               />
 
-              <!-- Transplant window bands (rose, middle track) -->
+              <!-- Transplant window bands -->
               <div
                 v-for="(b, i) in row.transplantBars"
                 :key="`transplant-${i}`"
@@ -256,7 +252,7 @@ const todayX = computed(() => {
                 }"
               />
 
-              <!-- Harvest window bands (amber, bottom track) -->
+              <!-- Harvest window bands -->
               <div
                 v-for="(b, i) in row.harvestBars"
                 :key="`harvest-${i}`"
