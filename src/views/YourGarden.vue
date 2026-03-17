@@ -72,7 +72,7 @@ function formatDate(dateStr: string | null | undefined) {
           <TabsTrigger value="gardenCalendar"> Calendar </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="gardenList">
+        <TabsContent value="gardenList" class="px-4">
           <Table v-if="plants.length > 0">
             <TableHeader>
               <TableRow>
