@@ -5,10 +5,17 @@ CREATE TABLE users (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE TABLE plant_categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
 CREATE TABLE plant_catalogue (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
+    variety VARCHAR(255),
     description TEXT,
+    category_id INTEGER REFERENCES plant_categories(id),
     seed_to_harvest TEXT,
     sowing_to_transplant TEXT,
     position TEXT,
@@ -34,3 +41,5 @@ CREATE TABLE plants (
     CONSTRAINT plants_must_have_name
         CHECK (catalogue_id IS NOT NULL OR name_override IS NOT NULL)
 );
+
+

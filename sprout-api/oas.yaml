@@ -238,6 +238,10 @@ components:
           format: uuid
         name:
           type: string
+        variety:
+          type: string
+        category_id:
+          type: integer
         description:
           type: string
         position:
@@ -281,6 +285,9 @@ components:
           type: string
           pattern: '^\d{2}-\d{2}$'
           description: End of window as MM-DD (e.g. "03-31")
+        label:
+          type: string
+          description: Optional label for this window (e.g. "salad leaves")
       required:
         - start
         - end

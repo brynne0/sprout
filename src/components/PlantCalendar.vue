@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date'
+import { today, getLocalTimeZone } from '@internationalized/date'
 import type { CataloguePlant } from '@/client'
 import { useElementSize } from '@vueuse/core'
 
@@ -10,17 +10,14 @@ const props = withDefaults(defineProps<{ plants: CataloguePlant[]; showSowDot?: 
 })
 const timelineContainer = ref<HTMLElement | null>(null)
 const { width: containerWidth } = useElementSize(timelineContainer)
-const monthWidth = computed(() =>
-  timelineMonths.value.length > 0
-    ? Math.max(40, containerWidth.value / timelineMonths.value.length)
-    : 40,
-)
+const monthWidth = computed(() => Math.max(40, containerWidth.value / 12))
 
 const NAME_COL_WIDTH = 112
 const TRACK_HEIGHT = 10
 const TRACK_GAP = 3
 const ROW_PADDING = 8
 const ROW_HEIGHT = ROW_PADDING * 2 + TRACK_HEIGHT * 3 + TRACK_GAP * 2
+const LABEL_ROW_HEIGHT = ROW_PADDING * 2 + TRACK_HEIGHT
 
 const MONTH_LABELS = [
   'Jan',
@@ -36,136 +33,177 @@ const MONTH_LABELS = [
   'Nov',
   'Dec',
 ]
-const currentYear = today(getLocalTimeZone()).year
 
-function daysInMonth(year: number, month: number): number {
-  return new Date(year, month, 0).getDate()
+// Use a fixed leap year so all month/day values are valid
+const DUMMY_YEAR = 2000
+
+const timelineMonths = Array.from({ length: 12 }, (_, i) => ({ month: i + 1 }))
+
+function daysInMonth(month: number): number {
+  return new Date(DUMMY_YEAR, month, 0).getDate()
 }
 
-function addMonths(year: number, month: number, delta: number): { year: number; month: number } {
-  let m = month + delta
-  let y = year
-  while (m > 12) {
-    m -= 12
-    y++
-  }
-  while (m < 1) {
-    m += 12
-    y--
-  }
-  return { year: y, month: m }
+function dateToX(month: number, day: number): number {
+  const idx = month - 1
+  const dayFraction = (day - 1) / daysInMonth(month)
+  return (idx + dayFraction) * monthWidth.value
 }
 
-const timelineMonths = computed(() => {
-  const nowDate = today(getLocalTimeZone())
-  let startYear = nowDate.year
-  let startMonth = 1
-  let endYear = nowDate.year
-  let endMonth = 12
+type Bar = { x: number; width: number }
+type WindowData = { start: string; end: string; label?: string }
 
-  for (const plant of props.plants) {
-    const sow = getAnchorDate(plant)
-    if (sow.year < startYear || (sow.year === startYear && sow.month < startMonth)) {
-      startYear = sow.year
-      startMonth = sow.month
-    }
-    if (sow.year > endYear || (sow.year === endYear && sow.month > endMonth)) {
-      endYear = sow.year
-      endMonth = sow.month
-    }
-  }
-
-  const months: { year: number; month: number }[] = []
-  let y = startYear
-  let m = startMonth
-  while (y < endYear || (y === endYear && m <= endMonth)) {
-    months.push({ year: y, month: m })
-    const next = addMonths(y, m, 1)
-    y = next.year
-    m = next.month
-  }
-  return months
-})
-
-function monthIndexOf(year: number, month: number): number {
-  const first = timelineMonths.value[0]!
-  return (year - first.year) * 12 + (month - first.month)
-}
-
-function dateToX(date: CalendarDate): number {
-  const idx = monthIndexOf(date.year, date.month)
-  const dayFraction = (date.day - 1) / daysInMonth(date.year, date.month)
-  return idx * monthWidth.value + dayFraction * monthWidth.value
-}
-
-function windowBar(
-  mmddStart: string,
-  mmddEnd: string,
-  baseYear: number,
-): { x: number; width: number } | null {
+// Returns 1 bar normally, or 2 bars if the window wraps past December into January
+function windowBars(mmddStart: string, mmddEnd: string): Bar[] {
   const sp = mmddStart.split('-').map(Number)
   const ep = mmddEnd.split('-').map(Number)
-  const sm = sp[0]!
-  const sd = sp[1]!
-  const em = ep[0]!
-  const ed = ep[1]!
-  const startDate = new CalendarDate(baseYear, sm, sd)
-  const endYear = em < sm || (em === sm && ed < sd) ? baseYear + 1 : baseYear
-  const endDate = new CalendarDate(endYear, em, ed)
-  const x = dateToX(startDate)
-  const endX = dateToX(endDate)
-  return endX > x ? { x, width: endX - x } : null
+  const sm = sp[0]!,
+    sd = sp[1]!,
+    em = ep[0]!,
+    ed = ep[1]!
+  const startX = dateToX(sm, sd)
+  const endX = dateToX(em, ed)
+  const wraps = em < sm || (em === sm && ed < sd)
+  if (!wraps) return endX > startX ? [{ x: startX, width: endX - startX }] : []
+  return [
+    { x: startX, width: 12 * monthWidth.value - startX },
+    { x: 0, width: endX },
+  ]
 }
 
-const plantRows = computed(() =>
-  props.plants
-    .slice()
-    .sort((a, b) => getAnchorDate(a).toString().localeCompare(getAnchorDate(b).toString()))
-    .map((plant) => {
-      const sow = getAnchorDate(plant)
-      const sowX = dateToX(sow)
-      const baseYear = sow.year
-      return {
-        plant,
-        sowX,
-        sowingBars: (plant.sowing_windows ?? [])
-          .map((w) => windowBar(w.start, w.end, baseYear))
-          .filter(Boolean) as { x: number; width: number }[],
-        transplantBars: (plant.transplant_windows ?? [])
-          .map((w) => windowBar(w.start, w.end, baseYear))
-          .filter(Boolean) as { x: number; width: number }[],
-        harvestBars: (plant.harvest_windows ?? [])
-          .map((w) => windowBar(w.start, w.end, baseYear))
-          .filter(Boolean) as { x: number; width: number }[],
-      }
-    }),
-)
+type DisplayRow =
+  | {
+      kind: 'base'
+      key: string
+      plant: CataloguePlant
+      sowX: number
+      sowingBars: Bar[]
+      transplantBars: Bar[]
+      harvestBars: Bar[]
+    }
+  | {
+      kind: 'label'
+      key: string
+      plant: CataloguePlant
+      label: string
+      trackType: 'sowing' | 'transplant' | 'harvest'
+      bars: Bar[]
+    }
 
-function parseDate(s: string): CalendarDate {
-  const parts = s.substring(0, 10).split('-').map(Number)
-  return new CalendarDate(parts[0]!, parts[1]!, parts[2]!)
+function extractTracks(windows: WindowData[]): {
+  unlabelledBars: Bar[]
+  labelGroups: Map<string, Bar[]>
+} {
+  const unlabelledBars: Bar[] = []
+  const labelGroups = new Map<string, Bar[]>()
+  for (const w of windows) {
+    const bars = windowBars(w.start, w.end)
+    if (!bars.length) continue
+    if (w.label) {
+      if (!labelGroups.has(w.label)) labelGroups.set(w.label, [])
+      labelGroups.get(w.label)!.push(...bars)
+    } else {
+      unlabelledBars.push(...bars)
+    }
+  }
+  return { unlabelledBars, labelGroups }
 }
 
-function getAnchorDate(plant: {
+function getAnchorMonthDay(plant: {
   sow_date?: string
   sowing_windows?: Array<{ start: string }>
-}): CalendarDate {
-  if (plant.sow_date) return parseDate(plant.sow_date)
+}): { month: number; day: number } {
+  if (plant.sow_date) {
+    const parts = plant.sow_date.substring(0, 10).split('-').map(Number)
+    return { month: parts[1]!, day: parts[2]! }
+  }
   const firstWindow = plant.sowing_windows?.[0]
   if (firstWindow) {
     const [m, d] = firstWindow.start.split('-').map(Number)
-    return new CalendarDate(today(getLocalTimeZone()).year, m!, d!)
+    return { month: m!, day: d! }
   }
-  return today(getLocalTimeZone())
+  const t = today(getLocalTimeZone())
+  return { month: t.month, day: t.day }
+}
+
+const displayRows = computed<DisplayRow[]>(() => {
+  const sorted = props.plants.slice().sort((a, b) => {
+    const am = getAnchorMonthDay(a)
+    const bm = getAnchorMonthDay(b)
+    return am.month !== bm.month ? am.month - bm.month : am.day - bm.day
+  })
+
+  const rows: DisplayRow[] = []
+
+  for (const plant of sorted) {
+    const anchor = getAnchorMonthDay(plant)
+    const sowX = dateToX(anchor.month, anchor.day)
+
+    const sowing = extractTracks((plant.sowing_windows ?? []) as WindowData[])
+    const transplant = extractTracks((plant.transplant_windows ?? []) as WindowData[])
+    const harvest = extractTracks((plant.harvest_windows ?? []) as WindowData[])
+
+    rows.push({
+      kind: 'base',
+      key: String(plant.id ?? plant.name),
+      plant,
+      sowX,
+      sowingBars: sowing.unlabelledBars,
+      transplantBars: transplant.unlabelledBars,
+      harvestBars: harvest.unlabelledBars,
+    })
+
+    for (const [label, bars] of sowing.labelGroups) {
+      rows.push({
+        kind: 'label',
+        key: `${plant.id}-sow-${label}`,
+        plant,
+        label,
+        trackType: 'sowing',
+        bars,
+      })
+    }
+    for (const [label, bars] of transplant.labelGroups) {
+      rows.push({
+        kind: 'label',
+        key: `${plant.id}-transplant-${label}`,
+        plant,
+        label,
+        trackType: 'transplant',
+        bars,
+      })
+    }
+    for (const [label, bars] of harvest.labelGroups) {
+      rows.push({
+        kind: 'label',
+        key: `${plant.id}-harvest-${label}`,
+        plant,
+        label,
+        trackType: 'harvest',
+        bars,
+      })
+    }
+  }
+
+  return rows
+})
+
+function rowHeight(row: DisplayRow): number {
+  return row.kind === 'base' ? ROW_HEIGHT : LABEL_ROW_HEIGHT
 }
 
 const sowingTop = ROW_PADDING
 const transplantTop = ROW_PADDING + TRACK_HEIGHT + TRACK_GAP
 const harvestTop = ROW_PADDING + (TRACK_HEIGHT + TRACK_GAP) * 2
 
+const trackBarClasses: Record<'sowing' | 'transplant' | 'harvest', string> = {
+  sowing: 'bg-emerald-500/20 border border-emerald-500/40',
+  transplant: 'bg-amber-500/20 border border-amber-500/40',
+  harvest: 'bg-rose-500/20 border border-rose-500/40',
+}
+
 const todayX = computed(() => {
   const t = today(getLocalTimeZone())
-  return dateToX(new CalendarDate(t.year, t.month, t.day))
+  return dateToX(t.month, t.day)
 })
 </script>
 
@@ -177,18 +215,23 @@ const todayX = computed(() => {
       <div class="px-3 py-2 text-xs font-medium text-muted-foreground">Plant</div>
       <!-- Rows -->
       <div
-        v-for="row in plantRows"
-        :key="row.plant.id"
+        v-for="row in displayRows"
+        :key="row.key"
         class="px-3 flex flex-col justify-center border-t border-border/40 first:border-t-0"
-        :style="{ minHeight: ROW_HEIGHT + 'px' }"
+        :style="{ minHeight: rowHeight(row) + 'px' }"
       >
-        <span class="text-xs font-medium leading-tight">{{ row.plant.name }}</span>
-        <span
-          v-if="'variety' in row.plant && (row.plant as { variety?: string }).variety"
-          class="text-[10px] text-muted-foreground leading-tight"
-        >
-          {{ (row.plant as { variety?: string }).variety }}
-        </span>
+        <template v-if="row.kind === 'base'">
+          <span class="text-xs font-medium leading-tight">{{ row.plant.name }}</span>
+          <span
+            v-if="'variety' in row.plant && (row.plant as { variety?: string }).variety"
+            class="text-[10px] text-muted-foreground leading-tight"
+          >
+            {{ (row.plant as { variety?: string }).variety }}
+          </span>
+        </template>
+        <template v-else>
+          <span class="text-[10px] text-muted-foreground leading-tight pl-1">{{ row.label }}</span>
+        </template>
       </div>
     </div>
 
@@ -199,24 +242,21 @@ const todayX = computed(() => {
         <div class="flex divide-x border-b border-border/40 divide-border/40">
           <div
             v-for="m in timelineMonths"
-            :key="`${m.year}-${m.month}`"
+            :key="m.month"
             class="shrink-0 text-xs text-muted-foreground py-2 text-center w-auto"
             :style="{ width: monthWidth + 'px' }"
           >
             {{ MONTH_LABELS[m.month - 1] }}
-            <span v-if="m.year !== currentYear" class="text-[10px]"
-              >'{{ String(m.year).slice(2) }}</span
-            >
           </div>
         </div>
 
         <!-- Timeline rows -->
-        <div v-for="row in plantRows" :key="row.plant.id">
+        <div v-for="row in displayRows" :key="row.key">
           <div
             class="relative flex divide-x divide-border/40 shrink-0"
             :style="{
               width: timelineMonths.length * monthWidth + 'px',
-              minHeight: ROW_HEIGHT + 'px',
+              minHeight: rowHeight(row) + 'px',
             }"
           >
             <div
@@ -233,56 +273,68 @@ const todayX = computed(() => {
                 :style="{ left: todayX + 'px' }"
               />
 
-              <!-- Sowing window bands -->
-              <div
-                v-for="(b, i) in row.sowingBars"
-                :key="`sow-${i}`"
-                class="absolute rounded-sm bg-emerald-500/20 border border-emerald-500/40"
-                :style="{
-                  left: b.x + 'px',
-                  width: b.width + 'px',
-                  top: sowingTop + 'px',
-                  height: TRACK_HEIGHT + 'px',
-                }"
-              />
+              <!-- Base row: unlabelled sowing, transplant, harvest tracks -->
+              <template v-if="row.kind === 'base'">
+                <div
+                  v-for="(b, i) in row.sowingBars"
+                  :key="`sow-${i}`"
+                  class="absolute rounded-sm bg-emerald-500/20 border border-emerald-500/40"
+                  :style="{
+                    left: b.x + 'px',
+                    width: b.width + 'px',
+                    top: sowingTop + 'px',
+                    height: TRACK_HEIGHT + 'px',
+                  }"
+                />
+                <div
+                  v-for="(b, i) in row.transplantBars"
+                  :key="`transplant-${i}`"
+                  class="absolute rounded-sm bg-amber-500/20 border border-amber-500/40"
+                  :style="{
+                    left: b.x + 'px',
+                    width: b.width + 'px',
+                    top: transplantTop + 'px',
+                    height: TRACK_HEIGHT + 'px',
+                  }"
+                />
+                <div
+                  v-for="(b, i) in row.harvestBars"
+                  :key="`harvest-${i}`"
+                  class="absolute rounded-sm bg-rose-500/20 border border-rose-500/40"
+                  :style="{
+                    left: b.x + 'px',
+                    width: b.width + 'px',
+                    top: harvestTop + 'px',
+                    height: TRACK_HEIGHT + 'px',
+                  }"
+                />
+                <div
+                  v-if="showSowDot"
+                  class="absolute rounded-full bg-primary border z-10"
+                  :style="{
+                    left: row.sowX - 5 + 'px',
+                    top: transplantTop + TRACK_HEIGHT / 2 - 5 + 'px',
+                    width: '10px',
+                    height: TRACK_HEIGHT + 'px',
+                  }"
+                />
+              </template>
 
-              <!-- Transplant window bands -->
-              <div
-                v-for="(b, i) in row.transplantBars"
-                :key="`transplant-${i}`"
-                class="absolute rounded-sm bg-amber-500/20 border border-amber-500/40"
-                :style="{
-                  left: b.x + 'px',
-                  width: b.width + 'px',
-                  top: transplantTop + 'px',
-                  height: TRACK_HEIGHT + 'px',
-                }"
-              />
-
-              <!-- Harvest window bands -->
-              <div
-                v-for="(b, i) in row.harvestBars"
-                :key="`harvest-${i}`"
-                class="absolute rounded-sm bg-rose-500/20 border border-rose-500/40"
-                :style="{
-                  left: b.x + 'px',
-                  width: b.width + 'px',
-                  top: harvestTop + 'px',
-                  height: TRACK_HEIGHT + 'px',
-                }"
-              />
-
-              <!-- Sow date dot -->
-              <div
-                v-if="showSowDot"
-                class="absolute rounded-full bg-primary border z-10"
-                :style="{
-                  left: row.sowX - 5 + 'px',
-                  top: transplantTop + TRACK_HEIGHT / 2 - 5 + 'px',
-                  width: '10px',
-                  height: TRACK_HEIGHT + 'px',
-                }"
-              />
+              <!-- Label row: single track centred vertically -->
+              <template v-else>
+                <div
+                  v-for="(b, i) in row.bars"
+                  :key="`label-bar-${i}`"
+                  class="absolute rounded-sm"
+                  :class="trackBarClasses[row.trackType]"
+                  :style="{
+                    left: b.x + 'px',
+                    width: b.width + 'px',
+                    top: ROW_PADDING + 'px',
+                    height: TRACK_HEIGHT + 'px',
+                  }"
+                />
+              </template>
             </div>
           </div>
         </div>
