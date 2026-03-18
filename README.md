@@ -1,48 +1,28 @@
-# seedling
+# Seedling 🌱
 
-This template should help get you started developing with Vue 3 in Vite.
+A personal project to track plant sowing, transplanting and harvesting.
+- PWA
+- Developed for mobile and desktop
 
-## Recommended IDE Setup
+## Tech Stack
+- Frontend: Vue.js, Typescript
+- Backend: Node.js, Fastify
+- Database: PostgreSQL (Neon)
+- Auth: OAuth2 / JWT
+- Deployment: Fly.io
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Screenshots
+<img width="200" alt="localhost_5173_catalogue(iPhone 12 Pro)" src="https://github.com/user-attachments/assets/82734b25-c029-486b-91f8-fd5335313f01" />
+<img width="200" alt="localhost_5173_catalogue(iPhone 12 Pro) (1)" src="https://github.com/user-attachments/assets/70f46ebd-15ff-4d96-86eb-ec2b3aae5551" />
+<img width="200" height="2532" alt="localhost_5173_catalogue(iPhone 12 Pro) (2)" src="https://github.com/user-attachments/assets/37c3916a-0495-42dc-9f88-730279b2cbdf" />
 
-## Recommended Browser Setup
+## Deployment
+https://growasprout.com/
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
+## To run locally
 ```sh
+git clone https://github.com/brynne0/sprout.git
+cd sprout
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
+npm make
 ```
