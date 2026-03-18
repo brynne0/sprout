@@ -291,12 +291,7 @@ const todayX = computed(() => {
   </div>
 
   <!-- Legend -->
-  <div
-    :class="[
-      'grid justify-items-center gap-2 mt-2 px-4 text-xs text-muted-foreground',
-      showSowDot ? 'grid-cols-4' : 'grid-cols-3',
-    ]"
-  >
+  <div class="flex flex-row gap-8 mt-2 px-4 text-xs text-muted-foreground">
     <span class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/40" />
       Sow
