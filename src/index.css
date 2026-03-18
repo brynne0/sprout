@@ -88,9 +88,20 @@
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
+    cursor: pointer;
   }
 }
 
+@keyframes leaf-bounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+}
 @theme inline {
   --font-sans: 'Figtree Variable', sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);

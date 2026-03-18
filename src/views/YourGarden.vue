@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import type { Plant } from '@/client'
 import { getApiPlants } from '@/client'
 import AddPlantDialog from '@/components/AddPlantDialog.vue'
+import LoadingLeaves from '@/components/LoadingLeaves.vue'
 
 const plants = ref<Plant[]>([])
 const dialogOpen = ref(false)
@@ -65,10 +66,12 @@ function formatDate(dateStr: string | null | undefined) {
       </AddPlantDialog>
     </header>
 
-    <div v-if="!loading && plants.length > 0">
+    <LoadingLeaves v-if="loading" />
+
+    <div v-else-if="!loading && plants.length > 0">
       <Tabs default-value="gardenList">
         <TabsList class="mx-8">
-          <TabsTrigger value="gardenList"> Your Plants </TabsTrigger>
+          <TabsTrigger value="gardenList"> Plants </TabsTrigger>
           <TabsTrigger value="gardenCalendar"> Calendar </TabsTrigger>
         </TabsList>
 
