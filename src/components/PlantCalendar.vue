@@ -306,7 +306,7 @@ const todayX = computed(() => {
     </span>
     <span v-if="showSowDot" class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 border rounded-sm bg-primary" />
-      Sown on
+      Sow date
     </span>
   </div>
 </template>
