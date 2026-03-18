@@ -1,13 +1,21 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+
 import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date'
 import type { CataloguePlant } from '@/client'
+import { useElementSize } from '@vueuse/core'
 
 const props = withDefaults(defineProps<{ plants: CataloguePlant[]; showSowDot?: boolean }>(), {
   showSowDot: false,
 })
+const timelineContainer = ref<HTMLElement | null>(null)
+const { width: containerWidth } = useElementSize(timelineContainer)
+const monthWidth = computed(() =>
+  timelineMonths.value.length > 0
+    ? Math.max(40, containerWidth.value / timelineMonths.value.length)
+    : 40,
+)
 
-const MONTH_WIDTH = 40
 const NAME_COL_WIDTH = 112
 const TRACK_HEIGHT = 10
 const TRACK_GAP = 3
@@ -87,7 +95,7 @@ function monthIndexOf(year: number, month: number): number {
 function dateToX(date: CalendarDate): number {
   const idx = monthIndexOf(date.year, date.month)
   const dayFraction = (date.day - 1) / daysInMonth(date.year, date.month)
-  return idx * MONTH_WIDTH + dayFraction * MONTH_WIDTH
+  return idx * monthWidth.value + dayFraction * monthWidth.value
 }
 
 function windowBar(
@@ -185,15 +193,15 @@ const todayX = computed(() => {
     </div>
 
     <!-- Scrollable timeline -->
-    <div class="overflow-x-auto flex-1 border-y border-l border-border">
-      <div :style="{ minWidth: timelineMonths.length * MONTH_WIDTH + 'px' }">
+    <div ref="timelineContainer" class="overflow-x-auto flex-1 border-y border-l border-border">
+      <div :style="{ minWidth: timelineMonths.length * monthWidth + 'px' }">
         <!-- Month header -->
         <div class="flex divide-x border-b border-border/40 divide-border/40">
           <div
             v-for="m in timelineMonths"
             :key="`${m.year}-${m.month}`"
-            class="shrink-0 text-xs text-muted-foreground py-2 text-center"
-            :style="{ width: MONTH_WIDTH + 'px' }"
+            class="shrink-0 text-xs text-muted-foreground py-2 text-center w-auto"
+            :style="{ width: monthWidth + 'px' }"
           >
             {{ MONTH_LABELS[m.month - 1] }}
             <span v-if="m.year !== currentYear" class="text-[10px]"
@@ -207,7 +215,7 @@ const todayX = computed(() => {
           <div
             class="relative flex divide-x divide-border/40 shrink-0"
             :style="{
-              width: timelineMonths.length * MONTH_WIDTH + 'px',
+              width: timelineMonths.length * monthWidth + 'px',
               minHeight: ROW_HEIGHT + 'px',
             }"
           >
@@ -215,10 +223,9 @@ const todayX = computed(() => {
               v-for="(_, i) in timelineMonths"
               :key="`col-${i}`"
               class="shrink-0"
-              :style="{ width: MONTH_WIDTH + 'px' }"
+              :style="{ width: monthWidth + 'px' }"
             />
 
-        
             <div class="absolute inset-0">
               <!-- Today line -->
               <div
