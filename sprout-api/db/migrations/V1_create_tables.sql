@@ -9,6 +9,7 @@ CREATE TABLE plant_catalogue (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
+    category plant_category,
     seed_to_harvest TEXT,
     sowing_to_transplant TEXT,
     position TEXT,
@@ -33,4 +34,16 @@ CREATE TABLE plants (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     CONSTRAINT plants_must_have_name
         CHECK (catalogue_id IS NOT NULL OR name_override IS NOT NULL)
+);
+
+CREATE TYPE plant_category AS ENUM (
+    'Legumes - pea and bean family',
+    'Brassicas - cabbage family',
+    'Alliums - onion family',
+    'Cucurbits - cucumber family',
+    'Umbellifers - carrot family',
+    'Beet family',
+    'Leafy salad crops',
+    'Solanums, basil, and sweetcorn',
+    'Perennial vegetables '
 );
