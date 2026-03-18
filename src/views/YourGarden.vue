@@ -68,7 +68,7 @@ function formatDate(dateStr: string | null | undefined) {
     <div v-if="!loading && plants.length > 0">
       <Tabs default-value="gardenList">
         <TabsList class="mx-8">
-          <TabsTrigger value="gardenList"> Your Plants </TabsTrigger>
+          <TabsTrigger value="gardenList"> Plants </TabsTrigger>
           <TabsTrigger value="gardenCalendar"> Calendar </TabsTrigger>
         </TabsList>
 
