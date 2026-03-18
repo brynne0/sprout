@@ -5,7 +5,7 @@ const PLANT_SELECT = `
     p.id,
     p.catalogue_id,
     COALESCE(p.name_override, pc.name) AS name,
-    p.variety,
+    COALESCE(p.variety, pc.variety) AS variety,
     p.sow_date,
     p.notes,
     COALESCE(p.overrides->>'description', pc.description) AS description,

@@ -4,6 +4,7 @@ const CATALOGUE_SELECT = `
   SELECT
     id,
     name,
+    variety,
     description,
     position,
     hardiness,
