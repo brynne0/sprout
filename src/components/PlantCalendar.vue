@@ -313,7 +313,7 @@ const todayX = computed(() => {
                   class="absolute rounded-full bg-primary border z-10"
                   :style="{
                     left: row.sowX - 5 + 'px',
-                    top: transplantTop + TRACK_HEIGHT / 2 - 5 + 'px',
+                    top: sowingTop + TRACK_HEIGHT / 2 - 5 + 'px',
                     width: '10px',
                     height: TRACK_HEIGHT + 'px',
                   }"
