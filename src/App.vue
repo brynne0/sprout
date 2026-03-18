@@ -2,17 +2,22 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppNav from '@/components/layout/AppNav.vue'
+import LoadingSprout from '@/components/LoadingSprout.vue' // add this
 
 const route = useRoute()
 const router = useRouter()
 const publicRoutes = ['/login', '/auth/callback']
 
 const routerReady = ref(false)
-router.isReady().then(() => { routerReady.value = true })
+router.isReady().then(() => {
+  routerReady.value = true
+})
 </script>
 
 <template>
+  <LoadingSprout v-if="!routerReady" />
   <div
+    v-else
     :class="
       publicRoutes.includes(route.path)
         ? 'min-w-sm'
