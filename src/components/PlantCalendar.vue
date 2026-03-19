@@ -208,6 +208,26 @@ const todayX = computed(() => {
 </script>
 
 <template>
+  <!-- Legend -->
+  <div class="flex flex-row gap-8 mb-2 px-4 text-xs text-muted-foreground">
+    <span class="flex items-center gap-1.5">
+      <span class="inline-block w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/40" />
+      Sow
+    </span>
+    <span class="flex items-center gap-1.5">
+      <span class="inline-block w-3 h-3 rounded-sm bg-amber-500/20 border border-amber-500/40" />
+      Transplant
+    </span>
+    <span class="flex items-center gap-1.5">
+      <span class="inline-block w-3 h-3 rounded-sm bg-rose-500/20 border border-rose-500/40" />
+      Harvest
+    </span>
+    <span v-if="showSowDot" class="flex items-center gap-1.5">
+      <span class="inline-block w-3 h-3 border rounded-sm bg-primary" />
+      Sow date
+    </span>
+  </div>
+
   <div class="flex mt-2">
     <!-- Fixed name column -->
     <div class="shrink-0 border-y border-border" :style="{ width: NAME_COL_WIDTH + 'px' }">
@@ -340,25 +360,5 @@ const todayX = computed(() => {
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Legend -->
-  <div class="flex flex-row gap-8 mt-2 px-4 text-xs text-muted-foreground">
-    <span class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/40" />
-      Sow
-    </span>
-    <span class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 rounded-sm bg-amber-500/20 border border-amber-500/40" />
-      Transplant
-    </span>
-    <span class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 rounded-sm bg-rose-500/20 border border-rose-500/40" />
-      Harvest
-    </span>
-    <span v-if="showSowDot" class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 border rounded-sm bg-primary" />
-      Sow date
-    </span>
   </div>
 </template>
