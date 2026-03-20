@@ -4,9 +4,6 @@ on:
   push:
     paths:
       - 'sprout-api/**'
-  pull_request:
-    paths:
-      - 'sprout-api/**'
 
 jobs:
   lint:
