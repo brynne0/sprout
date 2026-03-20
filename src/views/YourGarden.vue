@@ -24,20 +24,32 @@ import type { Plant } from '@/client'
 import { getApiPlants } from '@/client'
 import AddPlantDialog from '@/components/AddPlantDialog.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
+import { toast } from 'vue-sonner'
 
 const plants = ref<Plant[]>([])
 const dialogOpen = ref(false)
 const loading = ref(true)
 
+async function fetchPlants() {
+  try {
+    const res = await getApiPlants({ throwOnError: true })
+    plants.value = res.data ?? []
+  } catch (error) {
+    if (error instanceof TypeError) {
+      toast.error('Network error', { description: 'Check your connection and try again.' })
+    } else {
+      toast.error('Failed to load plants', { description: 'Please try refreshing.' })
+    }
+  }
+}
+
 onMounted(async () => {
-  const res = await getApiPlants()
-  plants.value = res.data ?? []
+  await fetchPlants()
   loading.value = false
 })
 
 async function onPlantAdded() {
-  const res = await getApiPlants()
-  plants.value = res.data ?? []
+  await fetchPlants()
 }
 
 function formatDate(dateStr: string | null | undefined) {

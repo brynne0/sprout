@@ -4,13 +4,22 @@ import { getApiCatalogue } from '@/client'
 import type { CataloguePlant } from '@/client'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
+import { toast } from 'vue-sonner'
 
 const plants = ref<CataloguePlant[]>([])
 const loading = ref(true)
 
 onMounted(async () => {
-  const res = await getApiCatalogue()
-  plants.value = res.data ?? []
+  try {
+    const res = await getApiCatalogue({ throwOnError: true })
+    plants.value = res.data ?? []
+  } catch (error) {
+    if (error instanceof TypeError) {
+      toast.error('Network error', { description: 'Check your connection and try again.' })
+    } else {
+      toast.error('Failed to load catalogue', { description: 'Please try refreshing.' })
+    }
+  }
   loading.value = false
 })
 </script>

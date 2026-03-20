@@ -16,7 +16,7 @@ router.isReady().then(() => {
 </script>
 
 <template>
-  <Toaster />
+  <Toaster position="top-right" richColors />
   <LoadingSprout v-if="!routerReady" />
   <div
     v-else

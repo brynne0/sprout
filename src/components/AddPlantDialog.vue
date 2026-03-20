@@ -32,6 +32,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils'
 import { getLocalTimeZone, today } from '@internationalized/date'
 import type { DateValue } from 'reka-ui'
+import { toast } from 'vue-sonner'
 
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ 'update:open': [boolean]; plantAdded: [] }>()
@@ -244,21 +245,31 @@ function reset() {
 
 async function addPlant() {
   loading.value = true
-  await postApiPlants({
-    body: {
-      plant_type_id: selectedPlantTypeId.value,
-      catalogue_id: selectedCatalogueId.value || undefined,
-      custom_variety: isCustomVariety.value ? customVariety.value : undefined,
-      sow_dates: sowDates.value.length ? sowDates.value : undefined,
-      transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
-      notes: notes.value || undefined,
-      overrides: cleanedOverrides.value,
-    },
-  })
-  loading.value = false
-  reset()
-  emit('plantAdded')
-  emit('update:open', false)
+  try {
+    await postApiPlants({
+      throwOnError: true,
+      body: {
+        plant_type_id: selectedPlantTypeId.value,
+        catalogue_id: selectedCatalogueId.value || undefined,
+        custom_variety: isCustomVariety.value ? customVariety.value : undefined,
+        sow_dates: sowDates.value.length ? sowDates.value : undefined,
+        transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
+        notes: notes.value || undefined,
+        overrides: cleanedOverrides.value,
+      },
+    })
+    reset()
+    emit('plantAdded')
+    emit('update:open', false)
+  } catch (error) {
+    if (error instanceof TypeError) {
+      toast.error('Network error', { description: 'Check your connection and try again.' })
+    } else {
+      toast.error('Failed to add plant. Please try again.')
+    }
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
