@@ -74,20 +74,20 @@ paths:
         '204':
           description: Plant deleted
 
-  /api/catalogue:
+  /api/plant-types:
     get:
-      summary: Get all catalogue plants
+      summary: Get all plant types
       responses:
         '200':
-          description: A list of all available plants in the catalogue
+          description: A list of unique plant type names
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CataloguePlant'
+                  $ref: '#/components/schemas/PlantType'
 
-  /api/catalogue/{id}:
+  /api/plant-types/{id}:
     parameters:
       - name: id
         in: path
@@ -96,14 +96,47 @@ paths:
           type: string
           format: uuid
     get:
-      summary: Get a catalogue plant
+      summary: Get a plant type
       responses:
         '200':
-          description: The fetched catalogue plant
+          description: The fetched plant type
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CataloguePlant'
+                $ref: '#/components/schemas/PlantType'
+
+  /api/plant-types/{id}/catalogue:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Get catalogue entries for a plant type
+      responses:
+        '200':
+          description: Catalogue entries for this plant type
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CataloguePlant'
+
+  /api/catalogue:
+    get:
+      summary: Get all catalogue plants (flat list)
+      responses:
+        '200':
+          description: All catalogue entries with resolved plant names
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CataloguePlant'
 
   /auth/google:
     get:
@@ -175,9 +208,14 @@ components:
         - $ref: '#/components/schemas/BasePlant'
         - type: object
           properties:
+            plant_type_id:
+              type: string
+              format: uuid
             catalogue_id:
               type: string
               format: uuid
+            custom_variety:
+              type: string
             sow_dates:
               type: array
               items:
@@ -191,25 +229,43 @@ components:
             notes:
               type: string
 
+    PlantType:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        category_id:
+          type: integer
+      required:
+        - id
+        - name
+
     CataloguePlant:
       allOf:
         - $ref: '#/components/schemas/BasePlant'
         - type: object
           properties:
-            category_id:
-              type: integer
+            plant_type_id:
+              type: string
+              format: uuid
             source:
               type: string
 
     PlantInput:
       type: object
+      required:
+        - plant_type_id
       properties:
+        plant_type_id:
+          type: string
+          format: uuid
         catalogue_id:
           type: string
           format: uuid
-        name_override:
-          type: string
-        variety:
+        custom_variety:
           type: string
         sow_dates:
           type: array

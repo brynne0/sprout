@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { ChevronDown, ChevronsUpDown, Check, Plus, X } from 'lucide-vue-next'
 import {
   Dialog,
@@ -25,8 +25,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import type { CataloguePlant } from '@/client'
-import { postApiPlants, getApiCatalogue } from '@/client'
+import type { PlantType, CataloguePlant } from '@/client'
+import { postApiPlants, getApiPlantTypes, getApiPlantTypesByIdCatalogue } from '@/client'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
@@ -41,19 +41,25 @@ const dialogOpen = computed({
   set: (val) => emit('update:open', val),
 })
 
-const comboboxOpen = ref(false)
+const plantTypeComboOpen = ref(false)
+const catalogueComboOpen = ref(false)
 const showOverrides = ref(false)
 
 const defaultPlaceholder = today(getLocalTimeZone())
 
-const cataloguePlants = ref<CataloguePlant[]>([])
+// Plant type + catalogue entry selection
+const plantTypes = ref<PlantType[]>([])
+const catalogueEntries = ref<CataloguePlant[]>([])
+const selectedPlantTypeId = ref('')
 const selectedCatalogueId = ref('')
+const customVariety = ref('')
+const isCustomVariety = ref(false)
+
 const sowDates = ref<string[]>([])
 const transplantDates = ref<string[]>([])
 const stagingSowDate = ref<DateValue>()
 const stagingTransplantDate = ref<DateValue>()
 const notes = ref('')
-const variety = ref('')
 
 const overrides = ref({
   description: '',
@@ -131,13 +137,27 @@ function confirmTransplantWindow() {
   }
 }
 
-const selectedPlantName = computed(
-  () =>
-    cataloguePlants.value.find((p) => p.id === selectedCatalogueId.value)?.name ??
-    'Select plant...',
+const selectedPlantTypeName = computed(
+  () => plantTypes.value.find((p) => p.id === selectedPlantTypeId.value)?.name ?? 'Select plant...',
 )
 
-const canSubmit = computed(() => !!selectedCatalogueId.value)
+// Catalogue entries that have a named variety
+const namedVarieties = computed(() => catalogueEntries.value.filter((e) => e.variety))
+
+const hasVarieties = computed(() => namedVarieties.value.length > 0)
+
+const selectedVarietyLabel = computed(() => {
+  if (isCustomVariety.value) return 'Custom'
+  const entry = catalogueEntries.value.find((e) => e.id === selectedCatalogueId.value)
+  return entry?.variety ?? 'Select variety...'
+})
+
+const canSubmit = computed(() => {
+  if (!selectedPlantTypeId.value) return false
+  if (hasVarieties.value && !selectedCatalogueId.value && !isCustomVariety.value) return false
+  if (isCustomVariety.value && !customVariety.value) return false
+  return true
+})
 
 const cleanedOverrides = computed(() => {
   const result: Record<string, unknown> = Object.fromEntries(
@@ -152,23 +172,55 @@ const cleanedOverrides = computed(() => {
 const loading = ref(false)
 
 onMounted(async () => {
-  const res = await getApiCatalogue()
-  cataloguePlants.value = res.data ?? []
+  const res = await getApiPlantTypes()
+  plantTypes.value = res.data ?? []
 })
 
-function selectPlant(id: string) {
+// Fetch catalogue entries when plant type changes
+watch(selectedPlantTypeId, async (id) => {
+  selectedCatalogueId.value = ''
+  customVariety.value = ''
+  isCustomVariety.value = false
+  catalogueEntries.value = []
+  if (id) {
+    const res = await getApiPlantTypesByIdCatalogue({ path: { id } })
+    catalogueEntries.value = res.data ?? []
+    // Auto-select if there's only one entry with no variety
+    const single = catalogueEntries.value[0]
+    if (catalogueEntries.value.length === 1 && single && !single.variety) {
+      selectedCatalogueId.value = single.id
+    }
+  }
+})
+
+function selectPlantType(id: string) {
+  selectedPlantTypeId.value = id
+  plantTypeComboOpen.value = false
+}
+
+function selectCatalogueEntry(id: string) {
+  isCustomVariety.value = false
   selectedCatalogueId.value = id
-  comboboxOpen.value = false
+  catalogueComboOpen.value = false
+}
+
+function selectCustomVariety() {
+  isCustomVariety.value = true
+  selectedCatalogueId.value = ''
+  catalogueComboOpen.value = false
 }
 
 function reset() {
+  selectedPlantTypeId.value = ''
   selectedCatalogueId.value = ''
+  customVariety.value = ''
+  isCustomVariety.value = false
+  catalogueEntries.value = []
   sowDates.value = []
   transplantDates.value = []
   stagingSowDate.value = undefined
   stagingTransplantDate.value = undefined
   notes.value = ''
-  variety.value = ''
   showOverrides.value = false
   overrides.value = {
     description: '',
@@ -194,8 +246,9 @@ async function addPlant() {
   loading.value = true
   await postApiPlants({
     body: {
+      plant_type_id: selectedPlantTypeId.value,
       catalogue_id: selectedCatalogueId.value || undefined,
-      variety: variety.value || undefined,
+      custom_variety: isCustomVariety.value ? customVariety.value : undefined,
       sow_dates: sowDates.value.length ? sowDates.value : undefined,
       transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
       notes: notes.value || undefined,
@@ -221,17 +274,18 @@ async function addPlant() {
       </DialogHeader>
 
       <FieldGroup>
+        <!-- Step 1: Plant type -->
         <Field>
-          <FieldLabel htmlFor="input-required">Plant name<span>*</span> </FieldLabel>
-          <Popover v-model:open="comboboxOpen">
+          <FieldLabel>Plant type<span>*</span></FieldLabel>
+          <Popover v-model:open="plantTypeComboOpen">
             <PopoverTrigger as-child>
               <Button
                 variant="outline"
                 role="combobox"
-                :aria-expanded="comboboxOpen"
+                :aria-expanded="plantTypeComboOpen"
                 class="w-full justify-between"
               >
-                {{ selectedPlantName }}
+                {{ selectedPlantTypeName }}
                 <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -242,17 +296,17 @@ async function addPlant() {
                   <CommandEmpty>No plants found.</CommandEmpty>
                   <CommandGroup>
                     <CommandItem
-                      v-for="plant in cataloguePlants"
-                      :key="plant.id"
-                      :value="plant.name"
-                      @select="() => selectPlant(plant.id)"
+                      v-for="pt in plantTypes"
+                      :key="pt.id"
+                      :value="pt.name"
+                      @select="() => selectPlantType(pt.id)"
                     >
-                      {{ plant.name }}
+                      {{ pt.name }}
                       <Check
                         :class="
                           cn(
                             'ml-auto h-4 w-4',
-                            selectedCatalogueId === plant.id ? 'opacity-100' : 'opacity-0',
+                            selectedPlantTypeId === pt.id ? 'opacity-100' : 'opacity-0',
                           )
                         "
                       />
@@ -264,9 +318,66 @@ async function addPlant() {
           </Popover>
         </Field>
 
-        <Field>
-          <FieldLabel for="variety">Variety</FieldLabel>
-          <Input id="variety" v-model="variety" placeholder="e.g. Cherry, Roma" />
+        <!-- Step 2: Variety (shown when plant type has named varieties) -->
+        <Field v-if="selectedPlantTypeId && hasVarieties">
+          <FieldLabel>Variety<span>*</span></FieldLabel>
+          <Popover v-model:open="catalogueComboOpen">
+            <PopoverTrigger as-child>
+              <Button
+                variant="outline"
+                role="combobox"
+                :aria-expanded="catalogueComboOpen"
+                class="w-full justify-between"
+              >
+                {{ selectedVarietyLabel }}
+                <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="p-0">
+              <Command>
+                <CommandInput placeholder="Search varieties..." />
+                <CommandList>
+                  <CommandEmpty>No varieties found.</CommandEmpty>
+                  <CommandGroup>
+                    <CommandItem
+                      v-for="entry in namedVarieties"
+                      :key="entry.id"
+                      :value="entry.variety!"
+                      @select="() => selectCatalogueEntry(entry.id)"
+                    >
+                      {{ entry.variety }}
+                      <Check
+                        :class="
+                          cn(
+                            'ml-auto h-4 w-4',
+                            selectedCatalogueId === entry.id ? 'opacity-100' : 'opacity-0',
+                          )
+                        "
+                      />
+                    </CommandItem>
+                    <CommandItem value="__custom" @select="selectCustomVariety">
+                      Custom...
+                      <Check
+                        :class="
+                          cn('ml-auto h-4 w-4', isCustomVariety ? 'opacity-100' : 'opacity-0')
+                        "
+                      />
+                    </CommandItem>
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </Field>
+
+        <!-- Custom variety text input -->
+        <Field v-if="isCustomVariety || (selectedPlantTypeId && !hasVarieties)">
+          <FieldLabel for="customVariety">Variety name</FieldLabel>
+          <Input
+            id="customVariety"
+            v-model="customVariety"
+            :placeholder="hasVarieties ? 'Enter variety name' : 'e.g. Cherry, Roma (optional)'"
+          />
         </Field>
 
         <Field>

@@ -10,12 +10,17 @@ CREATE TABLE plant_categories (
     name VARCHAR(100) NOT NULL UNIQUE
 );
 
+CREATE TABLE plant_types (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL UNIQUE,
+    category_id INTEGER REFERENCES plant_categories(id)
+);
+
 CREATE TABLE plant_catalogue (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
+    plant_type_id UUID NOT NULL REFERENCES plant_types(id),
     variety VARCHAR(255),
     description TEXT,
-    category_id INTEGER REFERENCES plant_categories(id),
     seed_to_harvest TEXT,
     sowing_to_transplant TEXT,
     position TEXT,
@@ -25,22 +30,19 @@ CREATE TABLE plant_catalogue (
     harvest_windows JSONB,
     transplant_windows JSONB,
     harvest TEXT,
-    source VARCHAR(255)
+    source VARCHAR(255),
+    UNIQUE(plant_type_id, variety)
 );
 
 CREATE TABLE plants (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    plant_type_id UUID NOT NULL REFERENCES plant_types(id),
     catalogue_id UUID REFERENCES plant_catalogue(id),
+    custom_variety VARCHAR(255),
     sow_dates DATE[] DEFAULT '{}',
     transplant_dates DATE[] DEFAULT '{}',
-    name_override VARCHAR(255),
-    variety VARCHAR(255),
     overrides JSONB,
     notes TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    CONSTRAINT plants_must_have_name
-        CHECK (catalogue_id IS NOT NULL OR name_override IS NOT NULL)
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
-

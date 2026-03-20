@@ -3,9 +3,11 @@ import pool from '../db.js'
 const PLANT_SELECT = `
   SELECT
     p.id,
+    p.plant_type_id,
     p.catalogue_id,
-    COALESCE(p.name_override, pc.name) AS name,
-    COALESCE(p.variety, pc.variety) AS variety,
+    p.custom_variety,
+    pt.name AS name,
+    COALESCE(pc.variety, p.custom_variety) AS variety,
     p.sow_dates,
     p.transplant_dates,
     p.notes,
@@ -20,6 +22,7 @@ const PLANT_SELECT = `
     COALESCE(p.overrides->'harvest_windows', pc.harvest_windows) AS harvest_windows,
     COALESCE(p.overrides->'transplant_windows', pc.transplant_windows) AS transplant_windows
   FROM plants p
+  JOIN plant_types pt ON pt.id = p.plant_type_id
   LEFT JOIN plant_catalogue pc ON pc.id = p.catalogue_id`
 
 export default async function plantRoutes(app) {
@@ -36,19 +39,19 @@ export default async function plantRoutes(app) {
 
   app.post('/plants', auth, async (request, reply) => {
     const userId = request.user.sub
-    const { catalogue_id, sow_dates, transplant_dates, notes, name_override, variety, overrides } = request.body
+    const { plant_type_id, catalogue_id, custom_variety, sow_dates, transplant_dates, notes, overrides } = request.body
     const result = await pool.query(
-      `INSERT INTO plants (user_id, catalogue_id, sow_dates, transplant_dates, notes, name_override, variety, overrides)
+      `INSERT INTO plants (user_id, plant_type_id, catalogue_id, custom_variety, sow_dates, transplant_dates, notes, overrides)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
        RETURNING id`,
       [
         userId,
+        plant_type_id,
         catalogue_id ?? null,
+        custom_variety ?? null,
         sow_dates ?? [],
         transplant_dates ?? [],
         notes ?? null,
-        name_override ?? null,
-        variety ?? null,
         overrides ? JSON.stringify(overrides) : null,
       ],
     )
@@ -68,20 +71,20 @@ export default async function plantRoutes(app) {
 
   app.put('/plants/:id', auth, async (request, reply) => {
     const userId = request.user.sub
-    const { catalogue_id, sow_dates, transplant_dates, notes, name_override, variety, overrides } = request.body
+    const { plant_type_id, catalogue_id, custom_variety, sow_dates, transplant_dates, notes, overrides } = request.body
     const result = await pool.query(
       `UPDATE plants SET
-         catalogue_id = $1, sow_dates = $2, transplant_dates = $3, notes = $4,
-         name_override = $5, variety = $6, overrides = $7
+         plant_type_id = $1, catalogue_id = $2, custom_variety = $3,
+         sow_dates = $4, transplant_dates = $5, notes = $6, overrides = $7
        WHERE id = $8 AND user_id = $9
        RETURNING id`,
       [
+        plant_type_id,
         catalogue_id ?? null,
+        custom_variety ?? null,
         sow_dates ?? [],
         transplant_dates ?? [],
         notes ?? null,
-        name_override ?? null,
-        variety ?? null,
         overrides ? JSON.stringify(overrides) : null,
         request.params.id,
         userId,
