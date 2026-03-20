@@ -1,7 +1,10 @@
 import { Hono } from 'hono'
 import { query } from '../db.ts'
+import { authMiddleware } from './auth.ts'
 
 export const catalogueRoutes = new Hono()
+
+catalogueRoutes.use('*', authMiddleware)
 
 catalogueRoutes.get('/plant-types', async (c) => {
   const rows = await query('SELECT id, name, category_id FROM plant_types ORDER BY name')
