@@ -27,6 +27,10 @@ router.isReady().then(() => {
     "
   >
     <AppNav v-if="routerReady && !publicRoutes.includes(route.path)" />
-    <RouterView />
+    <RouterView v-slot="{ Component }">
+      <KeepAlive>
+        <component :is="Component" />
+      </KeepAlive>
+    </RouterView>
   </div>
 </template>
