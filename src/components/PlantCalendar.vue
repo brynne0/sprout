@@ -2,11 +2,11 @@
 import { computed, ref } from 'vue'
 
 import { today, getLocalTimeZone } from '@internationalized/date'
-import type { CataloguePlant } from '@/client'
+import type { BasePlant } from '@/client'
 import { useElementSize } from '@vueuse/core'
 
-const props = withDefaults(defineProps<{ plants: CataloguePlant[]; showSowDot?: boolean }>(), {
-  showSowDot: false,
+const props = withDefaults(defineProps<{ plants: BasePlant[]; showDots?: boolean }>(), {
+  showDots: false,
 })
 const timelineContainer = ref<HTMLElement | null>(null)
 const { width: containerWidth } = useElementSize(timelineContainer)
@@ -74,8 +74,9 @@ type DisplayRow =
   | {
       kind: 'base'
       key: string
-      plant: CataloguePlant
-      sowX: number
+      plant: BasePlant
+      sowXs: number[]
+      transplantXs: number[]
       sowingBars: Bar[]
       transplantBars: Bar[]
       harvestBars: Bar[]
@@ -83,7 +84,7 @@ type DisplayRow =
   | {
       kind: 'label'
       key: string
-      plant: CataloguePlant
+      plant: BasePlant
       label: string
       trackType: 'sowing' | 'transplant' | 'harvest'
       bars: Bar[]
@@ -108,13 +109,14 @@ function extractTracks(windows: WindowData[]): {
   return { unlabelledBars, labelGroups }
 }
 
-function getAnchorMonthDay(plant: {
-  sow_date?: string
-  sowing_windows?: Array<{ start: string }>
-}): { month: number; day: number } {
-  if (plant.sow_date) {
-    const parts = plant.sow_date.substring(0, 10).split('-').map(Number)
-    return { month: parts[1]!, day: parts[2]! }
+function parseDateMonthDay(dateStr: string): { month: number; day: number } {
+  const parts = dateStr.substring(0, 10).split('-').map(Number)
+  return { month: parts[1]!, day: parts[2]! }
+}
+
+function getAnchorMonthDay(plant: BasePlant): { month: number; day: number } {
+  if ('sow_dates' in plant && Array.isArray(plant.sow_dates) && plant.sow_dates.length > 0) {
+    return parseDateMonthDay(plant.sow_dates[0] as string)
   }
   const firstWindow = plant.sowing_windows?.[0]
   if (firstWindow) {
@@ -135,8 +137,11 @@ const displayRows = computed<DisplayRow[]>(() => {
   const rows: DisplayRow[] = []
 
   for (const plant of sorted) {
-    const anchor = getAnchorMonthDay(plant)
-    const sowX = dateToX(anchor.month, anchor.day)
+    const rawSowDates = 'sow_dates' in plant && Array.isArray(plant.sow_dates) ? plant.sow_dates as string[] : []
+    const rawTransplantDates = 'transplant_dates' in plant && Array.isArray(plant.transplant_dates) ? plant.transplant_dates as string[] : []
+
+    const sowXs = rawSowDates.map((d) => { const md = parseDateMonthDay(d); return dateToX(md.month, md.day) })
+    const transplantXs = rawTransplantDates.map((d) => { const md = parseDateMonthDay(d); return dateToX(md.month, md.day) })
 
     const sowing = extractTracks((plant.sowing_windows ?? []) as WindowData[])
     const transplant = extractTracks((plant.transplant_windows ?? []) as WindowData[])
@@ -146,7 +151,8 @@ const displayRows = computed<DisplayRow[]>(() => {
       kind: 'base',
       key: String(plant.id ?? plant.name),
       plant,
-      sowX,
+      sowXs,
+      transplantXs,
       sowingBars: sowing.unlabelledBars,
       transplantBars: transplant.unlabelledBars,
       harvestBars: harvest.unlabelledBars,
@@ -209,7 +215,7 @@ const todayX = computed(() => {
 
 <template>
   <!-- Legend -->
-  <div class="flex flex-row gap-8 mb-2 px-4 text-xs text-muted-foreground">
+  <div class="flex flex-row flex-wrap gap-4 mb-2 px-4 text-xs text-muted-foreground">
     <span class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/40" />
       Sow
@@ -222,9 +228,13 @@ const todayX = computed(() => {
       <span class="inline-block w-3 h-3 rounded-sm bg-rose-500/20 border border-rose-500/40" />
       Harvest
     </span>
-    <span v-if="showSowDot" class="flex items-center gap-1.5">
+    <span v-if="showDots" class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 border rounded-sm bg-primary" />
       Sow date
+    </span>
+    <span v-if="showDots" class="flex items-center gap-1.5">
+      <span class="inline-block w-3 h-3 border rounded-sm bg-amber-500" />
+      Transplant date
     </span>
   </div>
 
@@ -329,11 +339,24 @@ const todayX = computed(() => {
                   }"
                 />
                 <div
-                  v-if="showSowDot"
+                  v-for="(sx, si) in showDots ? row.sowXs : []"
+                  :key="`sow-dot-${si}`"
                   class="absolute rounded-full bg-primary border z-10"
                   :style="{
-                    left: row.sowX - 5 + 'px',
+                    left: sx - 5 + 'px',
                     top: sowingTop + TRACK_HEIGHT / 2 - 5 + 'px',
+                    width: '10px',
+                    height: TRACK_HEIGHT + 'px',
+                  }"
+                />
+
+                <div
+                  v-for="(tx, ti) in showDots ? row.transplantXs : []"
+                  :key="`transplant-dot-${ti}`"
+                  class="absolute rounded-full bg-amber-500 border z-10"
+                  :style="{
+                    left: tx - 5 + 'px',
+                    top: transplantTop + TRACK_HEIGHT / 2 - 5 + 'px',
                     width: '10px',
                     height: TRACK_HEIGHT + 'px',
                   }"

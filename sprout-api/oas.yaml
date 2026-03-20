@@ -130,23 +130,15 @@ components:
       bearerFormat: JWT
 
   schemas:
-    Plant:
+    BasePlant:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        catalogue_id:
-          type: string
-          format: uuid
         name:
           type: string
         variety:
-          type: string
-        sow_date:
-          type: string
-          format: date
-        notes:
           type: string
         description:
           type: string
@@ -177,7 +169,37 @@ components:
       required:
         - id
         - name
-        - sow_date
+
+    Plant:
+      allOf:
+        - $ref: '#/components/schemas/BasePlant'
+        - type: object
+          properties:
+            catalogue_id:
+              type: string
+              format: uuid
+            sow_dates:
+              type: array
+              items:
+                type: string
+                format: date
+            transplant_dates:
+              type: array
+              items:
+                type: string
+                format: date
+            notes:
+              type: string
+
+    CataloguePlant:
+      allOf:
+        - $ref: '#/components/schemas/BasePlant'
+        - type: object
+          properties:
+            category_id:
+              type: integer
+            source:
+              type: string
 
     PlantInput:
       type: object
@@ -189,15 +211,20 @@ components:
           type: string
         variety:
           type: string
-        sow_date:
-          type: string
-          format: date
+        sow_dates:
+          type: array
+          items:
+            type: string
+            format: date
+        transplant_dates:
+          type: array
+          items:
+            type: string
+            format: date
         notes:
           type: string
         overrides:
           $ref: '#/components/schemas/PlantOverrides'
-      required:
-        - sow_date
 
     PlantOverrides:
       type: object
@@ -229,50 +256,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Window'
-
-    CataloguePlant:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        variety:
-          type: string
-        category_id:
-          type: integer
-        description:
-          type: string
-        position:
-          type: string
-        hardiness:
-          type: string
-        spacing:
-          type: string
-        seed_to_harvest:
-          type: string
-        sowing_to_transplant:
-          type: string
-        harvest:
-          type: string
-        sowing_windows:
-          type: array
-          items:
-            $ref: '#/components/schemas/Window'
-        harvest_windows:
-          type: array
-          items:
-            $ref: '#/components/schemas/Window'
-        transplant_windows:
-          type: array
-          items:
-            $ref: '#/components/schemas/Window'
-        source:
-          type: string
-      required:
-        - id
-        - name
 
     Window:
       type: object

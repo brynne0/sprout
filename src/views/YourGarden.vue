@@ -81,7 +81,8 @@ function formatDate(dateStr: string | null | undefined) {
               <TableRow>
                 <TableHead class="w-25">Plant Name</TableHead>
                 <!-- <TableHead>Variety</TableHead> -->
-                <TableHead>Sowing Date</TableHead>
+                <TableHead>Sowing Dates</TableHead>
+                <TableHead>Transplant Dates</TableHead>
                 <TableHead>Notes</TableHead>
               </TableRow>
             </TableHeader>
@@ -89,7 +90,12 @@ function formatDate(dateStr: string | null | undefined) {
               <TableRow v-for="plant in plants" :key="plant.id">
                 <TableCell class="font-medium">{{ plant.name }}</TableCell>
                 <!-- <TableCell>{{ plant.variety ?? '—' }}</TableCell> -->
-                <TableCell>{{ formatDate(plant.sow_date) }}</TableCell>
+                <TableCell>{{
+                  (plant.sow_dates ?? []).map(formatDate).join(', ') || '—'
+                }}</TableCell>
+                <TableCell>{{
+                  (plant.transplant_dates ?? []).map(formatDate).join(', ') || '—'
+                }}</TableCell>
                 <TableCell>{{ plant.notes ?? '—' }}</TableCell>
               </TableRow>
             </TableBody>
@@ -97,7 +103,7 @@ function formatDate(dateStr: string | null | undefined) {
         </TabsContent>
 
         <TabsContent value="gardenCalendar">
-          <PlantCalendar :plants="plants" :show-sow-dot="true" />
+          <PlantCalendar :plants="plants" :show-dots="true" />
         </TabsContent>
       </Tabs>
     </div>

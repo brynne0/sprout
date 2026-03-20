@@ -6,7 +6,8 @@ const PLANT_SELECT = `
     p.catalogue_id,
     COALESCE(p.name_override, pc.name) AS name,
     COALESCE(p.variety, pc.variety) AS variety,
-    p.sow_date,
+    p.sow_dates,
+    p.transplant_dates,
     p.notes,
     COALESCE(p.overrides->>'description', pc.description) AS description,
     COALESCE(p.overrides->>'position', pc.position) AS position,
@@ -35,15 +36,16 @@ export default async function plantRoutes(app) {
 
   app.post('/plants', auth, async (request, reply) => {
     const userId = request.user.sub
-    const { catalogue_id, sow_date, notes, name_override, variety, overrides } = request.body
+    const { catalogue_id, sow_dates, transplant_dates, notes, name_override, variety, overrides } = request.body
     const result = await pool.query(
-      `INSERT INTO plants (user_id, catalogue_id, sow_date, notes, name_override, variety, overrides)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)
+      `INSERT INTO plants (user_id, catalogue_id, sow_dates, transplant_dates, notes, name_override, variety, overrides)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
        RETURNING id`,
       [
         userId,
         catalogue_id ?? null,
-        sow_date,
+        sow_dates ?? [],
+        transplant_dates ?? [],
         notes ?? null,
         name_override ?? null,
         variety ?? null,
@@ -66,16 +68,17 @@ export default async function plantRoutes(app) {
 
   app.put('/plants/:id', auth, async (request, reply) => {
     const userId = request.user.sub
-    const { catalogue_id, sow_date, notes, name_override, variety, overrides } = request.body
+    const { catalogue_id, sow_dates, transplant_dates, notes, name_override, variety, overrides } = request.body
     const result = await pool.query(
       `UPDATE plants SET
-         catalogue_id = $1, sow_date = $2, notes = $3,
-         name_override = $4, variety = $5, overrides = $6
-       WHERE id = $7 AND user_id = $8
+         catalogue_id = $1, sow_dates = $2, transplant_dates = $3, notes = $4,
+         name_override = $5, variety = $6, overrides = $7
+       WHERE id = $8 AND user_id = $9
        RETURNING id`,
       [
         catalogue_id ?? null,
-        sow_date,
+        sow_dates ?? [],
+        transplant_dates ?? [],
         notes ?? null,
         name_override ?? null,
         variety ?? null,
