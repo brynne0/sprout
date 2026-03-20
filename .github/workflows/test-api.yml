@@ -1,0 +1,42 @@
+name: Test API
+
+on:
+  pull_request:
+    paths:
+      - 'sprout-api/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: sprout
+          POSTGRES_USER: sprout
+          POSTGRES_PASSWORD: sprout
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sprout"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - run: deno test --allow-net --allow-env --allow-read
+        working-directory: sprout-api
+        env:
+          DATABASE_URL: postgresql://sprout:sprout@localhost:5432/sprout
+          JWT_SECRET: test-secret
+          FRONTEND_URL: http://localhost:5173
+          BACKEND_URL: http://localhost:8080
+          GOOGLE_CLIENT_ID: dummy
+          GOOGLE_CLIENT_SECRET: dummy
