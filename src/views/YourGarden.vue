@@ -24,20 +24,32 @@ import type { Plant } from '@/client'
 import { getApiPlants } from '@/client'
 import AddPlantDialog from '@/components/AddPlantDialog.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
+import { toast } from 'vue-sonner'
 
 const plants = ref<Plant[]>([])
 const dialogOpen = ref(false)
 const loading = ref(true)
 
+async function fetchPlants() {
+  try {
+    const res = await getApiPlants({ throwOnError: true })
+    plants.value = res.data ?? []
+  } catch (error) {
+    if (error instanceof TypeError) {
+      toast.error('Network error', { description: 'Check your connection and try again.' })
+    } else {
+      toast.error('Failed to load plants', { description: 'Please try refreshing.' })
+    }
+  }
+}
+
 onMounted(async () => {
-  const res = await getApiPlants()
-  plants.value = res.data ?? []
+  await fetchPlants()
   loading.value = false
 })
 
 async function onPlantAdded() {
-  const res = await getApiPlants()
-  plants.value = res.data ?? []
+  await fetchPlants()
 }
 
 function formatDate(dateStr: string | null | undefined) {
@@ -81,7 +93,8 @@ function formatDate(dateStr: string | null | undefined) {
               <TableRow>
                 <TableHead class="w-25">Plant Name</TableHead>
                 <!-- <TableHead>Variety</TableHead> -->
-                <TableHead>Sowing Date</TableHead>
+                <TableHead>Sowing Dates</TableHead>
+                <TableHead>Transplant Dates</TableHead>
                 <TableHead>Notes</TableHead>
               </TableRow>
             </TableHeader>
@@ -89,7 +102,12 @@ function formatDate(dateStr: string | null | undefined) {
               <TableRow v-for="plant in plants" :key="plant.id">
                 <TableCell class="font-medium">{{ plant.name }}</TableCell>
                 <!-- <TableCell>{{ plant.variety ?? '—' }}</TableCell> -->
-                <TableCell>{{ formatDate(plant.sow_date) }}</TableCell>
+                <TableCell>{{
+                  (plant.sow_dates ?? []).map(formatDate).join(', ') || '—'
+                }}</TableCell>
+                <TableCell>{{
+                  (plant.transplant_dates ?? []).map(formatDate).join(', ') || '—'
+                }}</TableCell>
                 <TableCell>{{ plant.notes ?? '—' }}</TableCell>
               </TableRow>
             </TableBody>
@@ -97,7 +115,7 @@ function formatDate(dateStr: string | null | undefined) {
         </TabsContent>
 
         <TabsContent value="gardenCalendar">
-          <PlantCalendar :plants="plants" :show-sow-dot="true" />
+          <PlantCalendar :plants="plants" :show-dots="true" />
         </TabsContent>
       </Tabs>
     </div>

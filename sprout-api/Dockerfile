@@ -1,12 +1,12 @@
-FROM node:20-alpine
+FROM denoland/deno:latest
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci --omit=dev
+COPY deno.json deno.lock* ./
+RUN deno install
 
 COPY . .
 
 EXPOSE 8080
 
-CMD ["node", "src/app.js"]
+CMD ["deno", "task", "start"]

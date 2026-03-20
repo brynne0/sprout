@@ -21,7 +21,7 @@ function logout() {
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger
-      class="flex flex-col items-center gap-1 py-3 px-4 text-xs font-semibold text-foreground/60 transition-colors hover:text-foreground"
+      class="flex flex-col items-center gap-1 py-3 text-xs font-semibold text-foreground/60 transition-colors hover:text-foreground"
     >
       <div class="rounded-full p-2 transition-colors flex flex-row gap-2 items-center">
         <Settings class="size-5" />

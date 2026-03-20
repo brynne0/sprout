@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { CalendarIcon, ChevronDown, ChevronsUpDown, Check, Plus, X } from 'lucide-vue-next'
+import { ref, computed, watch, onMounted } from 'vue'
+import { ChevronDown, ChevronsUpDown, Check, Plus, X } from 'lucide-vue-next'
 import {
   Dialog,
   DialogClose,
@@ -25,13 +25,14 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import type { CataloguePlant } from '@/client'
-import { postApiPlants, getApiCatalogue } from '@/client'
+import type { PlantType, CataloguePlant } from '@/client'
+import { postApiPlants, getApiPlantTypes, getApiPlantTypesByIdCatalogue } from '@/client'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
+import { getLocalTimeZone, today } from '@internationalized/date'
 import type { DateValue } from 'reka-ui'
+import { toast } from 'vue-sonner'
 
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ 'update:open': [boolean]; plantAdded: [] }>()
@@ -41,17 +42,25 @@ const dialogOpen = computed({
   set: (val) => emit('update:open', val),
 })
 
-const comboboxOpen = ref(false)
+const plantTypeComboOpen = ref(false)
+const catalogueComboOpen = ref(false)
 const showOverrides = ref(false)
 
-const df = new DateFormatter('en-US', { dateStyle: 'long' })
 const defaultPlaceholder = today(getLocalTimeZone())
 
-const cataloguePlants = ref<CataloguePlant[]>([])
+// Plant type + catalogue entry selection
+const plantTypes = ref<PlantType[]>([])
+const catalogueEntries = ref<CataloguePlant[]>([])
+const selectedPlantTypeId = ref('')
 const selectedCatalogueId = ref('')
-const date = ref<DateValue>()
+const customVariety = ref('')
+const isCustomVariety = ref(false)
+
+const sowDates = ref<string[]>([])
+const transplantDates = ref<string[]>([])
+const stagingSowDate = ref<DateValue>()
+const stagingTransplantDate = ref<DateValue>()
 const notes = ref('')
-const variety = ref('')
 
 const overrides = ref({
   description: '',
@@ -77,11 +86,19 @@ const showSowingPicker = ref(false)
 const showHarvestPicker = ref(false)
 const showTransplantPicker = ref(false)
 const showSowDatePicker = ref(false)
+const showTransplantDatePicker = ref(false)
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 function toMonthDay(d: DateValue): string {
   return `${String(d.month).padStart(2, '0')}-${String(d.day).padStart(2, '0')}`
+}
+
+function formatDate(dateStr: string): string {
+  const d = new Date(dateStr.slice(0, 10) + 'T00:00:00')
+  return isNaN(d.getTime())
+    ? dateStr
+    : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function formatWindow(w: Window): string {
@@ -121,13 +138,27 @@ function confirmTransplantWindow() {
   }
 }
 
-const selectedPlantName = computed(
-  () =>
-    cataloguePlants.value.find((p) => p.id === selectedCatalogueId.value)?.name ??
-    'Select plant...',
+const selectedPlantTypeName = computed(
+  () => plantTypes.value.find((p) => p.id === selectedPlantTypeId.value)?.name ?? 'Select plant...',
 )
 
-const canSubmit = computed(() => !!selectedCatalogueId.value && !!date.value)
+// Catalogue entries that have a named variety
+const namedVarieties = computed(() => catalogueEntries.value.filter((e) => e.variety))
+
+const hasVarieties = computed(() => namedVarieties.value.length > 0)
+
+const selectedVarietyLabel = computed(() => {
+  if (isCustomVariety.value) return 'Custom'
+  const entry = catalogueEntries.value.find((e) => e.id === selectedCatalogueId.value)
+  return entry?.variety ?? 'Select variety...'
+})
+
+const canSubmit = computed(() => {
+  if (!selectedPlantTypeId.value) return false
+  if (hasVarieties.value && !selectedCatalogueId.value && !isCustomVariety.value) return false
+  if (isCustomVariety.value && !customVariety.value) return false
+  return true
+})
 
 const cleanedOverrides = computed(() => {
   const result: Record<string, unknown> = Object.fromEntries(
@@ -142,20 +173,55 @@ const cleanedOverrides = computed(() => {
 const loading = ref(false)
 
 onMounted(async () => {
-  const res = await getApiCatalogue()
-  cataloguePlants.value = res.data ?? []
+  const res = await getApiPlantTypes()
+  plantTypes.value = res.data ?? []
 })
 
-function selectPlant(id: string) {
+// Fetch catalogue entries when plant type changes
+watch(selectedPlantTypeId, async (id) => {
+  selectedCatalogueId.value = ''
+  customVariety.value = ''
+  isCustomVariety.value = false
+  catalogueEntries.value = []
+  if (id) {
+    const res = await getApiPlantTypesByIdCatalogue({ path: { id } })
+    catalogueEntries.value = res.data ?? []
+    // Auto-select if there's only one entry with no variety
+    const single = catalogueEntries.value[0]
+    if (catalogueEntries.value.length === 1 && single && !single.variety) {
+      selectedCatalogueId.value = single.id
+    }
+  }
+})
+
+function selectPlantType(id: string) {
+  selectedPlantTypeId.value = id
+  plantTypeComboOpen.value = false
+}
+
+function selectCatalogueEntry(id: string) {
+  isCustomVariety.value = false
   selectedCatalogueId.value = id
-  comboboxOpen.value = false
+  catalogueComboOpen.value = false
+}
+
+function selectCustomVariety() {
+  isCustomVariety.value = true
+  selectedCatalogueId.value = ''
+  catalogueComboOpen.value = false
 }
 
 function reset() {
+  selectedPlantTypeId.value = ''
   selectedCatalogueId.value = ''
-  date.value = undefined
+  customVariety.value = ''
+  isCustomVariety.value = false
+  catalogueEntries.value = []
+  sowDates.value = []
+  transplantDates.value = []
+  stagingSowDate.value = undefined
+  stagingTransplantDate.value = undefined
   notes.value = ''
-  variety.value = ''
   showOverrides.value = false
   overrides.value = {
     description: '',
@@ -179,19 +245,31 @@ function reset() {
 
 async function addPlant() {
   loading.value = true
-  await postApiPlants({
-    body: {
-      catalogue_id: selectedCatalogueId.value || undefined,
-      variety: variety.value || undefined,
-      sow_date: date.value?.toString() ?? '',
-      notes: notes.value || undefined,
-      overrides: cleanedOverrides.value,
-    },
-  })
-  loading.value = false
-  reset()
-  emit('plantAdded')
-  emit('update:open', false)
+  try {
+    await postApiPlants({
+      throwOnError: true,
+      body: {
+        plant_type_id: selectedPlantTypeId.value,
+        catalogue_id: selectedCatalogueId.value || undefined,
+        custom_variety: isCustomVariety.value ? customVariety.value : undefined,
+        sow_dates: sowDates.value.length ? sowDates.value : undefined,
+        transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
+        notes: notes.value || undefined,
+        overrides: cleanedOverrides.value,
+      },
+    })
+    reset()
+    emit('plantAdded')
+    emit('update:open', false)
+  } catch (error) {
+    if (error instanceof TypeError) {
+      toast.error('Network error', { description: 'Check your connection and try again.' })
+    } else {
+      toast.error('Failed to add plant. Please try again.')
+    }
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -207,17 +285,18 @@ async function addPlant() {
       </DialogHeader>
 
       <FieldGroup>
+        <!-- Step 1: Plant type -->
         <Field>
-          <FieldLabel htmlFor="input-required">Plant name<span>*</span> </FieldLabel>
-          <Popover v-model:open="comboboxOpen">
+          <FieldLabel>Plant type<span>*</span></FieldLabel>
+          <Popover v-model:open="plantTypeComboOpen">
             <PopoverTrigger as-child>
               <Button
                 variant="outline"
                 role="combobox"
-                :aria-expanded="comboboxOpen"
+                :aria-expanded="plantTypeComboOpen"
                 class="w-full justify-between"
               >
-                {{ selectedPlantName }}
+                {{ selectedPlantTypeName }}
                 <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -228,17 +307,17 @@ async function addPlant() {
                   <CommandEmpty>No plants found.</CommandEmpty>
                   <CommandGroup>
                     <CommandItem
-                      v-for="plant in cataloguePlants"
-                      :key="plant.id"
-                      :value="plant.name"
-                      @select="() => selectPlant(plant.id)"
+                      v-for="pt in plantTypes"
+                      :key="pt.id"
+                      :value="pt.name"
+                      @select="() => selectPlantType(pt.id)"
                     >
-                      {{ plant.name }}
+                      {{ pt.name }}
                       <Check
                         :class="
                           cn(
                             'ml-auto h-4 w-4',
-                            selectedCatalogueId === plant.id ? 'opacity-100' : 'opacity-0',
+                            selectedPlantTypeId === pt.id ? 'opacity-100' : 'opacity-0',
                           )
                         "
                       />
@@ -250,32 +329,149 @@ async function addPlant() {
           </Popover>
         </Field>
 
-        <Field>
-          <FieldLabel for="variety">Variety</FieldLabel>
-          <Input id="variety" v-model="variety" placeholder="e.g. Cherry, Roma" />
-        </Field>
-
-        <Field>
-          <FieldLabel htmlFor="input-required">Sow Date<span>*</span> </FieldLabel>
-          <Popover v-model:open="showSowDatePicker">
+        <!-- Step 2: Variety (shown when plant type has named varieties) -->
+        <Field v-if="selectedPlantTypeId && hasVarieties">
+          <FieldLabel>Variety<span>*</span></FieldLabel>
+          <Popover v-model:open="catalogueComboOpen">
             <PopoverTrigger as-child>
               <Button
                 variant="outline"
-                :class="
-                  cn('w-full justify-start text-left font-normal', !date && 'text-muted-foreground')
-                "
+                role="combobox"
+                :aria-expanded="catalogueComboOpen"
+                class="w-full justify-between"
               >
-                <CalendarIcon class="mr-2 h-4 w-4" />
-                {{ date ? df.format(date.toDate(getLocalTimeZone())) : 'Pick a date' }}
+                {{ selectedVarietyLabel }}
+                <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="p-0">
+              <Command>
+                <CommandInput placeholder="Search varieties..." />
+                <CommandList>
+                  <CommandEmpty>No varieties found.</CommandEmpty>
+                  <CommandGroup>
+                    <CommandItem
+                      v-for="entry in namedVarieties"
+                      :key="entry.id"
+                      :value="entry.variety!"
+                      @select="() => selectCatalogueEntry(entry.id)"
+                    >
+                      {{ entry.variety }}
+                      <Check
+                        :class="
+                          cn(
+                            'ml-auto h-4 w-4',
+                            selectedCatalogueId === entry.id ? 'opacity-100' : 'opacity-0',
+                          )
+                        "
+                      />
+                    </CommandItem>
+                    <CommandItem value="__custom" @select="selectCustomVariety">
+                      Custom...
+                      <Check
+                        :class="
+                          cn('ml-auto h-4 w-4', isCustomVariety ? 'opacity-100' : 'opacity-0')
+                        "
+                      />
+                    </CommandItem>
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </Field>
+
+        <!-- Custom variety text input -->
+        <Field v-if="isCustomVariety || (selectedPlantTypeId && !hasVarieties)">
+          <FieldLabel for="customVariety">Variety name</FieldLabel>
+          <Input
+            id="customVariety"
+            v-model="customVariety"
+            :placeholder="hasVarieties ? 'Enter variety name' : 'e.g. Cherry, Roma (optional)'"
+          />
+        </Field>
+
+        <Field>
+          <FieldLabel>Sow Dates</FieldLabel>
+          <div v-if="sowDates.length" class="flex flex-wrap gap-2">
+            <span
+              v-for="(d, i) in sowDates"
+              :key="i"
+              class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
+            >
+              {{ formatDate(d) }}
+              <button
+                type="button"
+                class="text-muted-foreground hover:text-foreground"
+                @click="sowDates.splice(i, 1)"
+              >
+                <X class="h-3 w-3" />
+              </button>
+            </span>
+          </div>
+          <Popover v-model:open="showSowDatePicker">
+            <PopoverTrigger as-child>
+              <Button type="button" variant="outline" size="sm" class="w-full">
+                <Plus /> Add sow date
               </Button>
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">
               <Calendar
-                v-model="date"
+                v-model="stagingSowDate"
                 :initial-focus="true"
                 :default-placeholder="defaultPlaceholder"
                 layout="month-and-year"
-                @update:model-value="showSowDatePicker = false"
+                @update:model-value="
+                  (v: DateValue | undefined) => {
+                    if (!v) return
+                    sowDates.push(v.toString())
+                    stagingSowDate = undefined
+                    showSowDatePicker = false
+                  }
+                "
+              />
+            </PopoverContent>
+          </Popover>
+        </Field>
+
+        <Field>
+          <FieldLabel>Transplant Dates</FieldLabel>
+          <div v-if="transplantDates.length" class="flex flex-wrap gap-2">
+            <span
+              v-for="(d, i) in transplantDates"
+              :key="i"
+              class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
+            >
+              {{ formatDate(d) }}
+              <button
+                type="button"
+                class="text-muted-foreground hover:text-foreground"
+                @click="transplantDates.splice(i, 1)"
+              >
+                <X class="h-3 w-3" />
+              </button>
+            </span>
+          </div>
+          <Popover v-model:open="showTransplantDatePicker">
+            <PopoverTrigger as-child>
+              <Button type="button" variant="outline" size="sm" class="w-full">
+                <Plus /> Add transplant date
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="w-auto p-0">
+              <Calendar
+                v-model="stagingTransplantDate"
+                :initial-focus="true"
+                :default-placeholder="defaultPlaceholder"
+                layout="month-and-year"
+                @update:model-value="
+                  (v: DateValue | undefined) => {
+                    if (!v) return
+                    transplantDates.push(v.toString())
+                    stagingTransplantDate = undefined
+                    showTransplantDatePicker = false
+                  }
+                "
               />
             </PopoverContent>
           </Popover>
