@@ -21,8 +21,13 @@ INSERT INTO plant_types (name, category_id) VALUES
     ('Kale', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
     ('Radish', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
     ('Swede', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Turnip', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'));
-
+    ('Turnip', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
+    ('Garlic', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
+    ('Leek', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
+    ('Spring Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
+    ('Bulb Onion and Shallot', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
+    ('Overwintering Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'));
+    
 INSERT INTO plant_catalogue (plant_type_id, variety, description, seed_to_harvest, sowing_to_transplant, position, spacing, hardiness, sowing_windows, transplant_windows, harvest_windows, harvest, source)
 VALUES
 -- Legumes
@@ -53,4 +58,14 @@ VALUES
 -- Swede
   ((SELECT id FROM plant_types WHERE name = 'Swede'), NULL, 'Suitable as a second follow-on crop', '4 months', '4 weeks', 'Full sun or a little shade', '30-35cm equidistant', 'Extremely hardy, to at least -10°C', '[{"start": "05-15", "end": "05-31"}]', '[{"start": "06-15", "end": "06-30"}]', '[{"start": "10-01", "end": "03-31"}]', NULL, 'No Dig'),
 -- Turnip
-  ((SELECT id FROM plant_types WHERE name = 'Turnip'), NULL, 'Suitable for multisowing and interplanting', '2 months', '2-4 weeks', 'Full sun', '25-30cm equidistant', 'Hardy to approx. -5°C', '[{"start": "02-15", "end": "03-15"}, {"start": "08-01", "end": "08-15"}]', '[{"start": "03-15", "end": "04-15"}, {"start": "08-15", "end": "08-31"}]', '[{"start": "05-01", "end": "06-15"}, {"start": "10-01", "end": "11-15"}]', NULL, 'No Dig');
+  ((SELECT id FROM plant_types WHERE name = 'Turnip'), NULL, 'Suitable for multisowing and interplanting', '2 months', '2-4 weeks', 'Full sun', '25-30cm equidistant', 'Hardy to approx. -5°C', '[{"start": "02-15", "end": "03-15"}, {"start": "08-01", "end": "08-15"}]', '[{"start": "03-15", "end": "04-15"}, {"start": "08-15", "end": "08-31"}]', '[{"start": "05-01", "end": "06-15"}, {"start": "10-01", "end": "11-15"}]', NULL, 'No Dig'),
+-- Garlic
+  ((SELECT id FROM plant_types WHERE name = 'Garlic'), NULL, 'Suitable for interplanting or intersowing in May or June', '8 months when sown in October', 'Not applicable', 'Adaptable; likes sun and warmth in spring and summer', '10-15cm equidistant or 8-10cm apart in rows 25cm apart', 'Hardy to at least -12°C', '[{"start": "09-15", "end": "12-31"}]', NULL, '[{"start": "06-15", "end": "07-15"}]', NULL, 'No Dig'),
+-- Leek
+  ((SELECT id FROM plant_types WHERE name = 'Leek'), NULL, 'Suitable for multisowing and as a second follow-on crop', 'Summer: 4.5-5 months, Autumn: 5-6 months, Winter: 10-13 months', '2-3 months', 'Moist, tolerates some shade', 'Clumps at 20-25cm equidistant, singles at 10cm', 'Hardy, but mature summer and autumn varieties can be damaged below -5°C', '[{"start": "04-01", "end": "04-15"}]', '[{"start": "06-01", "end": "07-31"}]', '[{"start": "07-15", "end": "09-30", "label": "summer"}, {"start": "09-01", "end": "01-31", "label": "autumn"}, {"start": "02-01", "end": "04-30", "label": "winter"}]', NULL, 'No Dig'),
+-- Spring Onion
+  ((SELECT id FROM plant_types WHERE name = 'Spring Onion'), NULL, 'Suitable for multisowing', '2.5 months', '6 weeks', 'Full sun or some shade', 'Multisown 25cm equidistant', 'Hardy, to at least -8°C', '[{"start": "02-15", "end": "06-30"}, {"start": "08-15", "end": "08-31", "label": "overwintering"}]', '[{"start": "04-01", "end": "08-15"}, {"start": "09-15", "end": "10-15", "label": "overwintering"}]', '[{"start": "06-01", "end": "10-31"}, {"start": "04-01", "end": "05-31", "label": "overwintering"}]', NULL, 'No Dig'),
+-- Bulb Onion and Shallot
+  ((SELECT id FROM plant_types WHERE name = 'Bulb Onion and Shallot'), NULL, 'Suitable for multisowing', '4.5 months from seed, 3.5 months from sets', '6 weeks', 'Full sun', 'Bulb onions: multisown 30cm equidistant, sets 15cm. Shallots: 30cm equidistant from seed or sets', 'Hardy, to at least -8°C', '[{"start": "03-15", "end": "04-15", "label": "from sets"}, {"start": "02-15", "end": "03-31", "label": "from seed"}]', '[{"start": "04-01", "end": "04-30"}]', '[{"start": "07-15", "end": "08-31"}]', NULL, 'No Dig'),
+-- Overwintering Onion
+  ((SELECT id FROM plant_types WHERE name = 'Overwintering Onion'), NULL, 'Suitable for multisowing and as a second follow-on crop', '7 months', '6 weeks', 'Full sun', 'Multisown 30cm equidistant, sets 15cm', 'Hardy, to at least -8°C', '[{"start": "10-01", "end": "10-15", "label": "from sets"}, {"start": "08-15", "end": "08-31", "label": "from seed"}]', '[{"start": "09-15", "end": "10-15"}]', '[{"start": "06-15", "end": "06-30"}]', NULL, 'No Dig');
