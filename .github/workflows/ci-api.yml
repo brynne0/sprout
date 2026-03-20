@@ -1,11 +1,29 @@
-name: Test API
+name: CI API
 
 on:
+  push:
+    paths:
+      - 'sprout-api/**'
   pull_request:
     paths:
       - 'sprout-api/**'
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - run: deno fmt --check
+        working-directory: sprout-api
+
+      - run: deno lint
+        working-directory: sprout-api
+
   test:
     runs-on: ubuntu-latest
 
