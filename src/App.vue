@@ -2,7 +2,8 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppNav from '@/components/layout/AppNav.vue'
-import LoadingSprout from '@/components/LoadingSprout.vue' // add this
+import LoadingSprout from '@/components/LoadingSprout.vue'
+import { Toaster } from '@/components/ui/sonner'
 
 const route = useRoute()
 const router = useRouter()
@@ -15,6 +16,7 @@ router.isReady().then(() => {
 </script>
 
 <template>
+  <Toaster />
   <LoadingSprout v-if="!routerReady" />
   <div
     v-else
