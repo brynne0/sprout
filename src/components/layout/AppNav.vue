@@ -11,13 +11,13 @@ const links = [
 
 <template>
   <nav
-    class="fixed bottom-0 left-0 right-0 z-50 flex border-t bg-background pb-[env(safe-area-inset-bottom)]"
+    class="fixed bottom-0 left-0 right-0 z-50 flex justify-center gap-8 border-t bg-background pb-[env(safe-area-inset-bottom)]"
   >
     <RouterLink
       v-for="link in links"
       :key="link.to"
       :to="link.to"
-      class="flex flex-1 flex-col items-center gap-1 py-3 text-xs font-semibold text-foreground/60 transition-colors hover:text-foreground"
+      class="flex flex-col items-center gap-1 py-3 text-xs font-semibold text-foreground/60 transition-colors hover:text-foreground"
       active-class="!text-primary [&>div]:bg-primary/15"
       :exact-active-class="link.exact ? '!text-primary [&>div]:bg-primary/15' : ''"
     >
