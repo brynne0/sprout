@@ -13,10 +13,10 @@ INSERT INTO plant_types (name, category_id, icon) VALUES
     ('Broad Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'), NULL),
     ('Climbing Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'), NULL),
     ('Dwarf French Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'), NULL),
-    ('Peas', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'),NULL),
+    ('Peas', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'),'peas.png'),
     ('Broccoli', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
-    ('Brussels Sprouts', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
-    ('Cabbage', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
+    ('Brussels Sprouts', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),'brussels-sprouts.png'),
+    ('Cabbage', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),'cabbage.png'),
     ('Cauliflower', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
     ('Kale', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
     ('Radish', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'), NULL),
@@ -28,7 +28,7 @@ INSERT INTO plant_types (name, category_id, icon) VALUES
     ('Bulb Onion and Shallot', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
     ('Overwintering Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
     ('Zucchini', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'zucchini.png'),
-    ('Cucumber', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), NULL),
+    ('Cucumber', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'cucumber.png'),
     ('Melon', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), NULL),
     ('Winter Squash', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), NULL);
 
