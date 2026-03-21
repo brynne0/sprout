@@ -1,3 +1,5 @@
+CREATE TYPE suitability_tag AS ENUM ('multisow', 'interplant', 'follow-on');
+
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -13,7 +15,8 @@ CREATE TABLE plant_categories (
 CREATE TABLE plant_types (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL UNIQUE,
-    category_id INTEGER REFERENCES plant_categories(id)
+    category_id INTEGER REFERENCES plant_categories(id),
+    icon VARCHAR(255)
 );
 
 CREATE TABLE plant_catalogue (
@@ -30,6 +33,7 @@ CREATE TABLE plant_catalogue (
     harvest_windows JSONB,
     transplant_windows JSONB,
     harvest TEXT,
+    suitability suitability_tag[], 
     source VARCHAR(255),
     UNIQUE(plant_type_id, variety)
 );
