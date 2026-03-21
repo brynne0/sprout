@@ -28,7 +28,7 @@ catalogueRoutes.get("/plant-types/:id/catalogue", async (c) => {
   const rows = await query(
     `SELECT id, plant_type_id, variety, description, seed_to_harvest, sowing_to_transplant,
               position, spacing, hardiness, sowing_windows, harvest_windows, transplant_windows,
-              harvest, source
+              harvest, suitability, source
        FROM plant_catalogue WHERE plant_type_id = $1 ORDER BY variety NULLS FIRST`,
     [c.req.param("id")],
   );
@@ -39,7 +39,7 @@ catalogueRoutes.get("/catalogue", async (c) => {
   const rows = await query(
     `SELECT pc.id, pt.name, pc.variety, pc.description, pc.position, pc.hardiness,
               pc.spacing, pc.harvest, pc.source, pc.seed_to_harvest, pc.sowing_to_transplant,
-              pc.sowing_windows, pc.harvest_windows, pc.transplant_windows
+              pc.sowing_windows, pc.suitability, pc.harvest_windows, pc.transplant_windows
        FROM plant_catalogue pc
        JOIN plant_types pt ON pt.id = pc.plant_type_id
        ORDER BY pt.name, pc.variety NULLS FIRST`,

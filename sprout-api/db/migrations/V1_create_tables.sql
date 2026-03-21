@@ -30,6 +30,7 @@ CREATE TABLE plant_catalogue (
     harvest_windows JSONB,
     transplant_windows JSONB,
     harvest TEXT,
+    suitability JSONB,
     source VARCHAR(255),
     UNIQUE(plant_type_id, variety)
 );

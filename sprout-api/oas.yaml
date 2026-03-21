@@ -251,6 +251,10 @@ components:
             plant_type_id:
               type: string
               format: uuid
+            suitability:
+              type: array
+              items:
+                type: string
             source:
               type: string
 
