@@ -14,23 +14,23 @@ INSERT INTO plant_types (name, category_id, icon) VALUES
     ('Climbing Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'), NULL),
     ('Dwarf French Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'), NULL),
     ('Peas', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'),'peas.png'),
-    ('Broccoli', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
+    ('Broccoli', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),'broccoli.png'),
     ('Brussels Sprouts', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),'brussels-sprouts.png'),
     ('Cabbage', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),'cabbage.png'),
-    ('Cauliflower', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
-    ('Kale', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
-    ('Radish', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'), NULL),
+    ('Cauliflower', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),'cauliflower.png'),
+    ('Kale', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),'kale.png'),
+    ('Radish', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'), 'radish.png'),
     ('Swede', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'), NULL),
     ('Turnip', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'), NULL),
-    ('Garlic', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
+    ('Garlic', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), 'garlic.png'),
     ('Leek', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
     ('Spring Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
     ('Bulb Onion and Shallot', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
     ('Overwintering Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
     ('Zucchini', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'zucchini.png'),
     ('Cucumber', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'cucumber.png'),
-    ('Melon', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), NULL),
-    ('Winter Squash', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), NULL);
+    ('Melon', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'melon.png'),
+    ('Pumpkin', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'pumpkin.png');
 
 INSERT INTO plant_catalogue (plant_type_id, variety, description, seed_to_harvest, sowing_to_transplant, position, spacing, hardiness, sowing_windows, transplant_windows, harvest_windows, harvest, suitability, source)
 VALUES
@@ -80,5 +80,5 @@ VALUES
   ((SELECT id FROM plant_types WHERE name = 'Cucumber'), 'Cordon', NULL, '70 days', '4-6 weeks', 'Under cover', '90cm', 'Tender; needs warmth and is killed by frost', '[{"start": "04-15", "end": "05-31", "label": "under cover"}]', '[{"start": "05-15", "end": "06-30", "label": "under cover"}]', '[{"start": "06-25", "end": "10-07", "label": "under cover"}]', NULL, NULL, 'No Dig'),
 -- Melon
   ((SELECT id FROM plant_types WHERE name = 'Melon'), NULL, NULL, '5 months', '6-8 weeks', 'Full sun and sheltered, ideally under cover', '50-60cm apart', 'Not hardy; needs warmth and will be killed by frost', '[{"start": "03-15", "end": "03-31", "label": "under cover"}]', '[{"start": "05-15", "end": "05-31", "label": "under cover"}]', '[{"start": "08-15", "end": "09-30", "label": "under cover"}]', NULL, NULL, 'No Dig'),
--- Winter Squash
-  ((SELECT id FROM plant_types WHERE name = 'Winter Squash'), NULL, NULL, '4.5-5.5 months', '4 weeks', 'Full sun and warmth', '1m apart', 'Tender; will be killed by frost and needs summer warmth to thrive', '[{"start": "04-15", "end": "04-30"}]', '[{"start": "05-15", "end": "05-31"}]', '[{"start": "09-01", "end": "10-15"}]', NULL, '{interplant}', 'No Dig');
+-- Pumpkin
+  ((SELECT id FROM plant_types WHERE name = 'Pumpkin'), NULL, NULL, '4.5-5.5 months', '4 weeks', 'Full sun and warmth', '1m apart', 'Tender; will be killed by frost and needs summer warmth to thrive', '[{"start": "04-15", "end": "04-30"}]', '[{"start": "05-15", "end": "05-31"}]', '[{"start": "09-01", "end": "10-15"}]', NULL, '{interplant}', 'No Dig');
