@@ -10,14 +10,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { CalendarDays } from 'lucide-vue-next'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import type { Plant } from '@/client'
@@ -88,30 +81,46 @@ function formatDate(dateStr: string | null | undefined) {
         </TabsList>
 
         <TabsContent value="gardenList" class="px-4">
-          <Table v-if="plants.length > 0">
-            <TableHeader>
-              <TableRow>
-                <TableHead class="w-25">Plant Name</TableHead>
-                <TableHead>Variety</TableHead>
-                <TableHead>Sowing Dates</TableHead>
-                <TableHead>Transplant Dates</TableHead>
-                <TableHead>Notes</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow v-for="plant in plants" :key="plant.id">
-                <TableCell class="font-medium">{{ plant.name }}</TableCell>
-                <TableCell>{{ plant.variety ?? '—' }}</TableCell>
-                <TableCell>{{
-                  (plant.sow_dates ?? []).map(formatDate).join(', ') || '—'
-                }}</TableCell>
-                <TableCell>{{
-                  (plant.transplant_dates ?? []).map(formatDate).join(', ') || '—'
-                }}</TableCell>
-                <TableCell>{{ plant.notes ?? '—' }}</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            <div
+              v-for="plant in plants"
+              :key="plant.id"
+              class="flex items-center gap-4 rounded-xl border bg-card p-2"
+            >
+              <img
+                v-if="plant.icon"
+                :src="`/icons/${plant.icon}`"
+                :alt="plant.name"
+                class="w-12 h-12 rounded-lg object-cover shrink-0"
+              />
+              <div v-else class="w-12 h-12 rounded-lg flex items-center justify-center shrink-0">
+                <Sprout class="w-8 h-8 text-primary" />
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-medium truncate">
+                  {{ plant.name }}
+                  <span v-if="plant.variety" class="font-normal text-muted-foreground">
+                    · {{ plant.variety }}
+                  </span>
+                </h3>
+                <div
+                  v-if="(plant.sow_dates ?? []).length || (plant.transplant_dates ?? []).length"
+                  class="flex flex-col gap-0.5 mt-1 text-sm text-muted-foreground"
+                >
+                  <div v-if="(plant.sow_dates ?? []).length" class="flex items-center gap-1">
+                    <CalendarDays class="w-3.5 h-3.5" />
+                    <span>Sow: {{ plant.sow_dates!.map(formatDate).join(', ') }}</span>
+                  </div>
+                  <div v-if="(plant.transplant_dates ?? []).length" class="flex items-center gap-1">
+                    <CalendarDays class="w-3.5 h-3.5" />
+                    <span
+                      >Transplant: {{ plant.transplant_dates!.map(formatDate).join(', ') }}</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="gardenCalendar">
