@@ -33,6 +33,7 @@ import { cn } from '@/lib/utils'
 import { getLocalTimeZone, today } from '@internationalized/date'
 import type { DateValue } from 'reka-ui'
 import { toast } from 'vue-sonner'
+import { Textarea } from '@/components/ui/textarea'
 
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits<{ 'update:open': [boolean]; plantAdded: [] }>()
@@ -152,6 +153,10 @@ const selectedVarietyLabel = computed(() => {
   const entry = catalogueEntries.value.find((e) => e.id === selectedCatalogueId.value)
   return entry?.variety ?? 'Select variety...'
 })
+
+const selectedCatalogueEntry = computed(() =>
+  catalogueEntries.value.find((e) => e.id === selectedCatalogueId.value),
+)
 
 const canSubmit = computed(() => {
   if (!selectedPlantTypeId.value) return false
@@ -387,7 +392,7 @@ async function addPlant() {
           <Input
             id="customVariety"
             v-model="customVariety"
-            :placeholder="hasVarieties ? 'Enter variety name' : 'e.g. Cherry, Roma (optional)'"
+            :placeholder="hasVarieties ? 'Enter variety name' : 'Optional'"
           />
         </Field>
 
@@ -489,56 +494,64 @@ async function addPlant() {
             class="h-4 w-4 transition-transform"
             :class="showOverrides ? 'rotate-180' : ''"
           />
-          Customise details
+          Customise Plant
         </CollapsibleTrigger>
         <CollapsibleContent>
           <FieldGroup class="mt-3">
             <Field>
               <FieldLabel for="description">Description</FieldLabel>
-              <Input
+              <Textarea
                 id="description"
                 v-model="overrides.description"
-                placeholder="Override catalogue description"
+                :placeholder="selectedCatalogueEntry?.description ?? ''"
               />
             </Field>
             <Field>
               <FieldLabel for="position">Position</FieldLabel>
-              <Input id="position" v-model="overrides.position" placeholder="e.g. Full sun" />
+              <Textarea
+                id="position"
+                v-model="overrides.position"
+                :placeholder="selectedCatalogueEntry?.position ?? ''"
+              />
             </Field>
             <Field>
               <FieldLabel for="hardiness">Hardiness</FieldLabel>
-              <Input
+              <Textarea
                 id="hardiness"
                 v-model="overrides.hardiness"
-                placeholder="e.g. Hardy to -5°C"
+                :placeholder="selectedCatalogueEntry?.hardiness ?? ''"
               />
             </Field>
             <Field>
               <FieldLabel for="spacing">Spacing</FieldLabel>
-              <Input id="spacing" v-model="overrides.spacing" placeholder="e.g. 30cm apart" />
+              <Textarea
+                id="spacing"
+                v-model="overrides.spacing"
+                :placeholder="selectedCatalogueEntry?.spacing ?? ''"
+              />
             </Field>
             <Field>
               <FieldLabel for="seed_to_harvest">Seed to harvest</FieldLabel>
-              <Input
+              <Textarea
                 id="seed_to_harvest"
                 v-model="overrides.seed_to_harvest"
-                placeholder="e.g. 3 months"
+                :placeholder="selectedCatalogueEntry?.seed_to_harvest ?? ''"
               />
             </Field>
             <Field>
               <FieldLabel for="sowing_to_transplant">Sowing to transplant</FieldLabel>
-              <Input
+              <Textarea
                 id="sowing_to_transplant"
                 v-model="overrides.sowing_to_transplant"
-                placeholder="e.g. 4-6 weeks"
+                :placeholder="selectedCatalogueEntry?.sowing_to_transplant ?? ''"
               />
             </Field>
             <Field>
               <FieldLabel for="harvest">Harvest notes</FieldLabel>
-              <Input
+              <Textarea
                 id="harvest"
                 v-model="overrides.harvest"
-                placeholder="e.g. Pick regularly to encourage pods"
+                :placeholder="selectedCatalogueEntry?.harvest ?? ''"
               />
             </Field>
 
