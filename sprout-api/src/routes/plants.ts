@@ -15,6 +15,7 @@ const PLANT_SELECT = `
     p.catalogue_id,
     p.custom_variety,
     pt.name AS name,
+    pt.icon,
     COALESCE(pc.variety, p.custom_variety) AS variety,
     p.sow_dates,
     p.transplant_dates,

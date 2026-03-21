@@ -9,28 +9,28 @@ INSERT INTO plant_categories (name) VALUES
     ('Solanums, basil, and sweetcorn'),
     ('Perennial vegetables');
 
-INSERT INTO plant_types (name, category_id) VALUES
-    ('Broad Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family')),
-    ('Climbing Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family')),
-    ('Dwarf French Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family')),
-    ('Peas', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family')),
-    ('Broccoli', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Brussels Sprouts', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Cabbage', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Cauliflower', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Kale', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Radish', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Swede', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Turnip', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Garlic', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
-    ('Leek', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
-    ('Spring Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
-    ('Bulb Onion and Shallot', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
-    ('Overwintering Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
-    ('Zucchini and Summer Squash', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family')),
-    ('Cucumber', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family')),
-    ('Melon', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family')),
-    ('Winter Squash', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'));
+INSERT INTO plant_types (name, category_id, icon) VALUES
+    ('Broad Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'), NULL),
+    ('Climbing Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'), NULL),
+    ('Dwarf French Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'), NULL),
+    ('Peas', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'),NULL),
+    ('Broccoli', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
+    ('Brussels Sprouts', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
+    ('Cabbage', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
+    ('Cauliflower', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
+    ('Kale', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),NULL),
+    ('Radish', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'), NULL),
+    ('Swede', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'), NULL),
+    ('Turnip', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'), NULL),
+    ('Garlic', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
+    ('Leek', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
+    ('Spring Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
+    ('Bulb Onion and Shallot', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
+    ('Overwintering Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
+    ('Zucchini', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'zucchini.png'),
+    ('Cucumber', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), NULL),
+    ('Melon', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), NULL),
+    ('Winter Squash', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), NULL);
 
 INSERT INTO plant_catalogue (plant_type_id, variety, description, seed_to_harvest, sowing_to_transplant, position, spacing, hardiness, sowing_windows, transplant_windows, harvest_windows, harvest, suitability, source)
 VALUES
@@ -74,7 +74,7 @@ VALUES
 -- Overwintering Onion
   ((SELECT id FROM plant_types WHERE name = 'Overwintering Onion'), NULL, NULL, '7 months', '6 weeks', 'Full sun', 'Multisown 30cm equidistant, sets 15cm', 'Hardy, to at least -8°C', '[{"start": "10-01", "end": "10-15", "label": "from sets"}, {"start": "08-15", "end": "08-31", "label": "from seed"}]', '[{"start": "09-15", "end": "10-15"}]', '[{"start": "06-15", "end": "06-30"}]', NULL, '{multisow,follow-on}', 'No Dig'),
 -- Zucchini and Summer Squash
-  ((SELECT id FROM plant_types WHERE name = 'Zucchini and Summer Squash'), NULL, NULL, '2 months', '3-4 weeks', 'Need warmth and full sun; won''t thrive in a cold, shady spot', '60cm minimum, but 90cm gives a whole season of fruiting', 'Not hardy; will be killed by frost', '[{"start": "04-15", "end": "05-31"}]', '[{"start": "05-15", "end": "06-30"}]', '[{"start": "06-15", "end": "09-30"}]', NULL, '{interplant}', 'No Dig'),
+  ((SELECT id FROM plant_types WHERE name = 'Zucchini'), NULL, NULL, '2 months', '3-4 weeks', 'Need warmth and full sun; won''t thrive in a cold, shady spot', '60cm minimum, but 90cm gives a whole season of fruiting', 'Not hardy; will be killed by frost', '[{"start": "04-15", "end": "05-31"}]', '[{"start": "05-15", "end": "06-30"}]', '[{"start": "06-15", "end": "09-30"}]', NULL, '{interplant}', 'No Dig'),
 -- Cucumber
   ((SELECT id FROM plant_types WHERE name = 'Cucumber'), 'Ridge', NULL, '80 days', '4-6 weeks', 'Full sun', '60-90cm', 'Tender; needs warmth and is killed by frost', '[{"start": "05-01", "end": "05-31", "label": "under cover"}, {"start": "06-01", "end": "06-30", "label": "outdoors"}]', '[{"start": "06-01", "end": "06-30", "label": "outdoors"}]', '[{"start": "07-15", "end": "09-15"}]', NULL, NULL, 'No Dig'),
   ((SELECT id FROM plant_types WHERE name = 'Cucumber'), 'Cordon', NULL, '70 days', '4-6 weeks', 'Under cover', '90cm', 'Tender; needs warmth and is killed by frost', '[{"start": "04-15", "end": "05-31", "label": "under cover"}]', '[{"start": "05-15", "end": "06-30", "label": "under cover"}]', '[{"start": "06-25", "end": "10-07", "label": "under cover"}]', NULL, NULL, 'No Dig'),
