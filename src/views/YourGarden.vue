@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Plus, Sprout } from 'lucide-vue-next'
+import {
+  Plus,
+  Sprout,
+  CalendarDays,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  ChevronDown,
+} from 'lucide-vue-next'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import {
   Empty,
@@ -10,17 +18,26 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty'
-import { CalendarDays } from 'lucide-vue-next'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import type { Plant } from '@/client'
-import { getApiPlants } from '@/client'
-import AddPlantDialog from '@/components/AddPlantDialog.vue'
+import { getApiPlants, deleteApiPlantsById } from '@/client'
+import PlantDialogue from '@/components/PlantDialogue.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import { toast } from 'vue-sonner'
 
 const plants = ref<Plant[]>([])
 const dialogOpen = ref(false)
+const editDialogOpen = ref(false)
+const plantToEdit = ref<Plant | null>(null)
 const loading = ref(true)
 
 async function fetchPlants() {
@@ -45,6 +62,21 @@ async function onPlantAdded() {
   await fetchPlants()
 }
 
+async function deletePlant(plant: Plant) {
+  try {
+    await deleteApiPlantsById({ path: { id: plant.id }, throwOnError: true })
+    toast.success(`${plant.name} removed from your garden`)
+    await fetchPlants()
+  } catch {
+    toast.error('Failed to delete plant')
+  }
+}
+
+function openEditDialog(plant: Plant) {
+  plantToEdit.value = plant
+  editDialogOpen.value = true
+}
+
 function formatDate(dateStr: string | null | undefined) {
   if (!dateStr) return '—'
   const d = new Date(String(dateStr).slice(0, 10) + 'T00:00:00')
@@ -58,7 +90,7 @@ function formatDate(dateStr: string | null | undefined) {
   <main>
     <header class="flex items-center justify-between mb-4 px-8">
       <h1 class="text-3xl font-bold tracking-tight text-primary">Your Garden</h1>
-      <AddPlantDialog
+      <PlantDialogue
         v-if="!loading && plants.length > 0"
         v-model:open="dialogOpen"
         @plant-added="onPlantAdded"
@@ -68,7 +100,7 @@ function formatDate(dateStr: string | null | undefined) {
         >
           <Plus :size="18" />
         </button>
-      </AddPlantDialog>
+      </PlantDialogue>
     </header>
 
     <LoadingLeaves v-if="loading" />
@@ -82,44 +114,70 @@ function formatDate(dateStr: string | null | undefined) {
 
         <TabsContent value="gardenList" class="px-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            <div
-              v-for="plant in plants"
-              :key="plant.id"
-              class="flex items-center gap-4 rounded-xl border bg-card p-2"
-            >
-              <img
-                v-if="plant.icon"
-                :src="`/icons/${plant.icon}`"
-                :alt="plant.name"
-                class="w-12 h-12 rounded-lg object-cover shrink-0 brightness-90"
-              />
-              <div v-else class="w-12 h-12 rounded-lg flex items-center justify-center shrink-0">
-                <Sprout class="w-8 h-8 text-primary" />
+            <Collapsible v-for="plant in plants" :key="plant.id" class="rounded-xl border bg-card">
+              <div class="flex items-center gap-4 py-2 px-4">
+                <img
+                  v-if="plant.icon"
+                  :src="`/icons/${plant.icon}`"
+                  :alt="plant.name"
+                  class="w-12 h-12 rounded-lg object-cover shrink-0 brightness-90"
+                />
+                <div v-else class="w-12 h-12 rounded-lg flex items-center justify-center shrink-0">
+                  <Sprout class="w-8 h-8 text-primary" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h3 class="font-medium truncate">
+                    {{ plant.name }}
+                    <span v-if="plant.variety" class="font-normal text-muted-foreground">
+                      · {{ plant.variety }}
+                    </span>
+                  </h3>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  <CollapsibleTrigger
+                    v-if="(plant.sow_dates ?? []).length || (plant.transplant_dates ?? []).length"
+                    class="p-1 rounded-md hover:bg-muted transition-colors"
+                  >
+                    <ChevronDown
+                      class="w-4 h-4 text-muted-foreground transition-transform duration-200 in-data-[state=open]:rotate-180"
+                    />
+                  </CollapsibleTrigger>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      @click.stop
+                      class="p-1 rounded-md hover:bg-muted transition-colors"
+                    >
+                      <MoreHorizontal class="w-4 h-4 text-muted-foreground" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem @click="openEditDialog(plant)">
+                        <Pencil class="w-4 h-4" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem variant="destructive" @click="deletePlant(plant)">
+                        <Trash2 class="w-4 h-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
-              <div class="min-w-0">
-                <h3 class="font-medium truncate">
-                  {{ plant.name }}
-                  <span v-if="plant.variety" class="font-normal text-muted-foreground">
-                    · {{ plant.variety }}
-                  </span>
-                </h3>
-                <div
-                  v-if="(plant.sow_dates ?? []).length || (plant.transplant_dates ?? []).length"
-                  class="flex flex-col gap-0.5 mt-1 text-sm text-muted-foreground"
-                >
-                  <div v-if="(plant.sow_dates ?? []).length" class="flex items-center gap-1">
+              <CollapsibleContent>
+                <div class="px-4 pb-3 pt-0 text-sm text-muted-foreground flex flex-col gap-1">
+                  <div v-if="(plant.sow_dates ?? []).length" class="flex items-center gap-2">
                     <CalendarDays class="w-3.5 h-3.5" />
                     <span>Sow: {{ plant.sow_dates!.map(formatDate).join(', ') }}</span>
                   </div>
-                  <div v-if="(plant.transplant_dates ?? []).length" class="flex items-center gap-1">
+                  <div v-if="(plant.transplant_dates ?? []).length" class="flex items-center gap-2">
                     <CalendarDays class="w-3.5 h-3.5" />
                     <span
                       >Transplant: {{ plant.transplant_dates!.map(formatDate).join(', ') }}</span
                     >
                   </div>
                 </div>
-              </div>
-            </div>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         </TabsContent>
 
@@ -141,11 +199,12 @@ function formatDate(dateStr: string | null | undefined) {
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <AddPlantDialog v-model:open="dialogOpen" @plant-added="onPlantAdded">
+          <PlantDialogue v-model:open="dialogOpen" @plant-added="onPlantAdded">
             <Button>Add Plant</Button>
-          </AddPlantDialog>
+          </PlantDialogue>
         </EmptyContent>
       </Empty>
     </div>
+    <PlantDialogue v-model:open="editDialogOpen" :plant="plantToEdit" @plant-added="onPlantAdded" />
   </main>
 </template>
