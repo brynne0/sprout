@@ -116,7 +116,7 @@ function formatDate(dateStr: string | null | undefined) {
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             <Collapsible v-for="plant in plants" :key="plant.id" class="rounded-xl border">
               <div class="flex items-center gap-4 py-2 px-4">
-                <img
+                <!-- <img
                   v-if="plant.icon"
                   :src="`/icons/${plant.icon}`"
                   :alt="plant.name"
@@ -124,7 +124,7 @@ function formatDate(dateStr: string | null | undefined) {
                 />
                 <div v-else class="w-12 h-12 rounded-lg flex items-center justify-center shrink-0">
                   <Sprout class="w-8 h-8 text-primary" />
-                </div>
+                </div> -->
                 <div class="min-w-0 flex-1">
                   <h3 class="font-medium truncate">
                     {{ plant.name }}
@@ -135,7 +135,11 @@ function formatDate(dateStr: string | null | undefined) {
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
                   <CollapsibleTrigger
-                    v-if="(plant.sow_dates ?? []).length || (plant.transplant_dates ?? []).length || plant.notes"
+                    v-if="
+                      (plant.sow_dates ?? []).length ||
+                      (plant.transplant_dates ?? []).length ||
+                      plant.notes
+                    "
                     class="p-1 rounded-md hover:bg-muted transition-colors"
                   >
                     <ChevronDown
@@ -175,7 +179,7 @@ function formatDate(dateStr: string | null | undefined) {
                       >Transplant: {{ plant.transplant_dates!.map(formatDate).join(', ') }}</span
                     >
                   </div>
-                  <p v-if="plant.notes" class="mt-1">{{ plant.notes }}</p>
+                  <p v-if="plant.notes">{{ plant.notes }}</p>
                 </div>
               </CollapsibleContent>
             </Collapsible>
