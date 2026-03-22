@@ -39,10 +39,9 @@ plantRoutes.use("*", authMiddleware);
 plantRoutes.get("/plants", async (c) => {
   const userId = getUserId(c);
   const rows = await query(
-    `${PLANT_SELECT} WHERE p.user_id = $1 ORDER BY p.created_at DESC`,
-    [
-      userId,
-    ],
+    `${PLANT_SELECT} WHERE p.user_id = $1 AND archived_at IS NULL
+    ORDER BY p.created_at DESC`,
+    [userId],
   );
   return c.json(rows);
 });
@@ -122,6 +121,17 @@ plantRoutes.put("/plants/:id", async (c) => {
   if (!rows[0]) return c.json({ error: "Not found" }, 404);
   const updated = await query(`${PLANT_SELECT} WHERE p.id = $1`, [rows[0].id]);
   return c.json(updated[0]);
+});
+
+plantRoutes.patch("/plants/:id/archive", async (c) => {
+  const userId = getUserId(c);
+  const rows = await query<{ id: string }>(
+    "UPDATE plants SET archived_at = NOW() WHERE id = $1 AND user_id = $2 RETURNING *",
+    [c.req.param("id"), userId],
+  );
+  if (!rows[0]) return c.json({ error: "Not found" }, 404);
+  const archived = await query(`${PLANT_SELECT} WHERE p.id = $1`, [rows[0].id]);
+  return c.json(archived[0]);
 });
 
 plantRoutes.delete("/plants/:id", async (c) => {

@@ -8,6 +8,7 @@ import {
   Pencil,
   Trash2,
   ChevronDown,
+  Archive,
 } from 'lucide-vue-next'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import {
@@ -29,11 +30,10 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import type { Plant } from '@/client'
-import { getApiPlants, deleteApiPlantsById } from '@/client'
+import { getApiPlants, deleteApiPlantsById, patchApiPlantsByIdArchive } from '@/client'
 import PlantDialogue from '@/components/PlantDialogue.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import { toast } from 'vue-sonner'
-
 const plants = ref<Plant[]>([])
 const dialogOpen = ref(false)
 const editDialogOpen = ref(false)
@@ -60,6 +60,16 @@ onMounted(async () => {
 
 async function onPlantAdded() {
   await fetchPlants()
+}
+
+async function archivePlant(plant: Plant) {
+  try {
+    await patchApiPlantsByIdArchive({ path: { id: plant.id }, throwOnError: true })
+    toast.success(`${plant.name} archived`)
+    plants.value = plants.value.filter((p) => p.id !== plant.id)
+  } catch {
+    toast.error('Failed to archive plant')
+  }
 }
 
 async function deletePlant(plant: Plant) {
@@ -157,6 +167,11 @@ function formatDate(dateStr: string | null | undefined) {
                       <DropdownMenuItem @click="openEditDialog(plant)">
                         <Pencil class="w-4 h-4" />
                         Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem @click="archivePlant(plant)">
+                        <Archive class="w-4 h-4" />
+                        Archive
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem variant="destructive" @click="deletePlant(plant)">

@@ -74,6 +74,24 @@ paths:
         "204":
           description: Plant deleted
 
+  /api/plants/{id}/archive:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      summary: Archive a plant
+      responses:
+        "200":
+          description: Plant archived
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Plant"
+
   /api/plant-types:
     get:
       summary: Get all plant types
