@@ -225,7 +225,7 @@ const todayX = computed(() => {
 
 <template>
   <!-- Legend -->
-  <div class="flex flex-row flex-wrap gap-4 mt-2 mb-4 px-4 text-xs text-muted-foreground">
+  <div class="flex flex-row flex-wrap gap-4 mb-4 px-4 text-xs text-muted-foreground">
     <span class="flex items-center gap-1.5">
       <span class="inline-block w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/40" />
       Sow

@@ -226,6 +226,8 @@ components:
               items:
                 type: string
                 format: date
+            icon:
+              type: string
             notes:
               type: string
 
@@ -239,6 +241,8 @@ components:
           type: string
         category_id:
           type: integer
+        icon:
+          type: string
       required:
         - id
         - name

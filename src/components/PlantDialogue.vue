@@ -25,8 +25,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import type { PlantType, CataloguePlant } from '@/client'
-import { postApiPlants, getApiPlantTypes, getApiPlantTypesByIdCatalogue } from '@/client'
+import type { PlantType, CataloguePlant, Plant } from '@/client'
+import {
+  postApiPlants,
+  putApiPlantsById,
+  getApiPlantTypes,
+  getApiPlantTypesByIdCatalogue,
+} from '@/client'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
@@ -35,8 +40,10 @@ import type { DateValue } from 'reka-ui'
 import { toast } from 'vue-sonner'
 import { Textarea } from '@/components/ui/textarea'
 
-const props = defineProps<{ open: boolean }>()
+const props = defineProps<{ open: boolean; plant?: Plant | null }>()
 const emit = defineEmits<{ 'update:open': [boolean]; plantAdded: [] }>()
+
+const isEditMode = computed(() => !!props.plant)
 
 const dialogOpen = computed({
   get: () => props.open,
@@ -182,6 +189,30 @@ onMounted(async () => {
   plantTypes.value = res.data ?? []
 })
 
+// Pre-fill fields when editing
+watch(
+  () => props.plant,
+  async (plant) => {
+    if (!plant) return
+    selectedPlantTypeId.value = plant.plant_type_id ?? ''
+    // Wait for catalogue entries to load via the plant type watcher
+    if (plant.plant_type_id) {
+      const res = await getApiPlantTypesByIdCatalogue({ path: { id: plant.plant_type_id } })
+      catalogueEntries.value = res.data ?? []
+    }
+    if (plant.catalogue_id) {
+      selectedCatalogueId.value = plant.catalogue_id
+    } else if (plant.custom_variety) {
+      isCustomVariety.value = true
+      customVariety.value = plant.custom_variety
+    }
+    sowDates.value = [...(plant.sow_dates ?? [])]
+    transplantDates.value = [...(plant.transplant_dates ?? [])]
+    notes.value = plant.notes ?? ''
+  },
+  { immediate: true },
+)
+
 // Fetch catalogue entries when plant type changes
 watch(selectedPlantTypeId, async (id) => {
   selectedCatalogueId.value = ''
@@ -248,21 +279,27 @@ function reset() {
   showTransplantPicker.value = false
 }
 
-async function addPlant() {
+async function submitPlant() {
   loading.value = true
+  const body = {
+    plant_type_id: selectedPlantTypeId.value,
+    catalogue_id: selectedCatalogueId.value || undefined,
+    custom_variety: isCustomVariety.value ? customVariety.value : undefined,
+    sow_dates: sowDates.value.length ? sowDates.value : undefined,
+    transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
+    notes: notes.value || undefined,
+    overrides: cleanedOverrides.value,
+  }
   try {
-    await postApiPlants({
-      throwOnError: true,
-      body: {
-        plant_type_id: selectedPlantTypeId.value,
-        catalogue_id: selectedCatalogueId.value || undefined,
-        custom_variety: isCustomVariety.value ? customVariety.value : undefined,
-        sow_dates: sowDates.value.length ? sowDates.value : undefined,
-        transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
-        notes: notes.value || undefined,
-        overrides: cleanedOverrides.value,
-      },
-    })
+    if (isEditMode.value && props.plant) {
+      await putApiPlantsById({
+        throwOnError: true,
+        path: { id: props.plant.id },
+        body,
+      })
+    } else {
+      await postApiPlants({ throwOnError: true, body })
+    }
     reset()
     emit('plantAdded')
     emit('update:open', false)
@@ -270,7 +307,9 @@ async function addPlant() {
     if (error instanceof TypeError) {
       toast.error('Network error', { description: 'Check your connection and try again.' })
     } else {
-      toast.error('Failed to add plant. Please try again.')
+      toast.error(
+        isEditMode.value ? 'Failed to update plant.' : 'Failed to add plant. Please try again.',
+      )
     }
   } finally {
     loading.value = false
@@ -286,7 +325,7 @@ async function addPlant() {
 
     <DialogScrollContent>
       <DialogHeader>
-        <DialogTitle>Add Plant</DialogTitle>
+        <DialogTitle>{{ isEditMode ? 'Edit Plant' : 'Add Plant' }}</DialogTitle>
       </DialogHeader>
 
       <FieldGroup>
@@ -688,9 +727,11 @@ async function addPlant() {
         <DialogClose as-child>
           <Button variant="outline">Cancel</Button>
         </DialogClose>
-        <Button type="button" :disabled="!canSubmit || loading" class="px-4!" @click="addPlant">
+        <Button type="button" :disabled="!canSubmit || loading" class="px-4!" @click="submitPlant">
           <Spinner v-if="loading" class="animate-spin" />
-          {{ loading ? 'Adding...' : 'Add Plant' }}
+          {{
+            loading ? (isEditMode ? 'Saving...' : 'Adding...') : isEditMode ? 'Save' : 'Add Plant'
+          }}
         </Button>
       </DialogFooter>
     </DialogScrollContent>

@@ -9,28 +9,28 @@ INSERT INTO plant_categories (name) VALUES
     ('Solanums, basil, and sweetcorn'),
     ('Perennial vegetables');
 
-INSERT INTO plant_types (name, category_id) VALUES
-    ('Broad Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family')),
-    ('Climbing Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family')),
-    ('Dwarf French Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family')),
-    ('Peas', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family')),
-    ('Broccoli', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Brussels Sprouts', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Cabbage', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Cauliflower', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Kale', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Radish', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Swede', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Turnip', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family')),
-    ('Garlic', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
-    ('Leek', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
-    ('Spring Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
-    ('Bulb Onion and Shallot', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
-    ('Overwintering Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family')),
-    ('Zucchini and Summer Squash', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family')),
-    ('Cucumber', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family')),
-    ('Melon', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family')),
-    ('Winter Squash', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'));
+INSERT INTO plant_types (name, category_id, icon) VALUES
+    ('Broad Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'), NULL),
+    ('Climbing Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'), NULL),
+    ('Dwarf French Beans', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'), NULL),
+    ('Peas', (SELECT id FROM plant_categories WHERE name = 'Legumes - pea and bean family'),'peas.png'),
+    ('Broccoli', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),'broccoli.png'),
+    ('Brussels Sprouts', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),'brussels-sprouts.png'),
+    ('Cabbage', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),'cabbage.png'),
+    ('Cauliflower', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),'cauliflower.png'),
+    ('Kale', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'),'kale.png'),
+    ('Radish', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'), 'radish.png'),
+    ('Swede', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'), 'swede-temp.png'),
+    ('Turnip', (SELECT id FROM plant_categories WHERE name = 'Brassicas - cabbage family'), 'turnip.png'),
+    ('Garlic', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), 'garlic.png'),
+    ('Leek', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), 'leak-temp.png'),
+    ('Spring Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), NULL),
+    ('Bulb Onion and Shallot', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), 'onion.png'),
+    ('Overwintering Onion', (SELECT id FROM plant_categories WHERE name = 'Alliums - onion family'), 'onion.png'),
+    ('Zucchini', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'zucchini.png'),
+    ('Cucumber', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'cucumber.png'),
+    ('Melon', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'melon.png'),
+    ('Pumpkin', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'pumpkin.png');
 
 INSERT INTO plant_catalogue (plant_type_id, variety, description, seed_to_harvest, sowing_to_transplant, position, spacing, hardiness, sowing_windows, transplant_windows, harvest_windows, harvest, suitability, source)
 VALUES
@@ -74,11 +74,11 @@ VALUES
 -- Overwintering Onion
   ((SELECT id FROM plant_types WHERE name = 'Overwintering Onion'), NULL, NULL, '7 months', '6 weeks', 'Full sun', 'Multisown 30cm equidistant, sets 15cm', 'Hardy, to at least -8°C', '[{"start": "10-01", "end": "10-15", "label": "from sets"}, {"start": "08-15", "end": "08-31", "label": "from seed"}]', '[{"start": "09-15", "end": "10-15"}]', '[{"start": "06-15", "end": "06-30"}]', NULL, '{multisow,follow-on}', 'No Dig'),
 -- Zucchini and Summer Squash
-  ((SELECT id FROM plant_types WHERE name = 'Zucchini and Summer Squash'), NULL, NULL, '2 months', '3-4 weeks', 'Need warmth and full sun; won''t thrive in a cold, shady spot', '60cm minimum, but 90cm gives a whole season of fruiting', 'Not hardy; will be killed by frost', '[{"start": "04-15", "end": "05-31"}]', '[{"start": "05-15", "end": "06-30"}]', '[{"start": "06-15", "end": "09-30"}]', NULL, '{interplant}', 'No Dig'),
+  ((SELECT id FROM plant_types WHERE name = 'Zucchini'), NULL, NULL, '2 months', '3-4 weeks', 'Need warmth and full sun; won''t thrive in a cold, shady spot', '60cm minimum, but 90cm gives a whole season of fruiting', 'Not hardy; will be killed by frost', '[{"start": "04-15", "end": "05-31"}]', '[{"start": "05-15", "end": "06-30"}]', '[{"start": "06-15", "end": "09-30"}]', NULL, '{interplant}', 'No Dig'),
 -- Cucumber
   ((SELECT id FROM plant_types WHERE name = 'Cucumber'), 'Ridge', NULL, '80 days', '4-6 weeks', 'Full sun', '60-90cm', 'Tender; needs warmth and is killed by frost', '[{"start": "05-01", "end": "05-31", "label": "under cover"}, {"start": "06-01", "end": "06-30", "label": "outdoors"}]', '[{"start": "06-01", "end": "06-30", "label": "outdoors"}]', '[{"start": "07-15", "end": "09-15"}]', NULL, NULL, 'No Dig'),
   ((SELECT id FROM plant_types WHERE name = 'Cucumber'), 'Cordon', NULL, '70 days', '4-6 weeks', 'Under cover', '90cm', 'Tender; needs warmth and is killed by frost', '[{"start": "04-15", "end": "05-31", "label": "under cover"}]', '[{"start": "05-15", "end": "06-30", "label": "under cover"}]', '[{"start": "06-25", "end": "10-07", "label": "under cover"}]', NULL, NULL, 'No Dig'),
 -- Melon
   ((SELECT id FROM plant_types WHERE name = 'Melon'), NULL, NULL, '5 months', '6-8 weeks', 'Full sun and sheltered, ideally under cover', '50-60cm apart', 'Not hardy; needs warmth and will be killed by frost', '[{"start": "03-15", "end": "03-31", "label": "under cover"}]', '[{"start": "05-15", "end": "05-31", "label": "under cover"}]', '[{"start": "08-15", "end": "09-30", "label": "under cover"}]', NULL, NULL, 'No Dig'),
--- Winter Squash
-  ((SELECT id FROM plant_types WHERE name = 'Winter Squash'), NULL, NULL, '4.5-5.5 months', '4 weeks', 'Full sun and warmth', '1m apart', 'Tender; will be killed by frost and needs summer warmth to thrive', '[{"start": "04-15", "end": "04-30"}]', '[{"start": "05-15", "end": "05-31"}]', '[{"start": "09-01", "end": "10-15"}]', NULL, '{interplant}', 'No Dig');
+-- Pumpkin
+  ((SELECT id FROM plant_types WHERE name = 'Pumpkin'), NULL, NULL, '4.5-5.5 months', '4 weeks', 'Full sun and warmth', '1m apart', 'Tender; will be killed by frost and needs summer warmth to thrive', '[{"start": "04-15", "end": "04-30"}]', '[{"start": "05-15", "end": "05-31"}]', '[{"start": "09-01", "end": "10-15"}]', NULL, '{interplant}', 'No Dig');
