@@ -91,7 +91,7 @@ function formatDate(dateStr: string | null | undefined) {
                 v-if="plant.icon"
                 :src="`/icons/${plant.icon}`"
                 :alt="plant.name"
-                class="w-12 h-12 rounded-lg object-cover shrink-0"
+                class="w-12 h-12 rounded-lg object-cover shrink-0 brightness-90"
               />
               <div v-else class="w-12 h-12 rounded-lg flex items-center justify-center shrink-0">
                 <Sprout class="w-8 h-8 text-primary" />
