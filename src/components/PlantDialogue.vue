@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogScrollContent,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import {
   Command,
@@ -39,6 +40,8 @@ import { getLocalTimeZone, today } from '@internationalized/date'
 import type { DateValue } from 'reka-ui'
 import { toast } from 'vue-sonner'
 import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
+import { CheckboxGroupRoot } from 'reka-ui'
 
 const props = defineProps<{ open: boolean; plant?: Plant | null }>()
 const emit = defineEmits<{ 'update:open': [boolean]; plantAdded: [] }>()
@@ -70,6 +73,8 @@ const stagingSowDate = ref<DateValue>()
 const stagingTransplantDate = ref<DateValue>()
 const notes = ref('')
 
+const SUITABILITY_OPTIONS = ['multisow', 'interplant', 'follow-on'] as const
+
 const overrides = ref({
   description: '',
   position: '',
@@ -78,6 +83,7 @@ const overrides = ref({
   seed_to_harvest: '',
   sowing_to_transplant: '',
   harvest: '',
+  suitability: [] as string[],
 })
 
 // Window arrays (confirmed selections)
@@ -176,6 +182,7 @@ const cleanedOverrides = computed(() => {
   const result: Record<string, unknown> = Object.fromEntries(
     Object.entries(overrides.value).filter(([, v]) => v !== '' && v != null),
   )
+  if (overrides.value.suitability.length) result.suitability = overrides.value.suitability
   if (sowingWindows.value.length) result.sowing_windows = sowingWindows.value
   if (harvestWindows.value.length) result.harvest_windows = harvestWindows.value
   if (transplantWindows.value.length) result.transplant_windows = transplantWindows.value
@@ -209,6 +216,7 @@ watch(
     sowDates.value = [...(plant.sow_dates ?? [])]
     transplantDates.value = [...(plant.transplant_dates ?? [])]
     notes.value = plant.notes ?? ''
+    overrides.value.suitability = plant.suitability ?? []
   },
   { immediate: true },
 )
@@ -267,6 +275,7 @@ function reset() {
     seed_to_harvest: '',
     sowing_to_transplant: '',
     harvest: '',
+    suitability: [],
   }
   sowingWindows.value = []
   harvestWindows.value = []
@@ -326,6 +335,9 @@ async function submitPlant() {
     <DialogScrollContent>
       <DialogHeader>
         <DialogTitle>{{ isEditMode ? 'Edit Plant' : 'Add Plant' }}</DialogTitle>
+        <DialogDescription class="sr-only">
+          {{ isEditMode ? 'Edit plant details' : 'Add a new plant to your garden' }}
+        </DialogDescription>
       </DialogHeader>
 
       <FieldGroup>
@@ -592,6 +604,20 @@ async function submitPlant() {
                 v-model="overrides.harvest"
                 :placeholder="selectedCatalogueEntry?.harvest ?? ''"
               />
+            </Field>
+
+            <Field>
+              <FieldLabel>Suitability</FieldLabel>
+              <CheckboxGroupRoot v-model="overrides.suitability" class="flex flex-wrap gap-3">
+                <label
+                  v-for="tag in SUITABILITY_OPTIONS"
+                  :key="tag"
+                  class="flex items-center gap-2 text-sm"
+                >
+                  <Checkbox :value="tag" />
+                  {{ tag.charAt(0).toUpperCase() + tag.slice(1) }}
+                </label>
+              </CheckboxGroupRoot>
             </Field>
 
             <!-- Sowing windows -->

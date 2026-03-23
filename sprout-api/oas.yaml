@@ -234,6 +234,14 @@ components:
               format: uuid
             custom_variety:
               type: string
+            suitability:
+              type: array
+              items:
+                type: string
+                enum:
+                  - multisow
+                  - interplant
+                  - follow-on
             sow_dates:
               type: array
               items:
@@ -277,6 +285,10 @@ components:
               type: array
               items:
                 type: string
+                enum:
+                  - multisow
+                  - interplant
+                  - follow-on
             source:
               type: string
 
@@ -326,6 +338,14 @@ components:
           type: string
         harvest:
           type: string
+        suitability:
+          type: array
+          items:
+            type: string
+            enum:
+              - multisow
+              - interplant
+              - follow-on
         sowing_windows:
           type: array
           items:
