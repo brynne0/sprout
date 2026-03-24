@@ -4,6 +4,8 @@ import { computed, ref } from 'vue'
 import { today, getLocalTimeZone } from '@internationalized/date'
 import type { BasePlant } from '@/client'
 import { useElementSize } from '@vueuse/core'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { ChevronRight } from 'lucide-vue-next'
 
 const props = withDefaults(defineProps<{ plants: BasePlant[]; showDots?: boolean }>(), {
   showDots: false,
@@ -16,8 +18,6 @@ const NAME_COL_WIDTH = 112
 const TRACK_HEIGHT = 10
 const TRACK_GAP = 3
 const ROW_PADDING = 8
-const ROW_HEIGHT = ROW_PADDING * 2 + TRACK_HEIGHT * 3 + TRACK_GAP * 2
-const LABEL_ROW_HEIGHT = ROW_PADDING * 2 + TRACK_HEIGHT
 
 const MONTH_LABELS = [
   'Jan',
@@ -49,9 +49,8 @@ function dateToX(month: number, day: number): number {
   return (idx + dayFraction) * monthWidth.value
 }
 
-type Bar = { x: number; width: number }
+type Bar = { x: number; width: number; start: string; end: string }
 type WindowData = { start: string; end: string; label?: string }
-
 // Returns 1 bar normally, or 2 bars if the window wraps past December into January
 function windowBars(mmddStart: string, mmddEnd: string): Bar[] {
   const sp = mmddStart.split('-').map(Number)
@@ -63,32 +62,43 @@ function windowBars(mmddStart: string, mmddEnd: string): Bar[] {
   const startX = dateToX(sm, sd)
   const endX = dateToX(em, ed)
   const wraps = em < sm || (em === sm && ed < sd)
-  if (!wraps) return endX > startX ? [{ x: startX, width: endX - startX }] : []
+  if (!wraps)
+    return endX > startX
+      ? [{ x: startX, width: endX - startX, start: mmddStart, end: mmddEnd }]
+      : []
   return [
-    { x: startX, width: 12 * monthWidth.value - startX },
-    { x: 0, width: endX },
+    { x: startX, width: 12 * monthWidth.value - startX, start: mmddStart, end: '12-31' },
+    { x: 0, width: endX, start: '01-01', end: mmddEnd },
   ]
 }
 
-type DisplayRow =
-  | {
-      kind: 'base'
-      key: string
-      plant: BasePlant
-      sowXs: number[]
-      transplantXs: number[]
-      sowingBars: Bar[]
-      transplantBars: Bar[]
-      harvestBars: Bar[]
-    }
-  | {
-      kind: 'label'
-      key: string
-      plant: BasePlant
-      label: string
-      trackType: 'sowing' | 'transplant' | 'harvest'
-      bars: Bar[]
-    }
+type Track = {
+  type: 'sowing' | 'transplant' | 'harvest'
+  label?: string
+  bars: Bar[]
+  dotXs?: number[]
+}
+
+type PlantGroup = {
+  name: string
+  rows: PlantRow[]
+}
+
+type PlantRow = {
+  key: string
+  plant: BasePlant
+  tracks: Track[]
+}
+
+const expandedGroups = ref(new Set<string>())
+
+function toggleGroup(name: string) {
+  if (expandedGroups.value.has(name)) {
+    expandedGroups.value.delete(name)
+  } else {
+    expandedGroups.value.add(name)
+  }
+}
 
 function extractTracks(windows: WindowData[]): {
   unlabelledBars: Bar[]
@@ -127,23 +137,23 @@ function getAnchorMonthDay(plant: BasePlant): { month: number; day: number } {
   return { month: t.month, day: t.day }
 }
 
-const displayRows = computed<DisplayRow[]>(() => {
+const displayGroups = computed<PlantGroup[]>(() => {
   const sorted = props.plants.slice().sort((a, b) => {
     const am = getAnchorMonthDay(a)
     const bm = getAnchorMonthDay(b)
     return am.month !== bm.month ? am.month - bm.month : am.day - bm.day
   })
 
-  const rows: DisplayRow[] = []
-
+  const groupMap = new Map<string, PlantRow[]>()
   for (const plant of sorted) {
+    const tracks: Track[] = []
+
     const rawSowDates =
       'sow_dates' in plant && Array.isArray(plant.sow_dates) ? (plant.sow_dates as string[]) : []
     const rawTransplantDates =
       'transplant_dates' in plant && Array.isArray(plant.transplant_dates)
         ? (plant.transplant_dates as string[])
         : []
-
     const sowXs = rawSowDates.map((d) => {
       const md = parseDateMonthDay(d)
       return dateToX(md.month, md.day)
@@ -157,64 +167,78 @@ const displayRows = computed<DisplayRow[]>(() => {
     const transplant = extractTracks((plant.transplant_windows ?? []) as WindowData[])
     const harvest = extractTracks((plant.harvest_windows ?? []) as WindowData[])
 
-    rows.push({
-      kind: 'base',
-      key: String(plant.id ?? plant.name),
-      plant,
-      sowXs,
-      transplantXs,
-      sowingBars: sowing.unlabelledBars,
-      transplantBars: transplant.unlabelledBars,
-      harvestBars: harvest.unlabelledBars,
-    })
-
+    // Sowing tracks
+    if (sowing.unlabelledBars.length || sowXs.length) {
+      tracks.push({ type: 'sowing', bars: sowing.unlabelledBars, dotXs: sowXs })
+    }
     for (const [label, bars] of sowing.labelGroups) {
-      rows.push({
-        kind: 'label',
-        key: `${plant.id}-sow-${label}`,
-        plant,
-        label,
-        trackType: 'sowing',
-        bars,
-      })
+      tracks.push({ type: 'sowing', label, bars })
+    }
+
+    // Transplant tracks
+    if (transplant.unlabelledBars.length || transplantXs.length) {
+      tracks.push({ type: 'transplant', bars: transplant.unlabelledBars, dotXs: transplantXs })
     }
     for (const [label, bars] of transplant.labelGroups) {
-      rows.push({
-        kind: 'label',
-        key: `${plant.id}-transplant-${label}`,
-        plant,
-        label,
-        trackType: 'transplant',
-        bars,
-      })
+      tracks.push({ type: 'transplant', label, bars })
+    }
+
+    // Harvest tracks
+    if (harvest.unlabelledBars.length) {
+      tracks.push({ type: 'harvest', bars: harvest.unlabelledBars })
     }
     for (const [label, bars] of harvest.labelGroups) {
-      rows.push({
-        kind: 'label',
-        key: `${plant.id}-harvest-${label}`,
-        plant,
-        label,
-        trackType: 'harvest',
-        bars,
-      })
+      tracks.push({ type: 'harvest', label, bars })
     }
+
+    const row: PlantRow = { key: String(plant.id ?? plant.name), plant, tracks }
+
+    if (!groupMap.has(plant.name)) groupMap.set(plant.name, [])
+    groupMap.get(plant.name)!.push(row)
   }
 
-  return rows
+  return Array.from(groupMap, ([name, rows]) => ({ name, rows }))
 })
 
-function rowHeight(row: DisplayRow): number {
-  return row.kind === 'base' ? ROW_HEIGHT : LABEL_ROW_HEIGHT
+type VisibleItem =
+  | { kind: 'plant'; row: PlantRow; expandable: boolean; groupName: string }
+  | { kind: 'variety'; row: PlantRow }
+
+const visibleRows = computed<VisibleItem[]>(() => {
+  const result: VisibleItem[] = []
+  for (const group of displayGroups.value) {
+    // First row is always visible as the main plant row
+    const [first, ...rest] = group.rows
+    if (!first) continue
+    result.push({ kind: 'plant', row: first, expandable: rest.length > 0, groupName: group.name })
+    // Remaining varieties only shown when expanded
+    if (rest.length > 0 && expandedGroups.value.has(group.name)) {
+      for (const row of rest) {
+        result.push({ kind: 'variety', row })
+      }
+    }
+  }
+  return result
+})
+
+function rowHeight(row: PlantRow): number {
+  const count = Math.max(row.tracks.length, 1)
+  return ROW_PADDING * 2 + count * TRACK_HEIGHT + (count - 1) * TRACK_GAP
 }
 
-const sowingTop = ROW_PADDING
-const transplantTop = ROW_PADDING + TRACK_HEIGHT + TRACK_GAP
-const harvestTop = ROW_PADDING + (TRACK_HEIGHT + TRACK_GAP) * 2
+function trackTop(index: number): number {
+  return ROW_PADDING + index * (TRACK_HEIGHT + TRACK_GAP)
+}
 
 const trackBarClasses: Record<'sowing' | 'transplant' | 'harvest', string> = {
   sowing: 'bg-emerald-500/20 border border-emerald-500/40',
   transplant: 'bg-amber-500/20 border border-amber-500/40',
   harvest: 'bg-rose-500/20 border border-rose-500/40',
+}
+
+const dotClasses: Record<string, string> = {
+  sowing: 'bg-primary border',
+  transplant: 'bg-amber-500/70 border',
 }
 
 const todayX = computed(() => {
@@ -250,27 +274,47 @@ const todayX = computed(() => {
 
   <div class="flex mt-2">
     <!-- Fixed name column -->
-    <div class="shrink-0 border-y border-border" :style="{ width: NAME_COL_WIDTH + 'px' }">
+    <div
+      class="shrink-0 border-y border-border relative z-10 bg-background"
+      :style="{ width: NAME_COL_WIDTH + 'px' }"
+    >
       <!-- Header -->
       <div class="px-3 py-2 text-xs font-medium text-muted-foreground">Plant</div>
       <!-- Rows -->
       <div
-        v-for="row in displayRows"
-        :key="row.key"
-        class="px-3 flex flex-col justify-center border-t border-border/40 first:border-t-0"
-        :style="{ minHeight: rowHeight(row) + 'px' }"
+        v-for="item in visibleRows"
+        :key="item.row.key"
+        class="px-3 flex items-center gap-1 border-t border-border/40 first:border-t-0 justify-between"
+        :style="{ minHeight: rowHeight(item.row) + 'px' }"
+        :class="{ 'cursor-pointer select-none': item.kind === 'plant' && item.expandable }"
+        @click="item.kind === 'plant' && item.expandable ? toggleGroup(item.groupName) : undefined"
       >
-        <template v-if="row.kind === 'base'">
-          <span class="text-xs font-medium leading-tight">{{ row.plant.name }}</span>
-          <span
-            v-if="'variety' in row.plant && (row.plant as { variety?: string }).variety"
-            class="text-[10px] text-muted-foreground leading-tight"
-          >
-            {{ (row.plant as { variety?: string }).variety }}
-          </span>
+        <!-- Main plant row -->
+        <template v-if="item.kind === 'plant'">
+          <div class="flex flex-col min-w-0">
+            <span class="text-xs font-medium leading-tight">{{ item.row.plant.name }}</span>
+            <span
+              v-if="'variety' in item.row.plant && (item.row.plant as { variety?: string }).variety"
+              class="text-[10px] text-muted-foreground leading-tight"
+            >
+              {{ (item.row.plant as { variety?: string }).variety }}
+            </span>
+          </div>
+          <ChevronRight
+            v-if="item.expandable"
+            class="w-3 h-3 shrink-0 text-muted-foreground transition-transform duration-200"
+            :class="{ 'rotate-90': expandedGroups.has(item.groupName) }"
+          />
         </template>
+        <!-- Variety sub-row -->
         <template v-else>
-          <span class="text-[10px] text-muted-foreground leading-tight pl-1">{{ row.label }}</span>
+          <span class="text-xs text-muted-foreground leading-tight">
+            {{
+              'variety' in item.row.plant && (item.row.plant as { variety?: string }).variety
+                ? (item.row.plant as { variety?: string }).variety
+                : '(default)'
+            }}
+          </span>
         </template>
       </div>
     </div>
@@ -291,12 +335,12 @@ const todayX = computed(() => {
         </div>
 
         <!-- Timeline rows -->
-        <div v-for="row in displayRows" :key="row.key">
+        <template v-for="item in visibleRows" :key="item.row.key">
           <div
             class="relative flex divide-x divide-border/40 shrink-0"
             :style="{
               width: timelineMonths.length * monthWidth + 'px',
-              minHeight: rowHeight(row) + 'px',
+              minHeight: rowHeight(item.row) + 'px',
             }"
           >
             <div
@@ -313,84 +357,74 @@ const todayX = computed(() => {
                 :style="{ left: todayX + 'px' }"
               />
 
-              <!-- Base row: unlabelled sowing, transplant, harvest tracks -->
-              <template v-if="row.kind === 'base'">
-                <div
-                  v-for="(b, i) in row.sowingBars"
-                  :key="`sow-${i}`"
-                  class="absolute rounded-sm bg-emerald-500/20 border border-emerald-500/40"
-                  :style="{
-                    left: b.x + 'px',
-                    width: b.width + 'px',
-                    top: sowingTop + 'px',
-                    height: TRACK_HEIGHT + 'px',
-                  }"
-                />
-                <div
-                  v-for="(b, i) in row.transplantBars"
-                  :key="`transplant-${i}`"
-                  class="absolute rounded-sm bg-amber-500/20 border border-amber-500/40"
-                  :style="{
-                    left: b.x + 'px',
-                    width: b.width + 'px',
-                    top: transplantTop + 'px',
-                    height: TRACK_HEIGHT + 'px',
-                  }"
-                />
-                <div
-                  v-for="(b, i) in row.harvestBars"
-                  :key="`harvest-${i}`"
-                  class="absolute rounded-sm bg-rose-500/20 border border-rose-500/40"
-                  :style="{
-                    left: b.x + 'px',
-                    width: b.width + 'px',
-                    top: harvestTop + 'px',
-                    height: TRACK_HEIGHT + 'px',
-                  }"
-                />
-                <div
-                  v-for="(sx, si) in showDots ? row.sowXs : []"
-                  :key="`sow-dot-${si}`"
-                  class="absolute rounded-full bg-primary border z-10"
-                  :style="{
-                    left: sx - 5 + 'px',
-                    top: sowingTop + TRACK_HEIGHT / 2 - 5 + 'px',
-                    width: '10px',
-                    height: TRACK_HEIGHT + 'px',
-                  }"
-                />
+              <!-- Render each track -->
+              <template v-for="(track, ti) in item.row.tracks" :key="`track-${ti}`">
+                <!-- Window bars with label: clickable with popover -->
+                <template v-if="track.label">
+                  <Popover v-for="(b, bi) in track.bars" :key="`bar-${ti}-${bi}`">
+                    <PopoverTrigger as-child>
+                      <button
+                        class="absolute rounded-sm overflow-hidden flex items-center cursor-pointer"
+                        :class="trackBarClasses[track.type]"
+                        :style="{
+                          left: b.x + 'px',
+                          width: b.width + 'px',
+                          top: trackTop(ti) + 'px',
+                          height: TRACK_HEIGHT + 'px',
+                        }"
+                      >
+                        <span
+                          v-if="b.width > 30"
+                          class="text-[8px] leading-none truncate px-1 text-muted-foreground"
+                        >
+                          {{ track.label }}
+                        </span>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      class="w-auto px-2 py-1 text-xs rounded-sm z-1"
+                      :class="trackBarClasses[track.type]"
+                      side="top"
+                      :side-offset="4"
+                    >
+                      {{ track.label }}
+                    </PopoverContent>
+                  </Popover>
+                </template>
 
-                <div
-                  v-for="(tx, ti) in showDots ? row.transplantXs : []"
-                  :key="`transplant-dot-${ti}`"
-                  class="absolute rounded-full bg-amber-500/70 border z-10"
-                  :style="{
-                    left: tx - 5 + 'px',
-                    top: transplantTop + TRACK_HEIGHT / 2 - 5 + 'px',
-                    width: '10px',
-                    height: TRACK_HEIGHT + 'px',
-                  }"
-                />
-              </template>
+                <!-- Window bars without label: plain div -->
+                <template v-else>
+                  <div
+                    v-for="(b, bi) in track.bars"
+                    :key="`bar-${ti}-${bi}`"
+                    class="absolute rounded-sm"
+                    :class="trackBarClasses[track.type]"
+                    :style="{
+                      left: b.x + 'px',
+                      width: b.width + 'px',
+                      top: trackTop(ti) + 'px',
+                      height: TRACK_HEIGHT + 'px',
+                    }"
+                  />
+                </template>
 
-              <!-- Label row: single track centred vertically -->
-              <template v-else>
+                <!-- Dots (sow/transplant dates) -->
                 <div
-                  v-for="(b, i) in row.bars"
-                  :key="`label-bar-${i}`"
-                  class="absolute rounded-sm"
-                  :class="trackBarClasses[row.trackType]"
+                  v-for="(dx, di) in showDots ? (track.dotXs ?? []) : []"
+                  :key="`dot-${ti}-${di}`"
+                  class="absolute rounded-full z-10"
+                  :class="dotClasses[track.type]"
                   :style="{
-                    left: b.x + 'px',
-                    width: b.width + 'px',
-                    top: ROW_PADDING + 'px',
+                    left: dx - 5 + 'px',
+                    top: trackTop(ti) + TRACK_HEIGHT / 2 - 5 + 'px',
+                    width: '10px',
                     height: TRACK_HEIGHT + 'px',
                   }"
                 />
               </template>
             </div>
           </div>
-        </div>
+        </template>
       </div>
     </div>
   </div>
