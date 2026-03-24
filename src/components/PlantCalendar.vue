@@ -5,6 +5,7 @@ import { today, getLocalTimeZone } from '@internationalized/date'
 import type { BasePlant } from '@/client'
 import { useElementSize } from '@vueuse/core'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { ChevronRight } from 'lucide-vue-next'
 
 const props = withDefaults(defineProps<{ plants: BasePlant[]; showDots?: boolean }>(), {
   showDots: false,
@@ -78,10 +79,25 @@ type Track = {
   dotXs?: number[]
 }
 
+type PlantGroup = {
+  name: string
+  rows: PlantRow[]
+}
+
 type PlantRow = {
   key: string
   plant: BasePlant
   tracks: Track[]
+}
+
+const expandedGroups = ref(new Set<string>())
+
+function toggleGroup(name: string) {
+  if (expandedGroups.value.has(name)) {
+    expandedGroups.value.delete(name)
+  } else {
+    expandedGroups.value.add(name)
+  }
 }
 
 function extractTracks(windows: WindowData[]): {
@@ -121,15 +137,14 @@ function getAnchorMonthDay(plant: BasePlant): { month: number; day: number } {
   return { month: t.month, day: t.day }
 }
 
-const displayRows = computed<PlantRow[]>(() => {
+const displayGroups = computed<PlantGroup[]>(() => {
   const sorted = props.plants.slice().sort((a, b) => {
     const am = getAnchorMonthDay(a)
     const bm = getAnchorMonthDay(b)
     return am.month !== bm.month ? am.month - bm.month : am.day - bm.day
   })
 
-  const rows: PlantRow[] = []
-
+  const groupMap = new Map<string, PlantRow[]>()
   for (const plant of sorted) {
     const tracks: Track[] = []
 
@@ -176,14 +191,34 @@ const displayRows = computed<PlantRow[]>(() => {
       tracks.push({ type: 'harvest', label, bars })
     }
 
-    rows.push({
-      key: String(plant.id ?? plant.name),
-      plant,
-      tracks,
-    })
+    const row: PlantRow = { key: String(plant.id ?? plant.name), plant, tracks }
+
+    if (!groupMap.has(plant.name)) groupMap.set(plant.name, [])
+    groupMap.get(plant.name)!.push(row)
   }
 
-  return rows
+  return Array.from(groupMap, ([name, rows]) => ({ name, rows }))
+})
+
+type VisibleItem =
+  | { kind: 'plant'; row: PlantRow; expandable: boolean; groupName: string }
+  | { kind: 'variety'; row: PlantRow }
+
+const visibleRows = computed<VisibleItem[]>(() => {
+  const result: VisibleItem[] = []
+  for (const group of displayGroups.value) {
+    // First row is always visible as the main plant row
+    const [first, ...rest] = group.rows
+    if (!first) continue
+    result.push({ kind: 'plant', row: first, expandable: rest.length > 0, groupName: group.name })
+    // Remaining varieties only shown when expanded
+    if (rest.length > 0 && expandedGroups.value.has(group.name)) {
+      for (const row of rest) {
+        result.push({ kind: 'variety', row })
+      }
+    }
+  }
+  return result
 })
 
 function rowHeight(row: PlantRow): number {
@@ -247,18 +282,40 @@ const todayX = computed(() => {
       <div class="px-3 py-2 text-xs font-medium text-muted-foreground">Plant</div>
       <!-- Rows -->
       <div
-        v-for="row in displayRows"
-        :key="row.key"
-        class="px-3 flex flex-col justify-center border-t border-border/40 first:border-t-0"
-        :style="{ minHeight: rowHeight(row) + 'px' }"
+        v-for="item in visibleRows"
+        :key="item.row.key"
+        class="px-3 flex items-center gap-1 border-t border-border/40 first:border-t-0 justify-between"
+        :style="{ minHeight: rowHeight(item.row) + 'px' }"
+        :class="{ 'cursor-pointer select-none': item.kind === 'plant' && item.expandable }"
+        @click="item.kind === 'plant' && item.expandable ? toggleGroup(item.groupName) : undefined"
       >
-        <span class="text-xs font-medium leading-tight">{{ row.plant.name }}</span>
-        <span
-          v-if="'variety' in row.plant && (row.plant as { variety?: string }).variety"
-          class="text-[10px] text-muted-foreground leading-tight"
-        >
-          {{ (row.plant as { variety?: string }).variety }}
-        </span>
+        <!-- Main plant row -->
+        <template v-if="item.kind === 'plant'">
+          <div class="flex flex-col min-w-0">
+            <span class="text-xs font-medium leading-tight">{{ item.row.plant.name }}</span>
+            <span
+              v-if="'variety' in item.row.plant && (item.row.plant as { variety?: string }).variety"
+              class="text-[10px] text-muted-foreground leading-tight"
+            >
+              {{ (item.row.plant as { variety?: string }).variety }}
+            </span>
+          </div>
+          <ChevronRight
+            v-if="item.expandable"
+            class="w-3 h-3 shrink-0 text-muted-foreground transition-transform duration-200"
+            :class="{ 'rotate-90': expandedGroups.has(item.groupName) }"
+          />
+        </template>
+        <!-- Variety sub-row -->
+        <template v-else>
+          <span class="text-xs text-muted-foreground leading-tight">
+            {{
+              'variety' in item.row.plant && (item.row.plant as { variety?: string }).variety
+                ? (item.row.plant as { variety?: string }).variety
+                : '(default)'
+            }}
+          </span>
+        </template>
       </div>
     </div>
 
@@ -278,12 +335,12 @@ const todayX = computed(() => {
         </div>
 
         <!-- Timeline rows -->
-        <div v-for="row in displayRows" :key="row.key">
+        <template v-for="item in visibleRows" :key="item.row.key">
           <div
             class="relative flex divide-x divide-border/40 shrink-0"
             :style="{
               width: timelineMonths.length * monthWidth + 'px',
-              minHeight: rowHeight(row) + 'px',
+              minHeight: rowHeight(item.row) + 'px',
             }"
           >
             <div
@@ -301,7 +358,7 @@ const todayX = computed(() => {
               />
 
               <!-- Render each track -->
-              <template v-for="(track, ti) in row.tracks" :key="`track-${ti}`">
+              <template v-for="(track, ti) in item.row.tracks" :key="`track-${ti}`">
                 <!-- Window bars with label: clickable with popover -->
                 <template v-if="track.label">
                   <Popover v-for="(b, bi) in track.bars" :key="`bar-${ti}-${bi}`">
@@ -367,7 +424,7 @@ const todayX = computed(() => {
               </template>
             </div>
           </div>
-        </div>
+        </template>
       </div>
     </div>
   </div>
