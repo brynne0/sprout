@@ -11,13 +11,14 @@ import { cn } from "@/lib/utils"
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { CalendarCell, CalendarCellTrigger, CalendarGrid, CalendarGridBody, CalendarGridHead, CalendarGridRow, CalendarHeadCell, CalendarHeader, CalendarHeading, CalendarNextButton, CalendarPrevButton } from "."
 
-const props = withDefaults(defineProps<CalendarRootProps & { class?: HTMLAttributes["class"], layout?: LayoutTypes, yearRange?: DateValue[] }>(), {
+const props = withDefaults(defineProps<CalendarRootProps & { class?: HTMLAttributes["class"], layout?: LayoutTypes, yearRange?: DateValue[], highlightDate?: (day: DateValue) => string | false }>(), {
   modelValue: undefined,
   layout: undefined,
+  highlightDate: undefined,
 })
 const emits = defineEmits<CalendarRootEmits>()
 
-const delegatedProps = reactiveOmit(props, "class", "layout", "placeholder")
+const delegatedProps = reactiveOmit(props, "class", "layout", "placeholder", "highlightDate")
 
 const placeholder = useVModel(props, "placeholder", emits, {
   passive: true,
@@ -146,6 +147,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
               v-for="weekDate in weekDates"
               :key="weekDate.toString()"
               :date="weekDate"
+              :class="highlightDate?.(weekDate) || ''"
             >
               <CalendarCellTrigger
                 :day="weekDate"

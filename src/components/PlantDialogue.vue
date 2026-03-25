@@ -108,6 +108,34 @@ function toMonthDay(d: DateValue): string {
   return `${String(d.month).padStart(2, '0')}-${String(d.day).padStart(2, '0')}`
 }
 
+function highlightWindow(day: DateValue, windows: Window[]): string | false {
+  const d = day.month * 100 + day.day
+  for (const w of windows) {
+    const [sm, sd] = w.start.split('-').map(Number)
+    const [em, ed] = w.end.split('-').map(Number)
+    const start = sm! * 100 + sd!
+    const end = em! * 100 + ed!
+    const wraps = start > end
+    const inRange = wraps ? d >= start || d <= end : d >= start && d <= end
+    if (!inRange) continue
+    const isStart = d === start
+    const isEnd = d === end
+    if (isStart && isEnd) return 'bg-primary/15 rounded-md'
+    if (isStart) return 'bg-primary/15 rounded-l-md rounded-r-none'
+    if (isEnd) return 'bg-primary/15 rounded-r-md rounded-l-none'
+    return 'bg-primary/15 rounded-none'
+  }
+  return false
+}
+
+function isInSowWindow(day: DateValue): string | false {
+  return highlightWindow(day, selectedCatalogueEntry.value?.sowing_windows ?? [])
+}
+
+function isInTransplantWindow(day: DateValue): string | false {
+  return highlightWindow(day, selectedCatalogueEntry.value?.transplant_windows ?? [])
+}
+
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr.slice(0, 10) + 'T00:00:00')
   return isNaN(d.getTime())
@@ -477,6 +505,7 @@ async function submitPlant() {
                 :initial-focus="true"
                 :default-placeholder="defaultPlaceholder"
                 layout="month-and-year"
+                :highlight-date="isInSowWindow"
                 @update:model-value="
                   (v: DateValue | undefined) => {
                     if (!v) return
@@ -520,6 +549,7 @@ async function submitPlant() {
                 :initial-focus="true"
                 :default-placeholder="defaultPlaceholder"
                 layout="month-and-year"
+                :highlight-date="isInTransplantWindow"
                 @update:model-value="
                   (v: DateValue | undefined) => {
                     if (!v) return
