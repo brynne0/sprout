@@ -5,7 +5,13 @@ import { today, getLocalTimeZone } from '@internationalized/date'
 import type { BasePlant } from '@/client'
 import { useElementSize } from '@vueuse/core'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { ChevronRight } from 'lucide-vue-next'
+import { ChevronRight, ArrowUpDown } from 'lucide-vue-next'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 const props = withDefaults(defineProps<{ plants: BasePlant[]; showDots?: boolean }>(), {
   showDots: false,
@@ -90,6 +96,17 @@ type PlantRow = {
   tracks: Track[]
 }
 
+type SortMode = 'sow-date' | 'transplant-date' | 'harvest-date' | 'alphabetical'
+const sortMode = ref<SortMode>('alphabetical')
+
+const sortLabels: Record<SortMode, string> = {
+  alphabetical: 'A-Z',
+  'sow-date': 'Sow date',
+  'transplant-date': 'Transplant date',
+  'harvest-date': 'Harvest date',
+}
+
+
 const expandedGroups = ref(new Set<string>())
 
 function toggleGroup(name: string) {
@@ -124,7 +141,7 @@ function parseDateMonthDay(dateStr: string): { month: number; day: number } {
   return { month: parts[1]!, day: parts[2]! }
 }
 
-function getAnchorMonthDay(plant: BasePlant): { month: number; day: number } {
+function getSowAnchor(plant: BasePlant): { month: number; day: number } {
   if ('sow_dates' in plant && Array.isArray(plant.sow_dates) && plant.sow_dates.length > 0) {
     return parseDateMonthDay(plant.sow_dates[0] as string)
   }
@@ -137,11 +154,48 @@ function getAnchorMonthDay(plant: BasePlant): { month: number; day: number } {
   return { month: t.month, day: t.day }
 }
 
+function getTransplantAnchor(plant: BasePlant): { month: number; day: number } {
+  if (
+    'transplant_dates' in plant &&
+    Array.isArray(plant.transplant_dates) &&
+    plant.transplant_dates.length > 0
+  ) {
+    return parseDateMonthDay(plant.transplant_dates[0] as string)
+  }
+  const firstWindow = plant.transplant_windows?.[0]
+  if (firstWindow) {
+    const [m, d] = firstWindow.start.split('-').map(Number)
+    return { month: m!, day: d! }
+  }
+  return { month: 12, day: 31 }
+}
+
+function getHarvestAnchor(plant: BasePlant): { month: number; day: number } {
+  const firstWindow = plant.harvest_windows?.[0]
+  if (firstWindow) {
+    const [m, d] = firstWindow.start.split('-').map(Number)
+    return { month: m!, day: d! }
+  }
+  return { month: 12, day: 31 }
+}
+
+function compareMD(a: { month: number; day: number }, b: { month: number; day: number }): number {
+  return a.month !== b.month ? a.month - b.month : a.day - b.day
+}
+
 const displayGroups = computed<PlantGroup[]>(() => {
   const sorted = props.plants.slice().sort((a, b) => {
-    const am = getAnchorMonthDay(a)
-    const bm = getAnchorMonthDay(b)
-    return am.month !== bm.month ? am.month - bm.month : am.day - bm.day
+    switch (sortMode.value) {
+      case 'alphabetical':
+        return a.name.localeCompare(b.name)
+      case 'transplant-date':
+        return compareMD(getTransplantAnchor(a), getTransplantAnchor(b))
+      case 'harvest-date':
+        return compareMD(getHarvestAnchor(a), getHarvestAnchor(b))
+      case 'sow-date':
+      default:
+        return compareMD(getSowAnchor(a), getSowAnchor(b))
+    }
   })
 
   const groupMap = new Map<string, PlantRow[]>()
@@ -278,8 +332,30 @@ const todayX = computed(() => {
       class="shrink-0 border-y border-border relative z-10 bg-background"
       :style="{ width: NAME_COL_WIDTH + 'px' }"
     >
-      <!-- Header -->
-      <div class="px-3 py-2 text-xs font-medium text-muted-foreground">Plant</div>
+      <!-- Header with sort -->
+      <div class="px-3 py-2 flex items-center justify-between">
+        <span class="text-xs font-medium text-muted-foreground">Plant</span>
+        <DropdownMenu>
+          <DropdownMenuTrigger class="p-0.5 rounded hover:bg-muted transition-colors">
+            <ArrowUpDown class="w-3 h-3 text-muted-foreground" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem
+              v-for="mode in [
+                'sow-date',
+                'transplant-date',
+                'harvest-date',
+                'alphabetical',
+              ] as SortMode[]"
+              :key="mode"
+              :class="{ 'font-medium bg-accent': sortMode === mode }"
+              @click="sortMode = mode"
+            >
+              {{ sortLabels[mode] }}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <!-- Rows -->
       <div
         v-for="item in visibleRows"
