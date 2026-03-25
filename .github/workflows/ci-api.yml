@@ -46,6 +46,9 @@ jobs:
         with:
           deno-version: v2.x
 
+      - run: deno task generate
+        working-directory: sprout-api
+
       - run: deno test --allow-net --allow-env --allow-read
         working-directory: sprout-api
         env:
