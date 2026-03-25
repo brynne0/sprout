@@ -1,13 +1,26 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { getApiCatalogue } from '@/client'
 import type { CataloguePlant } from '@/client'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
+import { Input } from '@/components/ui/input'
+import { Search } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
 const plants = ref<CataloguePlant[]>([])
 const loading = ref(true)
+const searchQuery = ref('')
+
+const filteredPlants = computed(() => {
+  const q = searchQuery.value.toLowerCase().trim()
+  if (!q) return plants.value
+  return plants.value.filter(
+    (p) =>
+      p.name.toLowerCase().includes(q) ||
+      (p.variety && p.variety.toLowerCase().includes(q)),
+  )
+})
 
 onMounted(async () => {
   try {
@@ -30,5 +43,16 @@ onMounted(async () => {
   </header>
 
   <LoadingLeaves v-if="loading" />
-  <PlantCalendar v-else :plants="plants" />
+  <PlantCalendar v-else :plants="filteredPlants">
+    <template #header>
+      <div class="relative max-w-xs">
+        <Search class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input
+          v-model="searchQuery"
+          placeholder="Search plants..."
+          class="pl-8 h-8"
+        />
+      </div>
+    </template>
+  </PlantCalendar>
 </template>

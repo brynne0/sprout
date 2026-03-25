@@ -106,7 +106,6 @@ const sortLabels: Record<SortMode, string> = {
   'harvest-date': 'Harvest date',
 }
 
-
 const expandedGroups = ref(new Set<string>())
 
 function toggleGroup(name: string) {
@@ -302,31 +301,38 @@ const todayX = computed(() => {
 </script>
 
 <template>
-  <!-- Legend -->
-  <div class="flex flex-row flex-wrap gap-4 mb-4 px-4 text-xs text-muted-foreground">
-    <span class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/40" />
-      Sow
-    </span>
-    <span class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 rounded-sm bg-amber-500/20 border border-amber-500/40" />
-      Transplant
-    </span>
-    <span class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 rounded-sm bg-rose-500/20 border border-rose-500/40" />
-      Harvest
-    </span>
-    <span v-if="showDots" class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 border rounded-sm bg-primary" />
-      Sow date
-    </span>
-    <span v-if="showDots" class="flex items-center gap-1.5">
-      <span class="inline-block w-3 h-3 border rounded-sm bg-amber-500/70" />
-      Transplant date
-    </span>
+  <!-- Header: slot + legend -->
+  <div class="flex flex-wrap items-center gap-4 mb-4 px-4">
+    <slot name="header" />
+    <div class="flex flex-wrap gap-4 text-xs text-muted-foreground">
+      <span class="flex items-center gap-1.5">
+        <span class="inline-block w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/40" />
+        Sow
+      </span>
+      <span class="flex items-center gap-1.5">
+        <span class="inline-block w-3 h-3 rounded-sm bg-amber-500/20 border border-amber-500/40" />
+        Transplant
+      </span>
+      <span class="flex items-center gap-1.5">
+        <span class="inline-block w-3 h-3 rounded-sm bg-rose-500/20 border border-rose-500/40" />
+        Harvest
+      </span>
+      <span v-if="showDots" class="flex items-center gap-1.5">
+        <span class="inline-block w-3 h-3 border rounded-sm bg-primary" />
+        Sow date
+      </span>
+      <span v-if="showDots" class="flex items-center gap-1.5">
+        <span class="inline-block w-3 h-3 border rounded-sm bg-amber-500/70" />
+        Transplant date
+      </span>
+    </div>
   </div>
 
-  <div class="flex mt-2">
+  <div v-if="plants.length === 0" class="px-4 py-8 text-sm text-muted-foreground text-center">
+    No plants found.
+  </div>
+
+  <div v-else class="flex mt-2">
     <!-- Fixed name column -->
     <div
       class="shrink-0 border-y border-border relative z-10 bg-background"
