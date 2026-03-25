@@ -375,11 +375,14 @@ const todayX = computed(() => {
       </div>
       <!-- Rows -->
       <div
-        v-for="item in visibleRows"
+        v-for="(item, index) in visibleRows"
         :key="item.row.key"
         class="px-3 flex items-center gap-1 border-t border-border/40 first:border-t-0 justify-between"
         :style="{ minHeight: rowHeight(item.row) + 'px' }"
-        :class="{ 'cursor-pointer select-none': item.kind === 'plant' && item.expandable }"
+        :class="{
+          'cursor-pointer select-none': item.kind === 'plant' && item.expandable,
+          'bg-muted/50': showGrid && index % 2 === 0,
+        }"
         @click="item.kind === 'plant' && item.expandable ? toggleGroup(item.groupName) : undefined"
       >
         <!-- Main plant row -->
@@ -431,9 +434,10 @@ const todayX = computed(() => {
         </div>
 
         <!-- Timeline rows -->
-        <template v-for="item in visibleRows" :key="item.row.key">
+        <template v-for="(item, index) in visibleRows" :key="item.row.key">
           <div
             class="relative flex divide-x divide-border/40 shrink-0"
+            :class="{ 'bg-muted/50': showGrid && index % 2 === 0 }"
             :style="{
               width: timelineMonths.length * monthWidth + 'px',
               minHeight: rowHeight(item.row) + 'px',
