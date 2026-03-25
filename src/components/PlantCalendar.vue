@@ -5,7 +5,7 @@ import { today, getLocalTimeZone } from '@internationalized/date'
 import type { BasePlant } from '@/client'
 import { useElementSize } from '@vueuse/core'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { ChevronRight, ArrowUpDown } from 'lucide-vue-next'
+import { ChevronRight, ArrowUpDown, Rows3 } from 'lucide-vue-next'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -95,6 +95,8 @@ type PlantRow = {
   plant: BasePlant
   tracks: Track[]
 }
+
+const showGrid = ref(false)
 
 type SortMode = 'sow-date' | 'transplant-date' | 'harvest-date' | 'alphabetical'
 const sortMode = ref<SortMode>('alphabetical')
@@ -341,26 +343,35 @@ const todayX = computed(() => {
       <!-- Header with sort -->
       <div class="px-3 py-2 flex items-center justify-between">
         <span class="text-xs font-medium text-muted-foreground">Plant</span>
-        <DropdownMenu>
-          <DropdownMenuTrigger class="p-0.5 rounded hover:bg-muted transition-colors">
-            <ArrowUpDown class="w-3 h-3 text-muted-foreground" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem
-              v-for="mode in [
-                'sow-date',
-                'transplant-date',
-                'harvest-date',
-                'alphabetical',
-              ] as SortMode[]"
-              :key="mode"
-              :class="{ 'font-medium bg-accent': sortMode === mode }"
-              @click="sortMode = mode"
-            >
-              {{ sortLabels[mode] }}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div class="flex items-center gap-1">
+          <button
+            class="p-0.5 rounded hover:bg-muted transition-colors"
+            :class="{ 'bg-accent': showGrid }"
+            @click="showGrid = !showGrid"
+          >
+            <Rows3 class="w-3 h-3 text-muted-foreground" />
+          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger class="p-0.5 rounded hover:bg-muted transition-colors">
+              <ArrowUpDown class="w-3 h-3 text-muted-foreground" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem
+                v-for="mode in [
+                  'sow-date',
+                  'transplant-date',
+                  'harvest-date',
+                  'alphabetical',
+                ] as SortMode[]"
+                :key="mode"
+                :class="{ 'font-medium bg-accent': sortMode === mode }"
+                @click="sortMode = mode"
+              >
+                {{ sortLabels[mode] }}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <!-- Rows -->
       <div
@@ -403,7 +414,10 @@ const todayX = computed(() => {
 
     <!-- Scrollable timeline -->
     <div ref="timelineContainer" class="overflow-x-auto flex-1 border-y border-l border-border">
-      <div :style="{ minWidth: timelineMonths.length * monthWidth + 'px' }">
+      <div
+        :class="showGrid ? 'divide-y divide-border/40' : ''"
+        :style="{ minWidth: timelineMonths.length * monthWidth + 'px' }"
+      >
         <!-- Month header -->
         <div class="flex divide-x border-b border-border/40 divide-border/40">
           <div
