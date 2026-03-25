@@ -16,9 +16,7 @@ const filteredPlants = computed(() => {
   const q = searchQuery.value.toLowerCase().trim()
   if (!q) return plants.value
   return plants.value.filter(
-    (p) =>
-      p.name.toLowerCase().includes(q) ||
-      (p.variety && p.variety.toLowerCase().includes(q)),
+    (p) => p.name.toLowerCase().includes(q) || (p.variety && p.variety.toLowerCase().includes(q)),
   )
 })
 
@@ -38,7 +36,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <header class="mb-4 px-8">
+  <header class="mb-4 mx-4">
     <h1 class="text-3xl font-bold tracking-tight text-primary">Catalogue</h1>
   </header>
 
@@ -47,11 +45,7 @@ onMounted(async () => {
     <template #header>
       <div class="relative max-w-xs">
         <Search class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          v-model="searchQuery"
-          placeholder="Search plants..."
-          class="pl-8 h-8"
-        />
+        <Input v-model="searchQuery" placeholder="Search plants..." class="pl-8 h-8" />
       </div>
     </template>
   </PlantCalendar>

@@ -98,7 +98,7 @@ function formatDate(dateStr: string | null | undefined) {
 
 <template>
   <main>
-    <header class="flex items-center justify-between mb-4 px-8">
+    <header class="flex items-center justify-between mb-4 mx-4">
       <h1 class="text-3xl font-bold tracking-tight text-primary">Your Garden</h1>
       <PlantDialogue
         v-if="!loading && plants.length > 0"
@@ -117,7 +117,7 @@ function formatDate(dateStr: string | null | undefined) {
 
     <div v-else-if="!loading && plants.length > 0">
       <Tabs default-value="gardenList">
-        <TabsList class="mx-8">
+        <TabsList class="mx-4">
           <TabsTrigger value="gardenList"> Plants </TabsTrigger>
           <TabsTrigger value="gardenCalendar"> Calendar </TabsTrigger>
         </TabsList>
