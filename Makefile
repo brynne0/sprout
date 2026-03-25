@@ -3,6 +3,7 @@
 dev:
 	docker compose up -d
 	npm run generate
+	cd sprout-api && deno task generate
 	cd sprout-api && deno task dev &
 	npm run dev
 

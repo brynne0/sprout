@@ -6,6 +6,7 @@ COPY deno.json deno.lock* ./
 RUN deno install
 
 COPY . .
+RUN deno task generate
 
 EXPOSE 8080
 

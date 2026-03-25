@@ -1,6 +1,10 @@
 import { Context, Hono } from "hono";
 import { query } from "../db.ts";
 import { authMiddleware } from "./auth.ts";
+import type { components } from "../types/api.ts";
+
+type Plant = components["schemas"]["Plant"];
+type PlantInput = components["schemas"]["PlantInput"];
 
 export const plantRoutes = new Hono();
 
@@ -39,7 +43,7 @@ plantRoutes.use("*", authMiddleware);
 
 plantRoutes.get("/plants", async (c) => {
   const userId = getUserId(c);
-  const rows = await query(
+  const rows = await query<Plant>(
     `${PLANT_SELECT} WHERE p.user_id = $1 AND archived_at IS NULL
     ORDER BY p.created_at DESC`,
     [userId],
@@ -57,7 +61,7 @@ plantRoutes.post("/plants", async (c) => {
     transplant_dates,
     notes,
     overrides,
-  } = await c.req.json();
+  } = await c.req.json<PlantInput>();
   const rows = await query<{ id: string }>(
     `INSERT INTO plants (user_id, plant_type_id, catalogue_id, custom_variety, sow_dates, transplant_dates, notes, overrides)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
@@ -73,13 +77,15 @@ plantRoutes.post("/plants", async (c) => {
       overrides ? JSON.stringify(overrides) : null,
     ],
   );
-  const inserted = await query(`${PLANT_SELECT} WHERE p.id = $1`, [rows[0].id]);
+  const inserted = await query<Plant>(`${PLANT_SELECT} WHERE p.id = $1`, [
+    rows[0].id,
+  ]);
   return c.json(inserted[0], 201);
 });
 
 plantRoutes.get("/plants/:id", async (c) => {
   const userId = getUserId(c);
-  const rows = await query(
+  const rows = await query<Plant>(
     `${PLANT_SELECT} WHERE p.id = $1 AND p.user_id = $2`,
     [
       c.req.param("id"),
@@ -100,7 +106,7 @@ plantRoutes.put("/plants/:id", async (c) => {
     transplant_dates,
     notes,
     overrides,
-  } = await c.req.json();
+  } = await c.req.json<PlantInput>();
   const rows = await query<{ id: string }>(
     `UPDATE plants SET
          plant_type_id = $1, catalogue_id = $2, custom_variety = $3,
@@ -120,7 +126,9 @@ plantRoutes.put("/plants/:id", async (c) => {
     ],
   );
   if (!rows[0]) return c.json({ error: "Not found" }, 404);
-  const updated = await query(`${PLANT_SELECT} WHERE p.id = $1`, [rows[0].id]);
+  const updated = await query<Plant>(`${PLANT_SELECT} WHERE p.id = $1`, [
+    rows[0].id,
+  ]);
   return c.json(updated[0]);
 });
 
@@ -131,7 +139,9 @@ plantRoutes.patch("/plants/:id/archive", async (c) => {
     [c.req.param("id"), userId],
   );
   if (!rows[0]) return c.json({ error: "Not found" }, 404);
-  const archived = await query(`${PLANT_SELECT} WHERE p.id = $1`, [rows[0].id]);
+  const archived = await query<Plant>(`${PLANT_SELECT} WHERE p.id = $1`, [
+    rows[0].id,
+  ]);
   return c.json(archived[0]);
 });
 
