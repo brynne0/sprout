@@ -59,7 +59,15 @@ INSERT INTO plant_types (name, category_id, icon) VALUES
     ('Basil', (SELECT id FROM plant_categories WHERE name = 'Solanums, basil, and sweetcorn'), NULL),
     ('Potato', (SELECT id FROM plant_categories WHERE name = 'Solanums, basil, and sweetcorn'), NULL),
     ('Sweetcorn', (SELECT id FROM plant_categories WHERE name = 'Solanums, basil, and sweetcorn'), NULL),
-    ('Tomato', (SELECT id FROM plant_categories WHERE name = 'Solanums, basil, and sweetcorn'), NULL);
+    ('Tomato', (SELECT id FROM plant_categories WHERE name = 'Solanums, basil, and sweetcorn'), NULL),
+    ('Asparagus', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
+    ('Perennial Kale', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
+    ('Rhubarb', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
+    ('Sorrel', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
+    ('Chives', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
+    ('Mint', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
+    ('Rosemary', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
+    ('Thyme', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL);
 
 INSERT INTO plant_catalogue (plant_type_id, variety, description, seed_to_harvest, sowing_to_transplant, position, spacing, hardiness, sowing_windows, transplant_windows, harvest_windows, harvest, suitability, source)
 VALUES
@@ -172,4 +180,20 @@ VALUES
 -- Sweetcorn
   ((SELECT id FROM plant_types WHERE name = 'Sweetcorn'), NULL, NULL, '3 months for early varieties', '4-5 weeks', 'Full sun and warmth', '25-30cm equidistant', 'Tender, will be killed by frost', '[{"start": "04-15", "end": "05-15", "label": "under cover"}, {"start": "05-15", "end": "06-15"}]', '[{"start": "05-15", "end": "06-15"}]', '[{"start": "08-01", "end": "09-30"}]', NULL, '{interplant}', 'No Dig'),
 -- Tomato
-  ((SELECT id FROM plant_types WHERE name = 'Tomato'), NULL, NULL, '3 months for cherry, 4 months for medium to large under cover, 4.5 months outdoors', '6 weeks', 'Full sun, and shelter for cordon varieties', '40-55cm apart', 'Not hardy, killed by frost, but more cold tolerant than aubergines and peppers', '[{"start": "03-15", "end": "03-31", "label": "under cover"}]', '[{"start": "05-01", "end": "05-31", "label": "under cover"}, {"start": "05-15", "end": "05-31"}]', '[{"start": "06-15", "end": "10-15", "label": "under cover"}, {"start": "07-15", "end": "09-30"}]', NULL, NULL, 'No Dig');
+  ((SELECT id FROM plant_types WHERE name = 'Tomato'), NULL, NULL, '3 months for cherry, 4 months for medium to large under cover, 4.5 months outdoors', '6 weeks', 'Full sun, and shelter for cordon varieties', '40-55cm apart', 'Not hardy, killed by frost, but more cold tolerant than aubergines and peppers', '[{"start": "03-15", "end": "03-31", "label": "under cover"}]', '[{"start": "05-01", "end": "05-31", "label": "under cover"}, {"start": "05-15", "end": "05-31"}]', '[{"start": "06-15", "end": "10-15", "label": "under cover"}, {"start": "07-15", "end": "09-30"}]', NULL, NULL, 'No Dig'),
+-- Asparagus
+  ((SELECT id FROM plant_types WHERE name = 'Asparagus'), NULL, NULL, 'First small harvest 3 years from seed or 2 years from crowns', '7-12 months', 'Full sun', '60cm apart, 1-1.5m between lines', 'Roots hardy to at least -10°C, but spears damaged by frost', '[{"start": "03-01", "end": "03-31"}]', '[{"start": "03-01", "end": "03-31"}, {"start": "11-01", "end": "11-30"}]', '[{"start": "04-15", "end": "06-30"}]', NULL, NULL, 'No Dig'),
+-- Perennial Kale
+  ((SELECT id FROM plant_types WHERE name = 'Perennial Kale'), NULL, NULL, 'Minimum 2 months from planting', NULL, 'Any; tolerates shade', '75-90cm apart', 'Very hardy to approx. -15°C', NULL, '[{"start": "03-01", "end": "08-31"}]', '[{"start": "01-01", "end": "12-31"}]', NULL, NULL, 'No Dig'),
+-- Rhubarb
+  ((SELECT id FROM plant_types WHERE name = 'Rhubarb'), NULL, NULL, '1 year', NULL, 'Full sun is ideal, but will grow in shade. Moist soil', '1m apart', 'Hardy to approx. -15°C', '[{"start": "03-01", "end": "03-31"}]', '[{"start": "06-01", "end": "10-31", "label": "seed-raised"}, {"start": "10-01", "end": "11-30", "label": "division from crown"}, {"start": "03-01", "end": "11-30", "label": "potted plants"}]', '[{"start": "03-01", "end": "07-31"}]', NULL, NULL, 'No Dig'),
+-- Sorrel
+  ((SELECT id FROM plant_types WHERE name = 'Sorrel'), NULL, NULL, '10 weeks', '4 weeks', 'Adaptable; tolerates shade and prefers moisture', '30cm', 'Very hardy to approx. -20°C', '[{"start": "02-15", "end": "05-31"}]', '[{"start": "04-01", "end": "07-31"}, {"start": "10-01", "end": "11-30"}]', '[{"start": "03-01", "end": "11-30"}]', NULL, NULL, 'No Dig'),
+-- Chives
+  ((SELECT id FROM plant_types WHERE name = 'Chives'), NULL, NULL, '3-4 months', '6 weeks', 'Unfussy, but like moisture', '25-30cm', 'Hardy to approx. -15°C', '[{"start": "03-01", "end": "04-30"}]', '[{"start": "04-15", "end": "06-30"}]', '[{"start": "03-01", "end": "11-30"}]', NULL, NULL, 'No Dig'),
+-- Mint
+  ((SELECT id FROM plant_types WHERE name = 'Mint'), NULL, NULL, '6 weeks from planting', NULL, 'Sun or shade', '40cm apart', 'Very hardy, perhaps to -30°C, but dormant even in mild winters', NULL, '[{"start": "03-01", "end": "06-30"}]', '[{"start": "04-01", "end": "11-30"}]', NULL, NULL, 'No Dig'),
+-- Rosemary
+  ((SELECT id FROM plant_types WHERE name = 'Rosemary'), NULL, NULL, '12 weeks; small pick in first summer', NULL, 'Full sun or part shade', '50cm apart', 'Hardy to about -8°C, sometimes lower', '[{"start": "03-01", "end": "04-30"}]', '[{"start": "03-01", "end": "10-31"}]', '[{"start": "01-01", "end": "12-31"}]', NULL, NULL, 'No Dig'),
+-- Thyme
+  ((SELECT id FROM plant_types WHERE name = 'Thyme'), NULL, NULL, '8 weeks', '6-8 weeks', 'Full sun is best; shade is possible', '30cm apart', 'Hardy to about -30°C', '[{"start": "03-01", "end": "07-31"}]', '[{"start": "03-01", "end": "10-31"}]', '[{"start": "01-01", "end": "12-31"}]', NULL, NULL, 'No Dig');
