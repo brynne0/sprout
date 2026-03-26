@@ -39,7 +39,10 @@ INSERT INTO plant_types (name, category_id, icon) VALUES
     ('Coriander', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
     ('Chervil', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
     ('Dill', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
-    ('Parsley', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL);
+    ('Parsley', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
+    ('Beetroot', (SELECT id FROM plant_categories WHERE name = 'Beet family'), NULL),
+    ('Chard', (SELECT id FROM plant_categories WHERE name = 'Beet family'), NULL),
+    ('Spinach', (SELECT id FROM plant_categories WHERE name = 'Beet family'), NULL);
 
 INSERT INTO plant_catalogue (plant_type_id, variety, description, seed_to_harvest, sowing_to_transplant, position, spacing, hardiness, sowing_windows, transplant_windows, harvest_windows, harvest, suitability, source)
 VALUES
@@ -109,4 +112,10 @@ VALUES
 -- Dill
   ((SELECT id FROM plant_types WHERE name = 'Dill'), NULL, NULL, '6 weeks', '3-4 weeks', 'Can grow in shade', '15-23cm', 'Some frost resistance to about -2°C', '[{"start": "02-15", "end": "09-15"}]', '[{"start": "03-15", "end": "09-15"}, {"start": "09-15", "end": "10-15", "label": "under cover"}]', '[{"start": "04-01", "end": "10-31"}, {"start": "11-01", "end": "03-31", "label": "under cover"}]', NULL, '{interplant}', 'No Dig'),
 -- Parsley
-  ((SELECT id FROM plant_types WHERE name = 'Parsley'), NULL, NULL, '10 weeks early sowings, 8 weeks summer sowings', '5-6 weeks', 'Prefers sun but tolerates shade', '15-20cm', 'Hardy to about -8°C', '[{"start": "02-15", "end": "07-31"}]', '[{"start": "05-01", "end": "08-31"}]', '[{"start": "04-01", "end": "12-31"}]', NULL, NULL, 'No Dig');
+  ((SELECT id FROM plant_types WHERE name = 'Parsley'), NULL, NULL, '10 weeks early sowings, 8 weeks summer sowings', '5-6 weeks', 'Prefers sun but tolerates shade', '15-20cm', 'Hardy to about -8°C', '[{"start": "02-15", "end": "07-31"}]', '[{"start": "05-01", "end": "08-31"}]', '[{"start": "04-01", "end": "12-31"}]', NULL, NULL, 'No Dig'),
+-- Beetroot
+  ((SELECT id FROM plant_types WHERE name = 'Beetroot'), NULL, NULL, '13 weeks spring sowing, 10 weeks summer sowing', '3-5 weeks', 'Adaptable, tolerates shade', '30-35cm', 'Hardy to approx. -4°C', '[{"start": "03-01", "end": "06-30"}]', '[{"start": "04-01", "end": "07-31"}]', '[{"start": "06-01", "end": "12-31"}]', NULL, '{multisow,follow-on,interplant}', 'No Dig'),
+-- Chard
+  ((SELECT id FROM plant_types WHERE name = 'Chard'), NULL, NULL, '7-10 weeks', '3-4 weeks', 'Any; tolerates shade', '22-30cm equidistant or direct-sown in rows 30cm apart, with 5-15cm between plants', 'Will tolerate slight frost; plants hardy to -5°C', '[{"start": "04-15", "end": "07-31"}, {"start": "08-15", "end": "09-15", "label": "under cover"}]', '[{"start": "05-15", "end": "07-31"}, {"start": "09-01", "end": "10-31", "label": "under cover"}]', '[{"start": "03-01", "end": "04-30"}, {"start": "06-01", "end": "12-31"}, {"start": "11-01", "end": "04-30", "label": "under cover"}]', NULL, '{multisow,follow-on}', 'No Dig'),
+-- Spinach
+  ((SELECT id FROM plant_types WHERE name = 'Spinach'), NULL, NULL, '6-7 weeks', '2-4 weeks', 'Full sun or some shade, where slugs aren''t too numerous', '20-22cm equidistant for multisown clumps, or direct-sown in rows 20cm apart, with 10cm between plants', 'Hardy, down to -15°C or lower', '[{"start": "02-15", "end": "03-31"}, {"start": "08-01", "end": "08-31"}]', '[{"start": "03-15", "end": "04-15"}, {"start": "09-01", "end": "09-15"}]', '[{"start": "09-01", "end": "05-31"}]', NULL, '{multisow,follow-on}', 'No Dig');
