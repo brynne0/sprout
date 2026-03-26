@@ -30,7 +30,16 @@ INSERT INTO plant_types (name, category_id, icon) VALUES
     ('Zucchini', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'zucchini.png'),
     ('Cucumber', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'cucumber.png'),
     ('Melon', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'melon.png'),
-    ('Pumpkin', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'pumpkin.png');
+    ('Pumpkin', (SELECT id FROM plant_categories WHERE name = 'Cucurbits - cucumber family'), 'pumpkin.png'),
+    ('Carrot', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
+    ('Celeriac', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
+    ('Celery', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
+    ('Bulb Fennel', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
+    ('Parsnip', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
+    ('Coriander', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
+    ('Chervil', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
+    ('Dill', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
+    ('Parsley', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL);
 
 INSERT INTO plant_catalogue (plant_type_id, variety, description, seed_to_harvest, sowing_to_transplant, position, spacing, hardiness, sowing_windows, transplant_windows, harvest_windows, harvest, suitability, source)
 VALUES
@@ -76,9 +85,28 @@ VALUES
 -- Zucchini and Summer Squash
   ((SELECT id FROM plant_types WHERE name = 'Zucchini'), NULL, NULL, '2 months', '3-4 weeks', 'Need warmth and full sun; won''t thrive in a cold, shady spot', '60cm minimum, but 90cm gives a whole season of fruiting', 'Not hardy; will be killed by frost', '[{"start": "04-15", "end": "05-31"}]', '[{"start": "05-15", "end": "06-30"}]', '[{"start": "06-15", "end": "09-30"}]', NULL, '{interplant}', 'No Dig'),
 -- Cucumber
-  ((SELECT id FROM plant_types WHERE name = 'Cucumber'), 'Ridge', NULL, '80 days', '4-6 weeks', 'Full sun', '60-90cm', 'Tender; needs warmth and is killed by frost', '[{"start": "05-01", "end": "05-31", "label": "under cover"}, {"start": "06-01", "end": "06-30", "label": "outdoors"}]', '[{"start": "06-01", "end": "06-30", "label": "outdoors"}]', '[{"start": "07-15", "end": "09-15"}]', NULL, NULL, 'No Dig'),
+  ((SELECT id FROM plant_types WHERE name = 'Cucumber'), 'Ridge', NULL, '80 days', '4-6 weeks', 'Full sun', '60-90cm', 'Tender; needs warmth and is killed by frost', '[{"start": "05-01", "end": "05-31", "label": "under cover"}, {"start": "06-01", "end": "06-30"}]', '[{"start": "06-01", "end": "06-30"}]', '[{"start": "07-15", "end": "09-15"}]', NULL, NULL, 'No Dig'),
   ((SELECT id FROM plant_types WHERE name = 'Cucumber'), 'Cordon', NULL, '70 days', '4-6 weeks', 'Under cover', '90cm', 'Tender; needs warmth and is killed by frost', '[{"start": "04-15", "end": "05-31", "label": "under cover"}]', '[{"start": "05-15", "end": "06-30", "label": "under cover"}]', '[{"start": "06-25", "end": "10-07", "label": "under cover"}]', NULL, NULL, 'No Dig'),
 -- Melon
   ((SELECT id FROM plant_types WHERE name = 'Melon'), NULL, NULL, '5 months', '6-8 weeks', 'Full sun and sheltered, ideally under cover', '50-60cm apart', 'Not hardy; needs warmth and will be killed by frost', '[{"start": "03-15", "end": "03-31", "label": "under cover"}]', '[{"start": "05-15", "end": "05-31", "label": "under cover"}]', '[{"start": "08-15", "end": "09-30", "label": "under cover"}]', NULL, NULL, 'No Dig'),
 -- Pumpkin
-  ((SELECT id FROM plant_types WHERE name = 'Pumpkin'), NULL, NULL, '4.5-5.5 months', '4 weeks', 'Full sun and warmth', '1m apart', 'Tender; will be killed by frost and needs summer warmth to thrive', '[{"start": "04-15", "end": "04-30"}]', '[{"start": "05-15", "end": "05-31"}]', '[{"start": "09-01", "end": "10-15"}]', NULL, '{interplant}', 'No Dig');
+  ((SELECT id FROM plant_types WHERE name = 'Pumpkin'), NULL, NULL, '4.5-5.5 months', '4 weeks', 'Full sun and warmth', '1m apart', 'Tender; will be killed by frost and needs summer warmth to thrive', '[{"start": "04-15", "end": "04-30"}]', '[{"start": "05-15", "end": "05-31"}]', '[{"start": "09-01", "end": "10-15"}]', NULL, '{interplant}', 'No Dig'),
+-- Carrot
+  ((SELECT id FROM plant_types WHERE name = 'Carrot'), 'Early', NULL, '10 weeks', NULL, 'Adaptable; will tolerate some shade', 'Rows 15cm apart', 'Seedlings stand spring frosts to about -4°C', '[{"start": "03-15", "end": "04-15"}, {"start": "06-01", "end": "06-30"}]', NULL, '[{"start": "06-01", "end": "07-31"}, {"start": "09-01", "end": "09-30"}]', NULL, '{intersow,follow-on}', 'No Dig'),
+  ((SELECT id FROM plant_types WHERE name = 'Carrot'), 'Maincrop', NULL, 'From 12 weeks for fresh carrots, 5 months for storing', NULL, 'Adaptable; will tolerate some shade', 'Rows 30cm apart', 'Mature plants stand frost to about -5°C, depending how much leaf cover is above them', '[{"start": "06-01", "end": "06-30"}]', NULL, '[{"start": "09-01", "end": "12-31"}]', NULL, '{intersow,follow-on}', 'No Dig'),
+-- Celeriac
+  ((SELECT id FROM plant_types WHERE name = 'Celeriac'), NULL, NULL, '6-7 months', '8 weeks', 'Full sun or shade in moisture-retentive soil', '35-40cm in an equidistant grid pattern', 'Hardy to -10°C and possibly colder', '[{"start": "03-15", "end": "03-31"}]', '[{"start": "05-15", "end": "05-31"}]', '[{"start": "10-15", "end": "11-30"}]', NULL, '{interplant}', 'No Dig'),
+-- Celery
+  ((SELECT id FROM plant_types WHERE name = 'Celery'), NULL, NULL, '3.5 months', '8 weeks', 'Full sun or shade in moisture-retentive soil', '25-30cm apart in an equidistant grid pattern', 'Hardy, but stalks are damaged by moderate frost', '[{"start": "03-15", "end": "05-31"}]', '[{"start": "05-15", "end": "07-31"}]', '[{"start": "06-01", "end": "10-31"}]', NULL, '{follow-on}', 'No Dig'),
+-- Bulb Fennel
+  ((SELECT id FROM plant_types WHERE name = 'Bulb Fennel'), NULL, NULL, '13 weeks early sowings, 8 weeks summer sowings', '4-5 weeks', 'Can tolerate shade, but early plantings benefit from warmth and sunshine', '20cm', 'Slightly hardy to about -3°C', '[{"start": "02-15", "end": "02-28"}, {"start": "07-15", "end": "07-31"}]', '[{"start": "03-15", "end": "04-15"}, {"start": "08-15", "end": "08-31"}]', '[{"start": "05-15", "end": "06-30"}, {"start": "09-15", "end": "11-15"}]', NULL, '{interplant,follow-on}', 'No Dig'),
+-- Parsnip
+  ((SELECT id FROM plant_types WHERE name = 'Parsnip'), NULL, NULL, '6 months', NULL, 'Grows in all soils, and tolerates some shade', '5-10cm apart with 30cm between rows', 'Very hardy, down to at least -15°C', '[{"start": "02-15", "end": "06-15"}]', NULL, '[{"start": "09-15", "end": "03-31"}]', NULL, '{interplant}', 'No Dig'),
+-- Coriander
+  ((SELECT id FROM plant_types WHERE name = 'Coriander'), NULL, NULL, '8 weeks', '4 weeks', 'Tolerates shade', '15-20cm equidistant or rows 20cm apart', 'Hardy to -5°C or colder', '[{"start": "02-15", "end": "09-15"}]', '[{"start": "03-15", "end": "09-15"}, {"start": "09-15", "end": "10-15", "label": "under cover"}]', '[{"start": "03-15", "end": "11-30"}, {"start": "12-01", "end": "03-15", "label": "under cover"}]', NULL, NULL, 'No Dig'),
+-- Chervil
+  ((SELECT id FROM plant_types WHERE name = 'Chervil'), NULL, NULL, '8 weeks', '4 weeks', 'Adaptable, tolerates shade', '20cm equidistant', 'Hardy to approx. -10°C', '[{"start": "07-15", "end": "08-31"}]', '[{"start": "08-15", "end": "09-15"}, {"start": "09-15", "end": "10-15", "label": "under cover"}]', '[{"start": "09-15", "end": "10-31"}, {"start": "02-15", "end": "05-15"}]', NULL, '{interplant}', 'No Dig'),
+-- Dill
+  ((SELECT id FROM plant_types WHERE name = 'Dill'), NULL, NULL, '6 weeks', '3-4 weeks', 'Can grow in shade', '15-23cm', 'Some frost resistance to about -2°C', '[{"start": "02-15", "end": "09-15"}]', '[{"start": "03-15", "end": "09-15"}, {"start": "09-15", "end": "10-15", "label": "under cover"}]', '[{"start": "04-01", "end": "10-31"}, {"start": "11-01", "end": "03-31", "label": "under cover"}]', NULL, '{interplant}', 'No Dig'),
+-- Parsley
+  ((SELECT id FROM plant_types WHERE name = 'Parsley'), NULL, NULL, '10 weeks early sowings, 8 weeks summer sowings', '5-6 weeks', 'Prefers sun but tolerates shade', '15-20cm', 'Hardy to about -8°C', '[{"start": "02-15", "end": "07-31"}]', '[{"start": "05-01", "end": "08-31"}]', '[{"start": "04-01", "end": "12-31"}]', NULL, NULL, 'No Dig');

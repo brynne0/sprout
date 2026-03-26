@@ -1,4 +1,4 @@
-CREATE TYPE suitability_tag AS ENUM ('multisow', 'interplant', 'follow-on');
+CREATE TYPE suitability_tag AS ENUM ('multisow', 'interplant', 'follow-on', 'intersow');
 
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
