@@ -42,6 +42,7 @@ import { toast } from 'vue-sonner'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { CheckboxGroupRoot } from 'reka-ui'
+import { formatDate } from '@/lib/utils'
 
 const props = defineProps<{ open: boolean; plant?: Plant | null }>()
 const emit = defineEmits<{ 'update:open': [boolean]; plantAdded: [] }>()
@@ -134,13 +135,6 @@ function isInSowWindow(day: DateValue): string | false {
 
 function isInTransplantWindow(day: DateValue): string | false {
   return highlightWindow(day, selectedCatalogueEntry.value?.transplant_windows ?? [])
-}
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr.slice(0, 10) + 'T00:00:00')
-  return isNaN(d.getTime())
-    ? dateStr
-    : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function formatWindow(w: Window): string {

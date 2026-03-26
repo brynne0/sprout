@@ -39,6 +39,7 @@ const dialogOpen = ref(false)
 const editDialogOpen = ref(false)
 const plantToEdit = ref<Plant | null>(null)
 const loading = ref(true)
+import { formatDate } from '@/lib/utils'
 
 async function fetchPlants() {
   try {
@@ -87,13 +88,7 @@ function openEditDialog(plant: Plant) {
   editDialogOpen.value = true
 }
 
-function formatDate(dateStr: string | null | undefined) {
-  if (!dateStr) return '—'
-  const d = new Date(String(dateStr).slice(0, 10) + 'T00:00:00')
-  return isNaN(d.getTime())
-    ? dateStr
-    : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-}
+
 </script>
 
 <template>

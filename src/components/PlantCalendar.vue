@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 
 import { today, getLocalTimeZone } from '@internationalized/date'
+import { formatDate } from '@/lib/utils'
 import type { BasePlant } from '@/client'
 import { useElementSize } from '@vueuse/core'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -78,11 +79,13 @@ function windowBars(mmddStart: string, mmddEnd: string): Bar[] {
   ]
 }
 
+type Dot = { x: number; date: string }
+
 type Track = {
   type: 'sowing' | 'transplant' | 'harvest'
   label?: string
   bars: Bar[]
-  dotXs?: number[]
+  dots?: Dot[]
 }
 
 type PlantGroup = {
@@ -216,13 +219,13 @@ const displayGroups = computed<PlantGroup[]>(() => {
       'transplant_dates' in plant && Array.isArray(plant.transplant_dates)
         ? (plant.transplant_dates as string[])
         : []
-    const sowXs = rawSowDates.map((d) => {
+    const sowDots: Dot[] = rawSowDates.map((d) => {
       const md = parseDateMonthDay(d)
-      return dateToX(md.month, md.day)
+      return { x: dateToX(md.month, md.day), date: d.substring(0, 10) }
     })
-    const transplantXs = rawTransplantDates.map((d) => {
+    const transplantDots: Dot[] = rawTransplantDates.map((d) => {
       const md = parseDateMonthDay(d)
-      return dateToX(md.month, md.day)
+      return { x: dateToX(md.month, md.day), date: d.substring(0, 10) }
     })
 
     const sowing = extractTracks((plant.sowing_windows ?? []) as WindowData[])
@@ -230,16 +233,16 @@ const displayGroups = computed<PlantGroup[]>(() => {
     const harvest = extractTracks((plant.harvest_windows ?? []) as WindowData[])
 
     // Sowing tracks
-    if (sowing.unlabelledBars.length || sowXs.length) {
-      tracks.push({ type: 'sowing', bars: sowing.unlabelledBars, dotXs: sowXs })
+    if (sowing.unlabelledBars.length || sowDots.length) {
+      tracks.push({ type: 'sowing', bars: sowing.unlabelledBars, dots: sowDots })
     }
     for (const [label, bars] of sowing.labelGroups) {
       tracks.push({ type: 'sowing', label, bars })
     }
 
     // Transplant tracks
-    if (transplant.unlabelledBars.length || transplantXs.length) {
-      tracks.push({ type: 'transplant', bars: transplant.unlabelledBars, dotXs: transplantXs })
+    if (transplant.unlabelledBars.length || transplantDots.length) {
+      tracks.push({ type: 'transplant', bars: transplant.unlabelledBars, dots: transplantDots })
     }
     for (const [label, bars] of transplant.labelGroups) {
       tracks.push({ type: 'transplant', label, bars })
@@ -475,7 +478,7 @@ const todayX = computed(() => {
 
               <!-- Render each track -->
               <template v-for="(track, ti) in item.row.tracks" :key="`track-${ti}`">
-                <!-- Window bars with label: clickable with popover -->
+                <!-- Window bars with label: tooltip + popover -->
                 <template v-if="track.label && !hiddenTracks.has(track.type)">
                   <Popover v-for="(b, bi) in track.bars" :key="`bar-${ti}-${bi}`">
                     <PopoverTrigger as-child>
@@ -526,19 +529,31 @@ const todayX = computed(() => {
                 </template>
 
                 <!-- Dots (sow/transplant dates) -->
-                <div
-                  v-for="(dx, di) in showDots ? (track.dotXs ?? []) : []"
-                  v-show="!hiddenTracks.has(track.type)"
+                <Popover
+                  v-for="(dot, di) in showDots ? (track.dots ?? []) : []"
                   :key="`dot-${ti}-${di}`"
-                  class="absolute rounded-full z-10"
-                  :class="dotClasses[track.type]"
-                  :style="{
-                    left: dx - 5 + 'px',
-                    top: trackTop(ti) + TRACK_HEIGHT / 2 - 5 + 'px',
-                    width: '10px',
-                    height: TRACK_HEIGHT + 'px',
-                  }"
-                />
+                >
+                  <PopoverTrigger as-child>
+                    <button
+                      v-show="!hiddenTracks.has(track.type)"
+                      class="absolute rounded-full z-10 cursor-pointer"
+                      :class="dotClasses[track.type]"
+                      :style="{
+                        left: dot.x - 5 + 'px',
+                        top: trackTop(ti) + TRACK_HEIGHT / 2 - 5 + 'px',
+                        width: '10px',
+                        height: TRACK_HEIGHT + 'px',
+                      }"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent
+                    class="w-auto px-2 py-1 text-xs rounded-sm z-1"
+                    side="top"
+                    :side-offset="4"
+                  >
+                    {{ formatDate(dot.date) }}
+                  </PopoverContent>
+                </Popover>
               </template>
             </div>
           </div>
