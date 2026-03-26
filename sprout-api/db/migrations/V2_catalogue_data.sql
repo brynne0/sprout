@@ -67,7 +67,10 @@ INSERT INTO plant_types (name, category_id, icon) VALUES
     ('Chives', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
     ('Mint', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
     ('Rosemary', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
-    ('Thyme', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL);
+    ('Thyme', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
+    ('Oregano', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
+    ('Artichoke', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
+    ('Wild Strawberry', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL);
 
 INSERT INTO plant_catalogue (plant_type_id, variety, description, seed_to_harvest, sowing_to_transplant, position, spacing, hardiness, sowing_windows, transplant_windows, harvest_windows, harvest, suitability, source)
 VALUES
@@ -196,4 +199,10 @@ VALUES
 -- Rosemary
   ((SELECT id FROM plant_types WHERE name = 'Rosemary'), NULL, NULL, '12 weeks; small pick in first summer', NULL, 'Full sun or part shade', '50cm apart', 'Hardy to about -8°C, sometimes lower', '[{"start": "03-01", "end": "04-30"}]', '[{"start": "03-01", "end": "10-31"}]', '[{"start": "01-01", "end": "12-31"}]', NULL, NULL, 'No Dig'),
 -- Thyme
-  ((SELECT id FROM plant_types WHERE name = 'Thyme'), NULL, NULL, '8 weeks', '6-8 weeks', 'Full sun is best; shade is possible', '30cm apart', 'Hardy to about -30°C', '[{"start": "03-01", "end": "07-31"}]', '[{"start": "03-01", "end": "10-31"}]', '[{"start": "01-01", "end": "12-31"}]', NULL, NULL, 'No Dig');
+  ((SELECT id FROM plant_types WHERE name = 'Thyme'), NULL, NULL, '8 weeks', '6-8 weeks', 'Full sun is best; shade is possible', '30cm apart', 'Hardy to about -30°C', '[{"start": "03-01", "end": "07-31"}]', '[{"start": "03-01", "end": "10-31"}]', '[{"start": "01-01", "end": "12-31"}]', NULL, NULL, 'No Dig'),
+-- Oregano
+  ((SELECT id FROM plant_types WHERE name = 'Oregano'), 'Hera', NULL, '2-3 months', '6-8 weeks', 'Sunny sheltered spot, poor well-drained soils', '30 x 25cm', 'Perennial', '[{"start": "02-01", "end": "03-31"}, {"start": "04-01", "end": "05-15"}]', '[{"start": "04-01", "end": "05-15"}]', '[{"start": "06-01", "end": "08-31"}]', NULL, NULL, 'Bingenheimer'),
+-- Artichoke
+  ((SELECT id FROM plant_types WHERE name = 'Artichoke'), 'Green Globe', NULL, '~5 months. Can be harvested for up to 5 years if not affected by frost', '~2 months', 'Full sun, warm, good drainage', '100 x 60-75cm', 'Not frost hardy', '[{"start": "02-15", "end": "04-15"}]', '[{"start": "04-15", "end": "06-30"}]', '[{"start": "07-01", "end": "09-30"}]', NULL, NULL, 'Bingenheimer'),
+-- Wild Strawberry
+  ((SELECT id FROM plant_types WHERE name = 'Wild Strawberry'), 'Baron Solemacher', NULL, 'First fruits in first summer', '6-8 weeks', 'Full sun to half shade, moist well-drained nutrient-rich soil', '25cm', 'Hardy, evergreen in winter', '[{"start": "03-01", "end": "04-30"}]', '[{"start": "05-01", "end": "06-30"}]', '[{"start": "06-01", "end": "09-30"}]', NULL, NULL, 'Magic Garden Seeds');
