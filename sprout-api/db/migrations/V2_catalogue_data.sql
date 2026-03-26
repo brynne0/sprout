@@ -52,7 +52,14 @@ INSERT INTO plant_types (name, category_id, icon) VALUES
     ('Rocket', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
     ('Corn Salad', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
     ('Land Cress', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
-    ('Winter Purslane', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL);
+    ('Winter Purslane', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
+    ('Eggplant', (SELECT id FROM plant_categories WHERE name = 'Solanums, basil, and sweetcorn'), NULL),
+    ('Capsicum', (SELECT id FROM plant_categories WHERE name = 'Solanums, basil, and sweetcorn'), NULL),
+    ('Chilli', (SELECT id FROM plant_categories WHERE name = 'Solanums, basil, and sweetcorn'), NULL),
+    ('Basil', (SELECT id FROM plant_categories WHERE name = 'Solanums, basil, and sweetcorn'), NULL),
+    ('Potato', (SELECT id FROM plant_categories WHERE name = 'Solanums, basil, and sweetcorn'), NULL),
+    ('Sweetcorn', (SELECT id FROM plant_categories WHERE name = 'Solanums, basil, and sweetcorn'), NULL),
+    ('Tomato', (SELECT id FROM plant_categories WHERE name = 'Solanums, basil, and sweetcorn'), NULL);
 
 INSERT INTO plant_catalogue (plant_type_id, variety, description, seed_to_harvest, sowing_to_transplant, position, spacing, hardiness, sowing_windows, transplant_windows, harvest_windows, harvest, suitability, source)
 VALUES
@@ -149,4 +156,20 @@ VALUES
 -- Land Cress
   ((SELECT id FROM plant_types WHERE name = 'Land Cress'), NULL, NULL, '10 weeks', '4-5 weeks', 'Full sun or shade', '20-22cm equidistant', 'Very hardy to -15°C or lower', '[{"start": "08-01", "end": "09-15"}, {"start": "09-01", "end": "09-15", "label": "under cover"}]', '[{"start": "09-01", "end": "09-30"}, {"start": "10-01", "end": "10-15", "label": "under cover"}]', '[{"start": "10-15", "end": "04-30"}, {"start": "11-01", "end": "04-30", "label": "under cover"}]', NULL, '{follow-on}', 'No Dig'),
 -- Winter Purslane
-  ((SELECT id FROM plant_types WHERE name = 'Winter Purslane'), NULL, NULL, '10 weeks', '4-5 weeks', 'Adaptable, will grow in shade', '22cm equidistant', 'Very hardy, to -10°C', '[{"start": "08-01", "end": "08-31"}, {"start": "09-01", "end": "09-15", "label": "under cover"}]', '[{"start": "09-01", "end": "09-30"}, {"start": "10-01", "end": "10-15", "label": "under cover"}]', '[{"start": "10-15", "end": "04-30"}, {"start": "11-01", "end": "04-30", "label": "under cover"}]', NULL, '{follow-on}', 'No Dig');
+  ((SELECT id FROM plant_types WHERE name = 'Winter Purslane'), NULL, NULL, '10 weeks', '4-5 weeks', 'Adaptable, will grow in shade', '22cm equidistant', 'Very hardy, to -10°C', '[{"start": "08-01", "end": "08-31"}, {"start": "09-01", "end": "09-15", "label": "under cover"}]', '[{"start": "09-01", "end": "09-30"}, {"start": "10-01", "end": "10-15", "label": "under cover"}]', '[{"start": "10-15", "end": "04-30"}, {"start": "11-01", "end": "04-30", "label": "under cover"}]', NULL, '{follow-on}', 'No Dig'),
+-- Eggplant
+  ((SELECT id FROM plant_types WHERE name = 'Eggplant'), NULL, NULL, '4 months', '2-3 months', 'Under cover or outdoors in a sheltered, sunny position with as much warmth as possible', '40-50cm apart', 'Will not tolerate frost; need nighttime temperatures above 10°C for strong growth', '[{"start": "02-01", "end": "03-31", "label": "under cover"}]', '[{"start": "05-15", "end": "05-31", "label": "under cover"}]', '[{"start": "07-15", "end": "10-15", "label": "under cover"}]', NULL, NULL, 'No Dig'),
+-- Capsicum
+  ((SELECT id FROM plant_types WHERE name = 'Capsicum'), NULL, NULL, '4 months for green fruits under cover', '3 months', 'Grow under cover or outdoors, in a warm, sunny, sheltered position', '45cm apart', 'Not hardy; one of the most warmth-demanding plants', '[{"start": "02-15", "end": "03-15"}]', '[{"start": "05-15", "end": "06-15"}]', '[{"start": "07-15", "end": "10-31"}]', NULL, NULL, 'No Dig'),
+-- Chilli
+  ((SELECT id FROM plant_types WHERE name = 'Chilli'), NULL, NULL, '4 months for green fruits under cover', '3 months', 'Grow under cover or outdoors, in a warm, sunny, sheltered position', '30cm apart', 'Not hardy; one of the most warmth-demanding plants', '[{"start": "02-15", "end": "03-15"}]', '[{"start": "05-15", "end": "06-15"}]', '[{"start": "07-15", "end": "10-31"}]', NULL, NULL, 'No Dig'),
+-- Basil
+  ((SELECT id FROM plant_types WHERE name = 'Basil'), NULL, NULL, '7 weeks', '4-6 weeks', 'Full sun', '22-30cm apart', 'Killed by frost; grows best when nighttime temperatures are above 12°C', '[{"start": "04-01", "end": "06-30"}]', '[{"start": "05-01", "end": "07-31"}]', '[{"start": "06-01", "end": "09-30"}]', NULL, NULL, 'No Dig'),
+-- Potato
+  ((SELECT id FROM plant_types WHERE name = 'Potato'), 'First Early', NULL, '2 months', NULL, 'Full sun is best, to keep leaves dry', '35-40cm or 30cm for a small, very early harvest', 'Not frost hardy', '[{"start": "03-15", "end": "03-31"}]', NULL, '[{"start": "06-01", "end": "06-30"}]', NULL, NULL, 'No Dig'),
+  ((SELECT id FROM plant_types WHERE name = 'Potato'), 'Second Early', NULL, '3 months', NULL, 'Full sun is best, to keep leaves dry', '45-50cm', 'Not frost hardy', '[{"start": "04-15", "end": "04-30"}]', NULL, '[{"start": "07-15", "end": "07-31"}]', NULL, NULL, 'No Dig'),
+  ((SELECT id FROM plant_types WHERE name = 'Potato'), 'Maincrop', NULL, '4 months', NULL, 'Full sun is best, to keep leaves dry', 'Up to 60cm', 'Not frost hardy', '[{"start": "04-15", "end": "05-15"}]', NULL, '[{"start": "08-15", "end": "08-31"}]', NULL, NULL, 'No Dig'),
+-- Sweetcorn
+  ((SELECT id FROM plant_types WHERE name = 'Sweetcorn'), NULL, NULL, '3 months for early varieties', '4-5 weeks', 'Full sun and warmth', '25-30cm equidistant', 'Tender, will be killed by frost', '[{"start": "04-15", "end": "05-15", "label": "under cover"}, {"start": "05-15", "end": "06-15"}]', '[{"start": "05-15", "end": "06-15"}]', '[{"start": "08-01", "end": "09-30"}]', NULL, '{interplant}', 'No Dig'),
+-- Tomato
+  ((SELECT id FROM plant_types WHERE name = 'Tomato'), NULL, NULL, '3 months for cherry, 4 months for medium to large under cover, 4.5 months outdoors', '6 weeks', 'Full sun, and shelter for cordon varieties', '40-55cm apart', 'Not hardy, killed by frost, but more cold tolerant than aubergines and peppers', '[{"start": "03-15", "end": "03-31", "label": "under cover"}]', '[{"start": "05-01", "end": "05-31", "label": "under cover"}, {"start": "05-15", "end": "05-31"}]', '[{"start": "06-15", "end": "10-15", "label": "under cover"}, {"start": "07-15", "end": "09-30"}]', NULL, NULL, 'No Dig');
