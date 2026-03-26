@@ -98,6 +98,13 @@ type PlantRow = {
 
 const showGrid = ref(false)
 
+const hiddenTracks = ref<Set<'sowing' | 'transplant' | 'harvest'>>(new Set())
+
+function toggleTrack(type: 'sowing' | 'transplant' | 'harvest') {
+  if (hiddenTracks.value.has(type)) hiddenTracks.value.delete(type)
+  else hiddenTracks.value.add(type)
+}
+
 type SortMode = 'sow-date' | 'transplant-date' | 'harvest-date' | 'alphabetical'
 const sortMode = ref<SortMode>('alphabetical')
 
@@ -276,6 +283,11 @@ const visibleRows = computed<VisibleItem[]>(() => {
   return result
 })
 
+const dotClasses: Record<string, string> = {
+  sowing: 'bg-primary border',
+  transplant: 'bg-amber-500/70 border',
+}
+
 function rowHeight(row: PlantRow): number {
   const count = Math.max(row.tracks.length, 1)
   return ROW_PADDING * 2 + count * TRACK_HEIGHT + (count - 1) * TRACK_GAP
@@ -291,11 +303,6 @@ const trackBarClasses: Record<'sowing' | 'transplant' | 'harvest', string> = {
   harvest: 'bg-rose-500/20 border border-rose-500/40',
 }
 
-const dotClasses: Record<string, string> = {
-  sowing: 'bg-primary border',
-  transplant: 'bg-amber-500/70 border',
-}
-
 const todayX = computed(() => {
   const t = today(getLocalTimeZone())
   return dateToX(t.month, t.day)
@@ -307,18 +314,27 @@ const todayX = computed(() => {
   <div class="flex flex-wrap items-center gap-4 mb-4 px-4">
     <slot name="header" />
     <div class="flex flex-wrap gap-4 text-xs text-muted-foreground">
-      <span class="flex items-center gap-1.5">
-        <span class="inline-block w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/40" />
+      <button @click="toggleTrack('sowing')" class="flex items-center gap-1.5">
+        <span
+          class="inline-block w-3 h-3 rounded-sm border border-green-500/40"
+          :class="hiddenTracks.has('sowing') ? '' : 'bg-green-500/20'"
+        />
         Sow
-      </span>
-      <span class="flex items-center gap-1.5">
-        <span class="inline-block w-3 h-3 rounded-sm bg-amber-500/20 border border-amber-500/40" />
+      </button>
+      <button @click="toggleTrack('transplant')" class="flex items-center gap-1.5">
+        <span
+          class="inline-block w-3 h-3 rounded-sm border border-amber-500/40"
+          :class="hiddenTracks.has('transplant') ? '' : 'bg-amber-500/20'"
+        />
         Transplant
-      </span>
-      <span class="flex items-center gap-1.5">
-        <span class="inline-block w-3 h-3 rounded-sm bg-rose-500/20 border border-rose-500/40" />
+      </button>
+      <button @click="toggleTrack('harvest')" class="flex items-center gap-1.5">
+        <span
+          class="inline-block w-3 h-3 rounded-sm border border-rose-500/40"
+          :class="hiddenTracks.has('harvest') ? '' : 'bg-rose-500/20'"
+        />
         Harvest
-      </span>
+      </button>
       <span v-if="showDots" class="flex items-center gap-1.5">
         <span class="inline-block w-3 h-3 border rounded-sm bg-primary" />
         Sow date
@@ -460,7 +476,7 @@ const todayX = computed(() => {
               <!-- Render each track -->
               <template v-for="(track, ti) in item.row.tracks" :key="`track-${ti}`">
                 <!-- Window bars with label: clickable with popover -->
-                <template v-if="track.label">
+                <template v-if="track.label && !hiddenTracks.has(track.type)">
                   <Popover v-for="(b, bi) in track.bars" :key="`bar-${ti}-${bi}`">
                     <PopoverTrigger as-child>
                       <button
@@ -496,6 +512,7 @@ const todayX = computed(() => {
                 <template v-else>
                   <div
                     v-for="(b, bi) in track.bars"
+                    v-show="!hiddenTracks.has(track.type)"
                     :key="`bar-${ti}-${bi}`"
                     class="absolute rounded-sm"
                     :class="trackBarClasses[track.type]"
@@ -511,6 +528,7 @@ const todayX = computed(() => {
                 <!-- Dots (sow/transplant dates) -->
                 <div
                   v-for="(dx, di) in showDots ? (track.dotXs ?? []) : []"
+                  v-show="!hiddenTracks.has(track.type)"
                   :key="`dot-${ti}-${di}`"
                   class="absolute rounded-full z-10"
                   :class="dotClasses[track.type]"
