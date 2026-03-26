@@ -42,7 +42,17 @@ INSERT INTO plant_types (name, category_id, icon) VALUES
     ('Parsley', (SELECT id FROM plant_categories WHERE name = 'Umbellifers - carrot family'), NULL),
     ('Beetroot', (SELECT id FROM plant_categories WHERE name = 'Beet family'), NULL),
     ('Chard', (SELECT id FROM plant_categories WHERE name = 'Beet family'), NULL),
-    ('Spinach', (SELECT id FROM plant_categories WHERE name = 'Beet family'), NULL);
+    ('Spinach', (SELECT id FROM plant_categories WHERE name = 'Beet family'), NULL),
+    ('Chicory', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
+    ('Endive', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
+    ('Lettuce', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
+    ('Wombok', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
+    ('Mizuna and Mustards', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
+    ('Pak Choi', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
+    ('Rocket', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
+    ('Corn Salad', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
+    ('Land Cress', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL),
+    ('Winter Purslane', (SELECT id FROM plant_categories WHERE name = 'Leafy salad crops'), NULL);
 
 INSERT INTO plant_catalogue (plant_type_id, variety, description, seed_to_harvest, sowing_to_transplant, position, spacing, hardiness, sowing_windows, transplant_windows, harvest_windows, harvest, suitability, source)
 VALUES
@@ -118,4 +128,25 @@ VALUES
 -- Chard
   ((SELECT id FROM plant_types WHERE name = 'Chard'), NULL, NULL, '7-10 weeks', '3-4 weeks', 'Any; tolerates shade', '22-30cm equidistant or direct-sown in rows 30cm apart, with 5-15cm between plants', 'Will tolerate slight frost; plants hardy to -5°C', '[{"start": "04-15", "end": "07-31"}, {"start": "08-15", "end": "09-15", "label": "under cover"}]', '[{"start": "05-15", "end": "07-31"}, {"start": "09-01", "end": "10-31", "label": "under cover"}]', '[{"start": "03-01", "end": "04-30"}, {"start": "06-01", "end": "12-31"}, {"start": "11-01", "end": "04-30", "label": "under cover"}]', NULL, '{multisow,follow-on}', 'No Dig'),
 -- Spinach
-  ((SELECT id FROM plant_types WHERE name = 'Spinach'), NULL, NULL, '6-7 weeks', '2-4 weeks', 'Full sun or some shade, where slugs aren''t too numerous', '20-22cm equidistant for multisown clumps, or direct-sown in rows 20cm apart, with 10cm between plants', 'Hardy, down to -15°C or lower', '[{"start": "02-15", "end": "03-31"}, {"start": "08-01", "end": "08-31"}]', '[{"start": "03-15", "end": "04-15"}, {"start": "09-01", "end": "09-15"}]', '[{"start": "09-01", "end": "05-31"}]', NULL, '{multisow,follow-on}', 'No Dig');
+  ((SELECT id FROM plant_types WHERE name = 'Spinach'), NULL, NULL, '6-7 weeks', '2-4 weeks', 'Full sun or some shade, where slugs aren''t too numerous', '20-22cm equidistant for multisown clumps, or direct-sown in rows 20cm apart, with 10cm between plants', 'Hardy, down to -15°C or lower', '[{"start": "02-15", "end": "03-31"}, {"start": "08-01", "end": "08-31"}]', '[{"start": "03-15", "end": "04-15"}, {"start": "09-01", "end": "09-15"}]', '[{"start": "09-01", "end": "05-31"}]', NULL, '{multisow,follow-on}', 'No Dig'),
+-- Chicory
+  ((SELECT id FROM plant_types WHERE name = 'Chicory'), NULL, NULL, '3 months', '3-5 weeks', 'Prefers full sun, but will tolerate shade', '30cm equidistant', 'Hardy; young or looseleaf plants to -15°C, mature hearted plants to -5°C', '[{"start": "06-15", "end": "07-15"}]', '[{"start": "07-01", "end": "08-15"}]', '[{"start": "09-01", "end": "02-28"}]', NULL, '{follow-on,interplant}', 'No Dig'),
+-- Endive
+  ((SELECT id FROM plant_types WHERE name = 'Endive'), NULL, NULL, '7-8 weeks for outer leaves, 11 weeks for hearts', '3 weeks', 'Full sun is best, and they like moisture', '22cm equidistant for outer leaves, 30cm for hearts, rows 25cm apart sown direct', 'Hardy to -10°C, although hearts damaged by lighter frosts', '[{"start": "06-15", "end": "08-01"}, {"start": "09-01", "end": "09-15", "label": "under cover"}]', '[{"start": "07-15", "end": "08-31"}, {"start": "09-15", "end": "10-15", "label": "under cover"}]', '[{"start": "08-15", "end": "11-15"}, {"start": "11-15", "end": "03-31", "label": "under cover"}]', NULL, '{follow-on}', 'No Dig'),
+-- Lettuce
+  ((SELECT id FROM plant_types WHERE name = 'Lettuce'), NULL, NULL, '6 weeks for leaf, 10-12 weeks for hearts, 4-5 weeks for cut-and-come-again', '3-4 weeks', 'Full sun or light shade; full sun in winter', 'Leaf 22cm equidistant, hearting 30cm, cut-and-come-again rows 15-22cm apart', 'Hardy, but don''t thrive in regular frost. To -7°C in a polytunnel', '[{"start": "02-15", "end": "09-15", "label": "under cover"}, {"start": "03-15", "end": "08-01"}]', '[{"start": "03-01", "end": "09-15"}, {"start": "09-15", "end": "10-15", "label": "under cover"}]', '[{"start": "05-01", "end": "10-31"}, {"start": "11-01", "end": "04-30", "label": "under cover"}]', NULL, '{interplant}', 'No Dig'),
+-- Wombok
+  ((SELECT id FROM plant_types WHERE name = 'Wombok'), NULL, NULL, '10 weeks', '2-3 weeks', 'Full sun for fewer slugs', '30-35cm', 'Hardy; non-headed plants -10°C, headed plants -4°C', '[{"start": "07-15", "end": "07-31"}]', '[{"start": "08-15", "end": "08-31"}]', '[{"start": "10-01", "end": "11-30"}]', NULL, '{follow-on}', 'No Dig'),
+-- Mizuna and Mustards
+  ((SELECT id FROM plant_types WHERE name = 'Mizuna and Mustards'), NULL, NULL, '5-6 weeks', '2-3 weeks', 'Cool, moist conditions. Grow well in some shade', '20-22cm equidistant or in rows 20cm apart', 'Fairly hardy; mizuna to -3°C and mustard to -5°C', '[{"start": "02-15", "end": "03-15"}, {"start": "07-15", "end": "08-15"}, {"start": "09-01", "end": "09-15", "label": "under cover"}]', '[{"start": "03-01", "end": "03-31"}, {"start": "08-15", "end": "09-30"}, {"start": "10-01", "end": "10-15", "label": "under cover"}]', '[{"start": "04-01", "end": "05-15"}, {"start": "09-15", "end": "11-15"}, {"start": "11-01", "end": "04-30", "label": "under cover"}]', NULL, '{multisow,follow-on}', 'No Dig'),
+-- Pak Choi
+  ((SELECT id FROM plant_types WHERE name = 'Pak Choi'), NULL, NULL, '6 weeks', '2-3 weeks', 'Full sun or shade, but beware of slugs', '20-25cm equidistant', 'Hardy down to about -3°C, but mature plants go soft if they freeze', '[{"start": "02-01", "end": "02-28"}, {"start": "07-15", "end": "08-31"}]', '[{"start": "03-01", "end": "03-15"}, {"start": "08-15", "end": "08-31"}]', '[{"start": "04-01", "end": "05-15"}, {"start": "09-15", "end": "11-30"}]', NULL, '{multisow,follow-on}', 'No Dig'),
+-- Rocket
+  ((SELECT id FROM plant_types WHERE name = 'Rocket'), 'Salad', NULL, '4-5 weeks', '2-3 weeks', 'Moist soil in full sun or some shade', '22cm equidistant', 'Hardy to at least -6°C', '[{"start": "08-01", "end": "09-15"}, {"start": "09-01", "end": "09-15", "label": "under cover"}]', '[{"start": "08-15", "end": "09-15"}, {"start": "10-01", "end": "10-31", "label": "under cover"}]', '[{"start": "08-15", "end": "12-15"}, {"start": "02-01", "end": "04-15", "label": "under cover"}, {"start": "11-01", "end": "12-31", "label": "under cover"}]', NULL, '{follow-on}', 'No Dig'),
+  ((SELECT id FROM plant_types WHERE name = 'Rocket'), 'Wild', NULL, '10-30 weeks', 'Up to 6 months', 'Moist soil in full sun or some shade', '22cm equidistant', 'Hardy to at least -6°C', '[{"start": "09-01", "end": "09-15"}]', '[{"start": "03-01", "end": "03-31"}]', '[{"start": "04-01", "end": "06-30"}]', NULL, '{follow-on}', 'No Dig'),
+-- Corn Salad
+  ((SELECT id FROM plant_types WHERE name = 'Corn Salad'), NULL, NULL, '2-4 months', '4 weeks', 'Adaptable; full sun or part shade', '10cm equidistant', 'Very hardy to approx. -10°C', '[{"start": "08-15", "end": "08-31"}]', '[{"start": "09-15", "end": "09-30"}]', '[{"start": "11-01", "end": "04-15"}]', NULL, '{follow-on}', 'No Dig'),
+-- Land Cress
+  ((SELECT id FROM plant_types WHERE name = 'Land Cress'), NULL, NULL, '10 weeks', '4-5 weeks', 'Full sun or shade', '20-22cm equidistant', 'Very hardy to -15°C or lower', '[{"start": "08-01", "end": "09-15"}, {"start": "09-01", "end": "09-15", "label": "under cover"}]', '[{"start": "09-01", "end": "09-30"}, {"start": "10-01", "end": "10-15", "label": "under cover"}]', '[{"start": "10-15", "end": "04-30"}, {"start": "11-01", "end": "04-30", "label": "under cover"}]', NULL, '{follow-on}', 'No Dig'),
+-- Winter Purslane
+  ((SELECT id FROM plant_types WHERE name = 'Winter Purslane'), NULL, NULL, '10 weeks', '4-5 weeks', 'Adaptable, will grow in shade', '22cm equidistant', 'Very hardy, to -10°C', '[{"start": "08-01", "end": "08-31"}, {"start": "09-01", "end": "09-15", "label": "under cover"}]', '[{"start": "09-01", "end": "09-30"}, {"start": "10-01", "end": "10-15", "label": "under cover"}]', '[{"start": "10-15", "end": "04-30"}, {"start": "11-01", "end": "04-30", "label": "under cover"}]', NULL, '{follow-on}', 'No Dig');
