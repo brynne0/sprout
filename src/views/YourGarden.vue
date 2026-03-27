@@ -197,7 +197,7 @@ function openEditDialog(plant: Plant) {
         </TabsContent>
 
         <TabsContent value="gardenCalendar">
-          <PlantCalendar :plants="plants" :show-dots="true" />
+          <PlantCalendar :plants="plants" :show-dots="true" :show-year-nav="true" />
         </TabsContent>
       </Tabs>
     </div>

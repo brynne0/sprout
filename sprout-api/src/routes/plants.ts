@@ -34,7 +34,8 @@ const PLANT_SELECT = `
     COALESCE(p.overrides->'suitability', to_jsonb(pc.suitability)) AS suitability,
     COALESCE(p.overrides->'sowing_windows', pc.sowing_windows) AS sowing_windows,
     COALESCE(p.overrides->'harvest_windows', pc.harvest_windows) AS harvest_windows,
-    COALESCE(p.overrides->'transplant_windows', pc.transplant_windows) AS transplant_windows
+    COALESCE(p.overrides->'transplant_windows', pc.transplant_windows) AS transplant_windows,
+    p.created_at
     FROM plants p
   JOIN plant_types pt ON pt.id = p.plant_type_id
   LEFT JOIN plant_catalogue pc ON pc.id = p.catalogue_id`;
