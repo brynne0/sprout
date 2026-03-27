@@ -20,7 +20,7 @@
   --muted-foreground: oklch(0.553 0.013 58.071);
   --accent: color-mix(in oklab, var(--primary) 15%, transparent);
   --accent-foreground: oklch(0.216 0.006 56.043);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: #c1121f;
   --border: oklch(0 0 0 / 15%);
   --input: oklch(0 0 0 / 15%);
   --ring: oklch(0.709 0.01 56.259);

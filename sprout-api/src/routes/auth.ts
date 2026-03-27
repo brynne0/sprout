@@ -55,7 +55,7 @@ authRoutes.get("/google/callback", async (c) => {
     [userInfo.email, userInfo.id],
   );
 
-  // Sign your JWT and redirect to frontend
+  // Sign JWT and redirect to frontend
   const jwt = await sign(
     { sub: rows[0].id },
     Deno.env.get("JWT_SECRET")!,
@@ -64,4 +64,13 @@ authRoutes.get("/google/callback", async (c) => {
   return c.redirect(
     `${Deno.env.get("FRONTEND_URL")}/auth/callback?token=${jwt}`,
   );
+});
+
+authRoutes.delete("/user", authMiddleware, async (c) => {
+  const userId = (c.get("jwtPayload") as { sub: string }).sub;
+
+  await query("DELETE FROM plants WHERE user_id = $1", [userId]);
+  await query("DELETE FROM users WHERE id = $1", [userId]);
+
+  return c.body(null, 204);
 });
