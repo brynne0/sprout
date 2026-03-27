@@ -461,7 +461,9 @@ async function submitPlant() {
 
         <!-- Custom variety text input -->
         <Field v-if="isCustomVariety || (selectedPlantTypeId && !hasVarieties)">
-          <FieldLabel for="customVariety">Variety name</FieldLabel>
+          <FieldLabel for="customVariety"
+            >Variety name<span v-if="isCustomVariety && hasVarieties">*</span></FieldLabel
+          >
           <Input
             id="customVariety"
             v-model="customVariety"
