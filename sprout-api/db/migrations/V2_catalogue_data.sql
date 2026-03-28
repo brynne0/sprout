@@ -70,7 +70,7 @@ INSERT INTO plant_types (name, category_id, icon) VALUES
     ('Thyme', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
     ('Oregano', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
     ('Artichoke', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL),
-    ('Wild Strawberry', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL);
+    ('Strawberry', (SELECT id FROM plant_categories WHERE name = 'Perennial vegetables'), NULL);
 
 INSERT INTO plant_catalogue (plant_type_id, variety, seed_to_harvest, sowing_to_transplant, position, spacing, hardiness, sowing_windows, transplant_windows, harvest_windows, suitability, source)
 VALUES
@@ -204,5 +204,5 @@ VALUES
   ((SELECT id FROM plant_types WHERE name = 'Oregano'), 'Hera', '2-3 months', '6-8 weeks', 'Sunny sheltered spot, poor well-drained soils', '30 x 25cm', 'Perennial', '[{"start": "02-01", "end": "03-31"}, {"start": "04-01", "end": "05-15"}]', '[{"start": "04-01", "end": "05-15"}]', '[{"start": "06-01", "end": "08-31"}]', NULL, 'Bingenheimer'),
 -- Artichoke
   ((SELECT id FROM plant_types WHERE name = 'Artichoke'), 'Green Globe', '~5 months. Can be harvested for up to 5 years if not affected by frost', '~2 months', 'Full sun, warm, good drainage', '100 x 60-75cm', 'Not frost hardy', '[{"start": "02-15", "end": "04-15"}]', '[{"start": "04-15", "end": "06-30"}]', '[{"start": "07-01", "end": "09-30"}]', NULL, 'Bingenheimer'),
--- Wild Strawberry
-  ((SELECT id FROM plant_types WHERE name = 'Wild Strawberry'), 'Baron Solemacher', 'First fruits in first summer', '6-8 weeks', 'Full sun to half shade, moist well-drained nutrient-rich soil', '25cm', 'Hardy, evergreen in winter', '[{"start": "03-01", "end": "04-30"}]', '[{"start": "05-01", "end": "06-30"}]', '[{"start": "06-01", "end": "09-30"}]', NULL, 'Magic Garden Seeds');
+-- Strawberry
+  ((SELECT id FROM plant_types WHERE name = 'Strawberry'), 'Baron Solemacher', 'First fruits in first summer', '6-8 weeks', 'Full sun to half shade, moist well-drained nutrient-rich soil', '25cm', 'Hardy, evergreen in winter', '[{"start": "03-01", "end": "04-30"}]', '[{"start": "05-01", "end": "06-30"}]', '[{"start": "06-01", "end": "09-30"}]', NULL, 'Magic Garden Seeds');
