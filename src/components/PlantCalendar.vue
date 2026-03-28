@@ -15,10 +15,16 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 const props = withDefaults(
-  defineProps<{ plants: BasePlant[]; showDots?: boolean; showYearNav?: boolean }>(),
+  defineProps<{
+    plants: BasePlant[]
+    showDots?: boolean
+    showYearNav?: boolean
+    groupByName?: boolean
+  }>(),
   {
     showDots: false,
     showYearNav: false,
+    groupByName: false,
   },
 )
 
@@ -251,11 +257,25 @@ const displayGroups = computed<PlantGroup[]>(() => {
     const harvest = extractTracks((plant.harvest_windows ?? []) as WindowData[])
 
     // Sowing tracks
-    if (sowing.unlabelledBars.length || sowDots.length) {
+    const sowLabelEntries = [...sowing.labelGroups]
+    if (sowing.unlabelledBars.length || (sowDots.length && sowLabelEntries.length === 0)) {
       tracks.push({ type: 'sowing', bars: sowing.unlabelledBars, dots: sowDots })
-    }
-    for (const [label, bars] of sowing.labelGroups) {
-      tracks.push({ type: 'sowing', label, bars })
+      for (const [label, bars] of sowLabelEntries) {
+        tracks.push({ type: 'sowing', label, bars })
+      }
+    } else {
+      const firstSowEntry = sowLabelEntries[0]
+      if (firstSowEntry) {
+        tracks.push({
+          type: 'sowing',
+          label: firstSowEntry[0],
+          bars: firstSowEntry[1],
+          dots: sowDots.length ? sowDots : undefined,
+        })
+      }
+      for (const [label, bars] of sowLabelEntries.slice(1)) {
+        tracks.push({ type: 'sowing', label, bars })
+      }
     }
 
     // Transplant tracks
@@ -276,8 +296,7 @@ const displayGroups = computed<PlantGroup[]>(() => {
 
     const row: PlantRow = { key: String(plant.id ?? plant.name), plant, tracks }
 
-    const hasVariety = 'variety' in plant && !!(plant as { variety?: string }).variety
-    const groupKey = hasVariety ? plant.name : String(plant.id ?? plant.name)
+    const groupKey = props.groupByName ? plant.name : String(plant.id ?? plant.name)
     if (!groupMap.has(groupKey)) groupMap.set(groupKey, [])
     groupMap.get(groupKey)!.push(row)
   }

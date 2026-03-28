@@ -245,8 +245,8 @@ watch(
       selectedCatalogueId.value = plant.catalogue_id
     } else if (plant.custom_variety) {
       isCustomVariety.value = true
-      customVariety.value = plant.custom_variety
     }
+    customVariety.value = plant.custom_variety ?? ''
     sowDates.value = [...(plant.sow_dates ?? [])]
     transplantDates.value = [...(plant.transplant_dates ?? [])]
     notes.value = plant.notes ?? ''
@@ -816,7 +816,15 @@ async function submitPlant() {
 
       <DialogFooter>
         <DialogClose as-child>
-          <Button variant="outline">Cancel</Button>
+          <Button
+            variant="outline"
+            @click="
+              () => {
+                if (!isEditMode) reset()
+              }
+            "
+            >Cancel</Button
+          >
         </DialogClose>
         <Button type="button" :disabled="!canSubmit || loading" class="px-4!" @click="submitPlant">
           <Spinner v-if="loading" class="animate-spin" />
