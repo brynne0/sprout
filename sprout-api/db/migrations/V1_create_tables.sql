@@ -48,6 +48,7 @@ CREATE TABLE plants (
     transplant_dates DATE[] DEFAULT '{}',
     overrides JSONB,
     notes TEXT,
+    year INTEGER DEFAULT NULL,
     archived_at TIMESTAMPTZ DEFAULT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );

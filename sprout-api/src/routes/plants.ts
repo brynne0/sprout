@@ -35,7 +35,7 @@ const PLANT_SELECT = `
     COALESCE(p.overrides->'sowing_windows', pc.sowing_windows) AS sowing_windows,
     COALESCE(p.overrides->'harvest_windows', pc.harvest_windows) AS harvest_windows,
     COALESCE(p.overrides->'transplant_windows', pc.transplant_windows) AS transplant_windows,
-    p.created_at,
+    p.year,
     pcat.name AS category_name
     FROM plants p
   JOIN plant_types pt ON pt.id = p.plant_type_id
@@ -48,7 +48,7 @@ plantRoutes.get("/plants", async (c) => {
   const userId = getUserId(c);
   const rows = await query<Plant>(
     `${PLANT_SELECT} WHERE p.user_id = $1 AND archived_at IS NULL
-    ORDER BY p.created_at DESC`,
+    ORDER BY pt.name ASC`,
     [userId],
   );
   return c.json(rows);
@@ -64,10 +64,11 @@ plantRoutes.post("/plants", async (c) => {
     transplant_dates,
     notes,
     overrides,
+    year,
   } = await c.req.json<PlantInput>();
   const rows = await query<{ id: string }>(
-    `INSERT INTO plants (user_id, plant_type_id, catalogue_id, custom_variety, sow_dates, transplant_dates, notes, overrides)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+    `INSERT INTO plants (user_id, plant_type_id, catalogue_id, custom_variety, sow_dates, transplant_dates, notes, overrides, year)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8, $9)
        RETURNING id`,
     [
       userId,
@@ -78,6 +79,7 @@ plantRoutes.post("/plants", async (c) => {
       transplant_dates ?? [],
       notes ?? null,
       overrides ? JSON.stringify(overrides) : null,
+      year ?? null,
     ],
   );
   const inserted = await query<Plant>(`${PLANT_SELECT} WHERE p.id = $1`, [
@@ -109,12 +111,13 @@ plantRoutes.put("/plants/:id", async (c) => {
     transplant_dates,
     notes,
     overrides,
+    year,
   } = await c.req.json<PlantInput>();
   const rows = await query<{ id: string }>(
     `UPDATE plants SET
          plant_type_id = $1, catalogue_id = $2, custom_variety = $3,
-         sow_dates = $4, transplant_dates = $5, notes = $6, overrides = $7
-       WHERE id = $8 AND user_id = $9
+         sow_dates = $4, transplant_dates = $5, notes = $6, overrides = $7, year = $8
+       WHERE id = $9 AND user_id = $10
        RETURNING id`,
     [
       plant_type_id,
@@ -124,6 +127,7 @@ plantRoutes.put("/plants/:id", async (c) => {
       transplant_dates ?? [],
       notes ?? null,
       overrides ? JSON.stringify(overrides) : null,
+      year ?? null,
       c.req.param("id"),
       userId,
     ],

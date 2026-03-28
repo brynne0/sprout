@@ -1,4 +1,4 @@
-UPDATE plant_catalogue SET description = '', harevest = ''
+UPDATE plant_catalogue SET description = '', harvest = ''
 WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Broad Beans') AND variety IS NULL;
 
 UPDATE plant_catalogue SET description = '', harvest = ''
