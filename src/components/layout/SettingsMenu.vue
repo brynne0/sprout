@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Settings, LogOut, UserRoundMinus } from 'lucide-vue-next'
+import { Settings, LogOut } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import {
   DropdownMenu,
@@ -47,10 +47,7 @@ async function deleteAccount() {
       </div>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" side="top" class="mr-2">
-      <DropdownMenuItem @click="showDeleteAccount = true">
-        <UserRoundMinus class="size-4" />
-        Delete Account
-      </DropdownMenuItem>
+      <DropdownMenuItem @click="showDeleteAccount = true"> Delete Account </DropdownMenuItem>
       <DropdownMenuItem @click="logout">
         <LogOut class="size-4" />
         Log out

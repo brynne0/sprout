@@ -95,12 +95,191 @@ Deno.test("DELETE /api/plants/:id returns 204", async () => {
   assertEquals(res.status, 204);
 });
 
+Deno.test("POST /api/plants creates a plant and returns 201", async () => {
+  const userId = await createTestUser();
+  const headers = await authHeader(userId);
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
+  const res = await app.request("/api/plants", {
+    method: "POST",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify({ plant_type_id: plantType!.id }),
+  });
+  assertEquals(res.status, 201);
+  const body = await res.json();
+  assertEquals(body.plant_type_id, plantType!.id);
+});
+
+Deno.test("GET /api/plants/:id returns plant with category_name", async () => {
+  const userId = await createTestUser();
+  const headers = await authHeader(userId);
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
+  const created = await app.request("/api/plants", {
+    method: "POST",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify({ plant_type_id: plantType!.id }),
+  });
+  const { id } = await created.json();
+  const res = await app.request(`/api/plants/${id}`, { headers });
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(typeof body.category_name, "string");
+});
+
+Deno.test("PUT /api/plants/:id updates a plant", async () => {
+  const userId = await createTestUser();
+  const headers = await authHeader(userId);
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
+  const created = await app.request("/api/plants", {
+    method: "POST",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify({ plant_type_id: plantType!.id }),
+  });
+  const { id } = await created.json();
+  const res = await app.request(`/api/plants/${id}`, {
+    method: "PUT",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify({ plant_type_id: plantType!.id, notes: "updated" }),
+  });
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(body.notes, "updated");
+});
+
+Deno.test("PATCH /api/plants/:id/archive archives a plant", async () => {
+  const userId = await createTestUser();
+  const headers = await authHeader(userId);
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
+  const created = await app.request("/api/plants", {
+    method: "POST",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify({ plant_type_id: plantType!.id }),
+  });
+  const { id } = await created.json();
+  const archiveRes = await app.request(`/api/plants/${id}/archive`, {
+    method: "PATCH",
+    headers,
+  });
+  assertEquals(archiveRes.status, 200);
+  // Archived plant should not appear in GET /api/plants
+  const listRes = await app.request("/api/plants", { headers });
+  const plants = await listRes.json();
+  assertEquals(plants.some((p: { id: string }) => p.id === id), false);
+});
+
+Deno.test("POST /api/plants with overrides returns overridden values", async () => {
+  const userId = await createTestUser();
+  const headers = await authHeader(userId);
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
+  const res = await app.request("/api/plants", {
+    method: "POST",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      plant_type_id: plantType!.id,
+      overrides: { description: "my custom description" },
+    }),
+  });
+  assertEquals(res.status, 201);
+  const body = await res.json();
+  assertEquals(body.description, "my custom description");
+});
+
+// Ownership tests
+Deno.test("GET /api/plants/:id returns 404 for another user's plant", async () => {
+  const userA = await createTestUser();
+  const userB = await query<{ id: string }>(
+    "INSERT INTO users (email, google_id) VALUES ('other@example.com', 'google-other-id') ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email RETURNING id",
+  ).then((r) => r[0].id);
+  const headersA = await authHeader(userA);
+  const headersB = await authHeader(userB);
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
+  const created = await app.request("/api/plants", {
+    method: "POST",
+    headers: { ...headersA, "Content-Type": "application/json" },
+    body: JSON.stringify({ plant_type_id: plantType!.id }),
+  });
+  const { id } = await created.json();
+  const res = await app.request(`/api/plants/${id}`, { headers: headersB });
+  assertEquals(res.status, 404);
+});
+
+Deno.test("PUT /api/plants/:id returns 404 for another user's plant", async () => {
+  const userA = await createTestUser();
+  const userB = await query<{ id: string }>(
+    "INSERT INTO users (email, google_id) VALUES ('other@example.com', 'google-other-id') ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email RETURNING id",
+  ).then((r) => r[0].id);
+  const headersA = await authHeader(userA);
+  const headersB = await authHeader(userB);
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
+  const created = await app.request("/api/plants", {
+    method: "POST",
+    headers: { ...headersA, "Content-Type": "application/json" },
+    body: JSON.stringify({ plant_type_id: plantType!.id }),
+  });
+  const { id } = await created.json();
+  const res = await app.request(`/api/plants/${id}`, {
+    method: "PUT",
+    headers: { ...headersB, "Content-Type": "application/json" },
+    body: JSON.stringify({ plant_type_id: plantType!.id }),
+  });
+  assertEquals(res.status, 404);
+});
+
+Deno.test("PATCH /api/plants/:id/archive returns 404 for another user's plant", async () => {
+  const userA = await createTestUser();
+  const userB = await query<{ id: string }>(
+    "INSERT INTO users (email, google_id) VALUES ('other@example.com', 'google-other-id') ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email RETURNING id",
+  ).then((r) => r[0].id);
+  const headersA = await authHeader(userA);
+  const headersB = await authHeader(userB);
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
+  const created = await app.request("/api/plants", {
+    method: "POST",
+    headers: { ...headersA, "Content-Type": "application/json" },
+    body: JSON.stringify({ plant_type_id: plantType!.id }),
+  });
+  const { id } = await created.json();
+  const res = await app.request(`/api/plants/${id}/archive`, {
+    method: "PATCH",
+    headers: headersB,
+  });
+  assertEquals(res.status, 404);
+});
+
 // Auth routes
 Deno.test("GET /auth/google redirects to Google", async () => {
   const res = await app.request("/auth/google", { redirect: "manual" });
   assertEquals(res.status, 302);
   const location = res.headers.get("Location")!;
   assertEquals(location.includes("accounts.google.com"), true);
+});
+
+Deno.test("expired JWT returns 401", async () => {
+  const userId = await createTestUser();
+  const expiredToken = await sign(
+    { sub: userId, exp: Math.floor(Date.now() / 1000) - 1 },
+    JWT_SECRET,
+    "HS256",
+  );
+  const res = await app.request("/api/plants", {
+    headers: { Authorization: `Bearer ${expiredToken}` },
+  });
+  assertEquals(res.status, 401);
 });
 
 // Clean up database connection pool

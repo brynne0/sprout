@@ -224,7 +224,6 @@ watch(
   async (plant) => {
     if (!plant) return
     selectedPlantTypeId.value = plant.plant_type_id ?? ''
-    // Wait for catalogue entries to load via the plant type watcher
     if (plant.plant_type_id) {
       const res = await getApiPlantTypesByIdCatalogue({ path: { id: plant.plant_type_id } })
       catalogueEntries.value = res.data ?? []
@@ -315,7 +314,7 @@ async function submitPlant() {
   const body = {
     plant_type_id: selectedPlantTypeId.value,
     catalogue_id: selectedCatalogueId.value || undefined,
-    custom_variety: isCustomVariety.value ? customVariety.value : undefined,
+    custom_variety: customVariety.value || undefined,
     sow_dates: sowDates.value.length ? sowDates.value : undefined,
     transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
     notes: notes.value || undefined,
@@ -372,6 +371,7 @@ async function submitPlant() {
                 variant="outline"
                 role="combobox"
                 :aria-expanded="plantTypeComboOpen"
+                :disabled="isEditMode"
                 class="w-full justify-between"
               >
                 {{ selectedPlantTypeName }}
@@ -379,7 +379,7 @@ async function submitPlant() {
               </Button>
             </PopoverTrigger>
             <PopoverContent class="p-0">
-              <Command>
+              <Command :model-value="selectedPlantTypeName">
                 <CommandInput placeholder="Search plants..." />
                 <CommandList>
                   <CommandEmpty>No plants found.</CommandEmpty>
@@ -423,7 +423,7 @@ async function submitPlant() {
               </Button>
             </PopoverTrigger>
             <PopoverContent class="p-0">
-              <Command>
+              <Command :model-value="selectedVarietyLabel">
                 <CommandInput placeholder="Search varieties..." />
                 <CommandList>
                   <CommandEmpty>No varieties found.</CommandEmpty>
