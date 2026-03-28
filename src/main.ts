@@ -5,10 +5,18 @@ import router from './router'
 import { client } from '@/client/client.gen'
 import { useAuth } from '@/composables/useAuth'
 
-const { token } = useAuth()
+const { token, clearToken } = useAuth()
 client.setConfig({
   baseUrl: import.meta.env.VITE_API_URL,
   auth: () => token.value ?? '',
+})
+
+client.interceptors.response.use((response) => {
+  if (response.status === 401) {
+    clearToken()
+    router.push('/login')
+  }
+  return response
 })
 
 const app = createApp(App)

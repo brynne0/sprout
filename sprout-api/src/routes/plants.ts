@@ -1,6 +1,6 @@
 import { Context, Hono } from "hono";
 import { query } from "../db.ts";
-import { authMiddleware } from "./auth.ts";
+import { authMiddleware, requireUser } from "./auth.ts";
 import type { components } from "../types/api.ts";
 
 type Plant = components["schemas"]["Plant"];
@@ -42,7 +42,7 @@ const PLANT_SELECT = `
   LEFT JOIN plant_catalogue pc ON pc.id = p.catalogue_id
   LEFT JOIN plant_categories pcat ON pcat.id = pt.category_id`;
 
-plantRoutes.use("*", authMiddleware);
+plantRoutes.use("*", authMiddleware, requireUser);
 
 plantRoutes.get("/plants", async (c) => {
   const userId = getUserId(c);
