@@ -19,6 +19,13 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
 import { RangeCalendar } from '@/components/ui/range-calendar'
 import type { DateRange } from 'reka-ui'
@@ -73,6 +80,7 @@ const transplantDates = ref<string[]>([])
 const stagingSowDate = ref<DateValue>()
 const stagingTransplantDate = ref<DateValue>()
 const notes = ref('')
+const year = ref<number | null>(null)
 
 const SUITABILITY_OPTIONS = ['multisow', 'interplant', 'follow-on'] as const
 
@@ -200,6 +208,11 @@ const canSubmit = computed(() => {
   return true
 })
 
+const yearOptions = computed(() => {
+  const current = today(getLocalTimeZone()).year
+  return Array.from({ length: 11 }, (_, i) => current - 5 + i)
+})
+
 const cleanedOverrides = computed(() => {
   const result: Record<string, unknown> = Object.fromEntries(
     Object.entries(overrides.value).filter(([, v]) => v !== '' && v != null),
@@ -237,6 +250,7 @@ watch(
     sowDates.value = [...(plant.sow_dates ?? [])]
     transplantDates.value = [...(plant.transplant_dates ?? [])]
     notes.value = plant.notes ?? ''
+    year.value = plant.year ?? today(getLocalTimeZone()).year
     overrides.value.suitability = plant.suitability ?? []
   },
   { immediate: true },
@@ -244,6 +258,7 @@ watch(
 
 // Fetch catalogue entries when plant type changes
 watch(selectedPlantTypeId, async (id) => {
+  if (isEditMode.value) return
   selectedCatalogueId.value = ''
   customVariety.value = ''
   isCustomVariety.value = false
@@ -258,6 +273,15 @@ watch(selectedPlantTypeId, async (id) => {
     }
   }
 })
+
+watch(
+  () => props.open,
+  (open) => {
+    if (open && !isEditMode.value) {
+      year.value = today(getLocalTimeZone()).year
+    }
+  },
+)
 
 function selectPlantType(id: string) {
   selectedPlantTypeId.value = id
@@ -287,6 +311,7 @@ function reset() {
   stagingSowDate.value = undefined
   stagingTransplantDate.value = undefined
   notes.value = ''
+  year.value = null
   showOverrides.value = false
   overrides.value = {
     description: '',
@@ -318,6 +343,7 @@ async function submitPlant() {
     sow_dates: sowDates.value.length ? sowDates.value : undefined,
     transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
     notes: notes.value || undefined,
+    year: year.value ?? undefined,
     overrides: cleanedOverrides.value,
   }
   try {
@@ -563,6 +589,27 @@ async function submitPlant() {
           <FieldLabel for="notes">Notes</FieldLabel>
           <Input id="notes" v-model="notes" placeholder="Optional" />
         </Field>
+
+        <Field>
+          <FieldLabel>Year</FieldLabel>
+          <Select
+            :modal="false"
+            :model-value="year?.toString() ?? 'all'"
+            @update:model-value="(v) => (year = v === 'all' ? null : Number(v))"
+          >
+            <SelectTrigger class="w-32">
+              <SelectValue placeholder="All years" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All years</SelectItem>
+              <SelectItem v-for="y in yearOptions" :key="y" :value="y.toString()">
+                {{ y }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          <p class="text-xs text-muted-foreground">Select "All years" to show in every year.</p>
+        </Field>
       </FieldGroup>
 
       <Collapsible v-model:open="showOverrides">
@@ -575,14 +622,6 @@ async function submitPlant() {
         </CollapsibleTrigger>
         <CollapsibleContent>
           <FieldGroup class="mt-3">
-            <Field>
-              <FieldLabel for="description">Description</FieldLabel>
-              <Textarea
-                id="description"
-                v-model="overrides.description"
-                :placeholder="selectedCatalogueEntry?.description ?? ''"
-              />
-            </Field>
             <Field>
               <FieldLabel for="position">Position</FieldLabel>
               <Textarea

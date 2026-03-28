@@ -198,8 +198,6 @@ components:
           type: string
         variety:
           type: string
-        description:
-          type: string
         position:
           type: string
         hardiness:
@@ -263,9 +261,8 @@ components:
               type: string
             notes:
               type: string
-            created_at:
-              type: string
-              format: date-time
+            year:
+              type: integer
             category_name:
               type: string
 
@@ -329,6 +326,8 @@ components:
             format: date
         notes:
           type: string
+        year:
+          type: integer
         overrides:
           $ref: "#/components/schemas/PlantOverrides"
 
@@ -336,8 +335,6 @@ components:
       type: object
       description: Optional overrides for catalogue fields (e.g. from a seed packet)
       properties:
-        description:
-          type: string
         position:
           type: string
         hardiness:

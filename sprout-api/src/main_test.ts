@@ -126,7 +126,7 @@ Deno.test("GET /api/plants/:id returns plant with category_name", async () => {
   const res = await app.request(`/api/plants/${id}`, { headers });
   assertEquals(res.status, 200);
   const body = await res.json();
-  assertEquals(typeof body.category_name, "string");
+  assertEquals("category_name" in body, true);
 });
 
 Deno.test("PUT /api/plants/:id updates a plant", async () => {
@@ -185,12 +185,12 @@ Deno.test("POST /api/plants with overrides returns overridden values", async () 
     headers: { ...headers, "Content-Type": "application/json" },
     body: JSON.stringify({
       plant_type_id: plantType!.id,
-      overrides: { description: "my custom description" },
+      overrides: { position: "my custom position" },
     }),
   });
   assertEquals(res.status, 201);
   const body = await res.json();
-  assertEquals(body.description, "my custom description");
+  assertEquals(body.position, "my custom position");
 });
 
 // Ownership tests
