@@ -224,7 +224,6 @@ watch(
   async (plant) => {
     if (!plant) return
     selectedPlantTypeId.value = plant.plant_type_id ?? ''
-    // Wait for catalogue entries to load via the plant type watcher
     if (plant.plant_type_id) {
       const res = await getApiPlantTypesByIdCatalogue({ path: { id: plant.plant_type_id } })
       catalogueEntries.value = res.data ?? []
@@ -379,7 +378,7 @@ async function submitPlant() {
               </Button>
             </PopoverTrigger>
             <PopoverContent class="p-0">
-              <Command>
+              <Command :model-value="selectedPlantTypeName">
                 <CommandInput placeholder="Search plants..." />
                 <CommandList>
                   <CommandEmpty>No plants found.</CommandEmpty>
@@ -423,7 +422,7 @@ async function submitPlant() {
               </Button>
             </PopoverTrigger>
             <PopoverContent class="p-0">
-              <Command>
+              <Command :model-value="selectedVarietyLabel">
                 <CommandInput placeholder="Search varieties..." />
                 <CommandList>
                   <CommandEmpty>No varieties found.</CommandEmpty>
