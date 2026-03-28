@@ -43,7 +43,7 @@ onMounted(async () => {
   <LoadingLeaves v-if="loading" />
   <PlantCalendar v-else :plants="filteredPlants">
     <template #header>
-      <div class="relative max-w-xs">
+      <div class="relative max-w-sm">
         <Search class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input v-model="searchQuery" placeholder="Search plants..." class="pl-8 h-8" />
       </div>

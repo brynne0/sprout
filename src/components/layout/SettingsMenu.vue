@@ -8,11 +8,30 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/composables/useAuth'
+import { ref } from 'vue'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { deleteAuthUser } from '@/client'
 
 const router = useRouter()
 const { clearToken } = useAuth()
+const showDeleteAccount = ref(false)
 
 function logout() {
+  clearToken()
+  router.push('/login')
+}
+
+async function deleteAccount() {
+  await deleteAuthUser()
   clearToken()
   router.push('/login')
 }
@@ -28,10 +47,26 @@ function logout() {
       </div>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" side="top" class="mr-2">
+      <DropdownMenuItem @click="showDeleteAccount = true"> Delete Account </DropdownMenuItem>
       <DropdownMenuItem @click="logout">
         <LogOut class="size-4" />
         Log out
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
+
+  <AlertDialog v-model:open="showDeleteAccount">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Delete account?</AlertDialogTitle>
+        <AlertDialogDescription>
+          This will permanently delete your account and all your plants. This can't be undone.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogAction variant="destructive" @click="deleteAccount"> Delete </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>

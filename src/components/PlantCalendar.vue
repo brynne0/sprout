@@ -6,7 +6,7 @@ import { formatDate } from '@/lib/utils'
 import type { BasePlant } from '@/client'
 import { useElementSize } from '@vueuse/core'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { ChevronRight, ArrowUpDown, Rows3 } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, ArrowUpDown, Rows3 } from 'lucide-vue-next'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,9 +14,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-const props = withDefaults(defineProps<{ plants: BasePlant[]; showDots?: boolean }>(), {
-  showDots: false,
-})
+const props = withDefaults(
+  defineProps<{ plants: BasePlant[]; showDots?: boolean; showYearNav?: boolean }>(),
+  {
+    showDots: false,
+    showYearNav: false,
+  },
+)
+
+const selectedYear = ref(today(getLocalTimeZone()).year)
 const timelineContainer = ref<HTMLElement | null>(null)
 const { width: containerWidth } = useElementSize(timelineContainer)
 const monthWidth = computed(() => Math.max(40, containerWidth.value / 12))
@@ -209,16 +215,28 @@ const displayGroups = computed<PlantGroup[]>(() => {
     }
   })
 
+  const filtered = props.showYearNav
+    ? sorted.filter(
+        (p) =>
+          !('created_at' in p) ||
+          !p.created_at ||
+          new Date(p.created_at as string).getFullYear() === selectedYear.value,
+      )
+    : sorted
+
   const groupMap = new Map<string, PlantRow[]>()
-  for (const plant of sorted) {
+  for (const plant of filtered) {
     const tracks: Track[] = []
 
-    const rawSowDates =
+    const rawSowDates = (
       'sow_dates' in plant && Array.isArray(plant.sow_dates) ? (plant.sow_dates as string[]) : []
-    const rawTransplantDates =
+    ).filter((d) => !props.showYearNav || new Date(d).getFullYear() === selectedYear.value)
+    const rawTransplantDates = (
       'transplant_dates' in plant && Array.isArray(plant.transplant_dates)
         ? (plant.transplant_dates as string[])
         : []
+    ).filter((d) => !props.showYearNav || new Date(d).getFullYear() === selectedYear.value)
+
     const sowDots: Dot[] = rawSowDates.map((d) => {
       const md = parseDateMonthDay(d)
       return { x: dateToX(md.month, md.day), date: d.substring(0, 10) }
@@ -258,8 +276,10 @@ const displayGroups = computed<PlantGroup[]>(() => {
 
     const row: PlantRow = { key: String(plant.id ?? plant.name), plant, tracks }
 
-    if (!groupMap.has(plant.name)) groupMap.set(plant.name, [])
-    groupMap.get(plant.name)!.push(row)
+    const hasVariety = 'variety' in plant && !!(plant as { variety?: string }).variety
+    const groupKey = hasVariety ? plant.name : String(plant.id ?? plant.name)
+    if (!groupMap.has(groupKey)) groupMap.set(groupKey, [])
+    groupMap.get(groupKey)!.push(row)
   }
 
   return Array.from(groupMap, ([name, rows]) => ({ name, rows }))
@@ -313,9 +333,11 @@ const todayX = computed(() => {
 </script>
 
 <template>
-  <!-- Header: slot + legend -->
-  <div class="flex flex-wrap items-center gap-4 mb-4 px-4">
+  <div v-if="$slots.header" class="mb-4 px-4">
     <slot name="header" />
+  </div>
+  <!-- Legend + year nav -->
+  <div class="flex items-center gap-4 mb-4 px-4">
     <div class="flex flex-wrap gap-4 text-xs text-muted-foreground">
       <button @click="toggleTrack('sowing')" class="flex items-center gap-1.5">
         <span
@@ -346,6 +368,22 @@ const todayX = computed(() => {
         <span class="inline-block w-3 h-3 border rounded-sm bg-amber-500/70" />
         Transplant date
       </span>
+    </div>
+    <div v-if="showYearNav" class="flex items-center gap-2 text-sm ml-auto">
+      <button
+        v-if="selectedYear !== today(getLocalTimeZone()).year"
+        class="text-xs text-muted-foreground hover:text-foreground transition-colors"
+        @click="selectedYear = today(getLocalTimeZone()).year"
+      >
+        {{ today(getLocalTimeZone()).year }}
+      </button>
+      <button class="p-0.5 rounded hover:bg-muted transition-colors" @click="selectedYear--">
+        <ChevronLeft class="w-4 h-4 text-muted-foreground" />
+      </button>
+      <span class="font-medium tabular-nums">{{ selectedYear }}</span>
+      <button class="p-0.5 rounded hover:bg-muted transition-colors" @click="selectedYear++">
+        <ChevronRight class="w-4 h-4 text-muted-foreground" />
+      </button>
     </div>
   </div>
 
@@ -472,6 +510,7 @@ const todayX = computed(() => {
             <div class="absolute inset-0">
               <!-- Today line -->
               <div
+                v-if="selectedYear === today(getLocalTimeZone()).year"
                 class="absolute top-0 bottom-0 border-l border-primary/40"
                 :style="{ left: todayX + 'px' }"
               />

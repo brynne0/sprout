@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { type Context, Hono, type Next } from "hono";
 import { sign } from "hono/jwt";
 import { query } from "../db.ts";
 import { jwt } from "hono/jwt";
@@ -55,7 +55,7 @@ authRoutes.get("/google/callback", async (c) => {
     [userInfo.email, userInfo.id],
   );
 
-  // Sign your JWT and redirect to frontend
+  // Sign JWT and redirect to frontend
   const jwt = await sign(
     { sub: rows[0].id },
     Deno.env.get("JWT_SECRET")!,
@@ -64,4 +64,23 @@ authRoutes.get("/google/callback", async (c) => {
   return c.redirect(
     `${Deno.env.get("FRONTEND_URL")}/auth/callback?token=${jwt}`,
   );
+});
+
+export async function requireUser(c: Context, next: Next) {
+  const userId = (c.get("jwtPayload") as { sub: string }).sub;
+  const rows = await query<{ id: string }>(
+    "SELECT id FROM users WHERE id = $1",
+    [userId],
+  );
+  if (!rows[0]) return c.json({ error: "Unauthorized" }, 401);
+  return next();
+}
+
+authRoutes.delete("/user", authMiddleware, async (c) => {
+  const userId = (c.get("jwtPayload") as { sub: string }).sub;
+
+  await query("DELETE FROM plants WHERE user_id = $1", [userId]);
+  await query("DELETE FROM users WHERE id = $1", [userId]);
+
+  return c.body(null, 204);
 });

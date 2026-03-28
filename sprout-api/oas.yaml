@@ -170,6 +170,13 @@ paths:
         "302":
           description: Redirects to frontend with JWT token
 
+  /auth/user:
+    delete:
+      summary: Delete the user's account and plants
+      responses:
+        "204":
+          description: Account deleted
+
 security:
   - bearerAuth: []
 
@@ -255,6 +262,11 @@ components:
             icon:
               type: string
             notes:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            category_name:
               type: string
 
     PlantType:

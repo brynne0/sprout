@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   Plus,
   Sprout,
@@ -40,6 +40,21 @@ const editDialogOpen = ref(false)
 const plantToEdit = ref<Plant | null>(null)
 const loading = ref(true)
 import { formatDate } from '@/lib/utils'
+
+const groupedPlants = computed(() => {
+  const groups = new Map<string, Plant[]>()
+  for (const plant of plants.value) {
+    const cat = plant.category_name ?? 'Uncategorised'
+    if (!groups.has(cat)) groups.set(cat, [])
+    groups.get(cat)!.push(plant)
+  }
+  for (const groupPlants of groups.values()) {
+    groupPlants.sort((a, b) => a.name.localeCompare(b.name))
+  }
+  return Array.from(groups, ([label, plants]) => ({ label, plants })).sort((a, b) =>
+    a.label.localeCompare(b.label),
+  )
+})
 
 async function fetchPlants() {
   try {
@@ -118,8 +133,15 @@ function openEditDialog(plant: Plant) {
         </TabsList>
 
         <TabsContent value="gardenList" class="px-4">
+          <template v-for="group in groupedPlants" :key="group.label">
+            <h3
+              v-if="groupedPlants.length > 1"
+              class="text-sm font-medium text-muted-foreground mt-4 mb-2 first:mt-0"
+            >
+              {{ group.label }}
+            </h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            <Collapsible v-for="plant in plants" :key="plant.id" class="rounded-xl border">
+            <Collapsible v-for="plant in group.plants" :key="plant.id" class="rounded-xl border">
               <div class="flex items-center gap-4 py-2 px-4">
                 <!-- <img
                   v-if="plant.icon"
@@ -194,10 +216,11 @@ function openEditDialog(plant: Plant) {
               </CollapsibleContent>
             </Collapsible>
           </div>
+          </template>
         </TabsContent>
 
         <TabsContent value="gardenCalendar">
-          <PlantCalendar :plants="plants" :show-dots="true" />
+          <PlantCalendar :plants="plants" :show-dots="true" :show-year-nav="true" />
         </TabsContent>
       </Tabs>
     </div>
