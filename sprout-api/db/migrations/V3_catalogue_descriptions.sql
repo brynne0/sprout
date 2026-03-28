@@ -211,11 +211,11 @@ WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Rosemary') AND v
 UPDATE plant_catalogue SET description = '', harvest = ''
 WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Thyme') AND variety IS NULL;
 
-UPDATE plant_catalogue SET description = '', harvest = ''
+UPDATE plant_catalogue SET description = 'Greek Oregano ''Hera'' is a perennial plant with a height up to 30 cm; sunny position, poor soils, flowers July/August, white to pink flowers. Seasoning plant; typical pizza seasoning and for sauces. A productive selection with a particularly strong flavour.', harvest = 'Pinch new growth off as and when you need it. Prune right back in midsummer and dry the leaves in the sun.'
 WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Oregano') AND variety = 'Hera';
 
-UPDATE plant_catalogue SET description = '', harvest = ''
+UPDATE plant_catalogue SET description = 'Green Globe is a tall-growing artichoke with round, lightly spiked buds and healthy leaves. Initially slow to develop, but later very productive, including many side buds. Good yield in the first year; in milder locations, it can be grown as a perennial. The dark purple flowers are popular in floral arrangements.', harvest = 'Use secateurs to harvest them when they reach the size of a golf ball. You will be rewarded as you will get more than one flower bud.'
 WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Artichoke') AND variety = 'Green Globe';
 
-UPDATE plant_catalogue SET description = '', harvest = ''
+UPDATE plant_catalogue SET description = 'The ''Baron Solemacher'' is a very tasty, old wild strawberry variety which grows bushy and bears enormously many juicy and sweet, little fruits. As it doesn''t climb or form offshoots, it is ideal for pot cultivation. It can also be grown well in a plant bag. The variety was first mentioned in 1935. It originates from the nursery Heinemann in Erfurt, which is steeped in tradition.', harvest = NULL
 WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Wild Strawberry') AND variety = 'Baron Solemacher';
