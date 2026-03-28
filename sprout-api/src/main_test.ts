@@ -98,7 +98,9 @@ Deno.test("DELETE /api/plants/:id returns 204", async () => {
 Deno.test("POST /api/plants creates a plant and returns 201", async () => {
   const userId = await createTestUser();
   const headers = await authHeader(userId);
-  const [plantType] = await query<{ id: string }>("SELECT id FROM plant_types LIMIT 1");
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
   const res = await app.request("/api/plants", {
     method: "POST",
     headers: { ...headers, "Content-Type": "application/json" },
@@ -112,7 +114,9 @@ Deno.test("POST /api/plants creates a plant and returns 201", async () => {
 Deno.test("GET /api/plants/:id returns plant with category_name", async () => {
   const userId = await createTestUser();
   const headers = await authHeader(userId);
-  const [plantType] = await query<{ id: string }>("SELECT id FROM plant_types LIMIT 1");
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
   const created = await app.request("/api/plants", {
     method: "POST",
     headers: { ...headers, "Content-Type": "application/json" },
@@ -128,7 +132,9 @@ Deno.test("GET /api/plants/:id returns plant with category_name", async () => {
 Deno.test("PUT /api/plants/:id updates a plant", async () => {
   const userId = await createTestUser();
   const headers = await authHeader(userId);
-  const [plantType] = await query<{ id: string }>("SELECT id FROM plant_types LIMIT 1");
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
   const created = await app.request("/api/plants", {
     method: "POST",
     headers: { ...headers, "Content-Type": "application/json" },
@@ -148,7 +154,9 @@ Deno.test("PUT /api/plants/:id updates a plant", async () => {
 Deno.test("PATCH /api/plants/:id/archive archives a plant", async () => {
   const userId = await createTestUser();
   const headers = await authHeader(userId);
-  const [plantType] = await query<{ id: string }>("SELECT id FROM plant_types LIMIT 1");
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
   const created = await app.request("/api/plants", {
     method: "POST",
     headers: { ...headers, "Content-Type": "application/json" },
@@ -169,7 +177,9 @@ Deno.test("PATCH /api/plants/:id/archive archives a plant", async () => {
 Deno.test("POST /api/plants with overrides returns overridden values", async () => {
   const userId = await createTestUser();
   const headers = await authHeader(userId);
-  const [plantType] = await query<{ id: string }>("SELECT id FROM plant_types LIMIT 1");
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
   const res = await app.request("/api/plants", {
     method: "POST",
     headers: { ...headers, "Content-Type": "application/json" },
@@ -191,7 +201,9 @@ Deno.test("GET /api/plants/:id returns 404 for another user's plant", async () =
   ).then((r) => r[0].id);
   const headersA = await authHeader(userA);
   const headersB = await authHeader(userB);
-  const [plantType] = await query<{ id: string }>("SELECT id FROM plant_types LIMIT 1");
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
   const created = await app.request("/api/plants", {
     method: "POST",
     headers: { ...headersA, "Content-Type": "application/json" },
@@ -209,7 +221,9 @@ Deno.test("PUT /api/plants/:id returns 404 for another user's plant", async () =
   ).then((r) => r[0].id);
   const headersA = await authHeader(userA);
   const headersB = await authHeader(userB);
-  const [plantType] = await query<{ id: string }>("SELECT id FROM plant_types LIMIT 1");
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
   const created = await app.request("/api/plants", {
     method: "POST",
     headers: { ...headersA, "Content-Type": "application/json" },
@@ -231,7 +245,9 @@ Deno.test("PATCH /api/plants/:id/archive returns 404 for another user's plant", 
   ).then((r) => r[0].id);
   const headersA = await authHeader(userA);
   const headersB = await authHeader(userB);
-  const [plantType] = await query<{ id: string }>("SELECT id FROM plant_types LIMIT 1");
+  const [plantType] = await query<{ id: string }>(
+    "SELECT id FROM plant_types LIMIT 1",
+  );
   const created = await app.request("/api/plants", {
     method: "POST",
     headers: { ...headersA, "Content-Type": "application/json" },

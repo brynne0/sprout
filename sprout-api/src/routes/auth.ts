@@ -68,7 +68,10 @@ authRoutes.get("/google/callback", async (c) => {
 
 export async function requireUser(c: Context, next: Next) {
   const userId = (c.get("jwtPayload") as { sub: string }).sub;
-  const rows = await query<{ id: string }>("SELECT id FROM users WHERE id = $1", [userId]);
+  const rows = await query<{ id: string }>(
+    "SELECT id FROM users WHERE id = $1",
+    [userId],
+  );
   if (!rows[0]) return c.json({ error: "Unauthorized" }, 401);
   return next();
 }
