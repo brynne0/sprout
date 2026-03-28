@@ -216,12 +216,12 @@ const displayGroups = computed<PlantGroup[]>(() => {
   })
 
   const filtered = props.showYearNav
-    ? sorted.filter(
-        (p) =>
-          !('created_at' in p) ||
-          !p.created_at ||
-          new Date(p.created_at as string).getFullYear() === selectedYear.value,
-      )
+    ? sorted.filter((p) => {
+        if ('year' in p && p.year != null) {
+          return (p.year as number) === selectedYear.value
+        }
+        return true // show in all years
+      })
     : sorted
 
   const groupMap = new Map<string, PlantRow[]>()
