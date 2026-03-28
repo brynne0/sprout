@@ -245,8 +245,8 @@ watch(
       selectedCatalogueId.value = plant.catalogue_id
     } else if (plant.custom_variety) {
       isCustomVariety.value = true
-      customVariety.value = plant.custom_variety
     }
+    customVariety.value = plant.custom_variety ?? ''
     sowDates.value = [...(plant.sow_dates ?? [])]
     transplantDates.value = [...(plant.transplant_dates ?? [])]
     notes.value = plant.notes ?? ''
