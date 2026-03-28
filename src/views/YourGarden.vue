@@ -34,6 +34,7 @@ import { getApiPlants, deleteApiPlantsById, patchApiPlantsByIdArchive } from '@/
 import PlantDialogue from '@/components/PlantDialogue.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import { toast } from 'vue-sonner'
+import { handleApiError } from '@/lib/utils'
 const plants = ref<Plant[]>([])
 const dialogOpen = ref(false)
 const editDialogOpen = ref(false)
@@ -61,11 +62,7 @@ async function fetchPlants() {
     const res = await getApiPlants({ throwOnError: true })
     plants.value = res.data ?? []
   } catch (error) {
-    if (error instanceof TypeError) {
-      toast.error('Network error', { description: 'Check your connection and try again.' })
-    } else {
-      toast.error('Failed to load plants', { description: 'Please try refreshing.' })
-    }
+    handleApiError(error, 'Failed to load plants')
   }
 }
 

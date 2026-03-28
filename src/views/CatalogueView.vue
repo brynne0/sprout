@@ -6,7 +6,7 @@ import PlantCalendar from '@/components/PlantCalendar.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { handleApiError } from '@/lib/utils'
 
 const plants = ref<CataloguePlant[]>([])
 const loading = ref(true)
@@ -25,11 +25,7 @@ onMounted(async () => {
     const res = await getApiCatalogue({ throwOnError: true })
     plants.value = res.data ?? []
   } catch (error) {
-    if (error instanceof TypeError) {
-      toast.error('Network error', { description: 'Check your connection and try again.' })
-    } else {
-      toast.error('Failed to load catalogue', { description: 'Please try refreshing.' })
-    }
+    handleApiError(error, 'Failed to load catalogue')
   }
   loading.value = false
 })
