@@ -276,8 +276,10 @@ const displayGroups = computed<PlantGroup[]>(() => {
 
     const row: PlantRow = { key: String(plant.id ?? plant.name), plant, tracks }
 
-    if (!groupMap.has(plant.name)) groupMap.set(plant.name, [])
-    groupMap.get(plant.name)!.push(row)
+    const hasVariety = 'variety' in plant && !!(plant as { variety?: string }).variety
+    const groupKey = hasVariety ? plant.name : String(plant.id ?? plant.name)
+    if (!groupMap.has(groupKey)) groupMap.set(groupKey, [])
+    groupMap.get(groupKey)!.push(row)
   }
 
   return Array.from(groupMap, ([name, rows]) => ({ name, rows }))
