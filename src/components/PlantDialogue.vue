@@ -371,6 +371,7 @@ async function submitPlant() {
                 variant="outline"
                 role="combobox"
                 :aria-expanded="plantTypeComboOpen"
+                :disabled="isEditMode"
                 class="w-full justify-between"
               >
                 {{ selectedPlantTypeName }}
