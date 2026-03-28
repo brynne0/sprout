@@ -251,11 +251,20 @@ const displayGroups = computed<PlantGroup[]>(() => {
     const harvest = extractTracks((plant.harvest_windows ?? []) as WindowData[])
 
     // Sowing tracks
-    if (sowing.unlabelledBars.length || sowDots.length) {
+    const sowLabelEntries = [...sowing.labelGroups]
+    if (sowing.unlabelledBars.length || (sowDots.length && sowLabelEntries.length === 0)) {
       tracks.push({ type: 'sowing', bars: sowing.unlabelledBars, dots: sowDots })
-    }
-    for (const [label, bars] of sowing.labelGroups) {
-      tracks.push({ type: 'sowing', label, bars })
+      for (const [label, bars] of sowLabelEntries) {
+        tracks.push({ type: 'sowing', label, bars })
+      }
+    } else {
+      const firstSowEntry = sowLabelEntries[0]
+      if (firstSowEntry) {
+        tracks.push({ type: 'sowing', label: firstSowEntry[0], bars: firstSowEntry[1], dots: sowDots.length ? sowDots : undefined })
+      }
+      for (const [label, bars] of sowLabelEntries.slice(1)) {
+        tracks.push({ type: 'sowing', label, bars })
+      }
     }
 
     // Transplant tracks
