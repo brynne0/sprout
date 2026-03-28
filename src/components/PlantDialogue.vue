@@ -816,7 +816,15 @@ async function submitPlant() {
 
       <DialogFooter>
         <DialogClose as-child>
-          <Button variant="outline" @click="!isEditMode && reset">Cancel</Button>
+          <Button
+            variant="outline"
+            @click="
+              () => {
+                if (!isEditMode) reset()
+              }
+            "
+            >Cancel</Button
+          >
         </DialogClose>
         <Button type="button" :disabled="!canSubmit || loading" class="px-4!" @click="submitPlant">
           <Spinner v-if="loading" class="animate-spin" />
