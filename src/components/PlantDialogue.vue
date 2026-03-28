@@ -623,14 +623,6 @@ async function submitPlant() {
         <CollapsibleContent>
           <FieldGroup class="mt-3">
             <Field>
-              <FieldLabel for="description">Description</FieldLabel>
-              <Textarea
-                id="description"
-                v-model="overrides.description"
-                :placeholder="selectedCatalogueEntry?.description ?? ''"
-              />
-            </Field>
-            <Field>
               <FieldLabel for="position">Position</FieldLabel>
               <Textarea
                 id="position"

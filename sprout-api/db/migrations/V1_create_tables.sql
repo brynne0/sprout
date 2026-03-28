@@ -23,7 +23,6 @@ CREATE TABLE plant_catalogue (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     plant_type_id UUID NOT NULL REFERENCES plant_types(id),
     variety VARCHAR(255),
-    description TEXT,
     seed_to_harvest TEXT,
     sowing_to_transplant TEXT,
     position TEXT,
