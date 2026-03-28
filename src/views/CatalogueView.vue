@@ -37,7 +37,7 @@ onMounted(async () => {
   </header>
 
   <LoadingLeaves v-if="loading" />
-  <PlantCalendar v-else :plants="filteredPlants">
+  <PlantCalendar v-else :plants="filteredPlants" :group-by-name="true">
     <template #header>
       <div class="relative max-w-sm">
         <Search class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

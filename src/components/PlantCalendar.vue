@@ -15,10 +15,16 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 const props = withDefaults(
-  defineProps<{ plants: BasePlant[]; showDots?: boolean; showYearNav?: boolean }>(),
+  defineProps<{
+    plants: BasePlant[]
+    showDots?: boolean
+    showYearNav?: boolean
+    groupByName?: boolean
+  }>(),
   {
     showDots: false,
     showYearNav: false,
+    groupByName: false,
   },
 )
 
@@ -260,7 +266,12 @@ const displayGroups = computed<PlantGroup[]>(() => {
     } else {
       const firstSowEntry = sowLabelEntries[0]
       if (firstSowEntry) {
-        tracks.push({ type: 'sowing', label: firstSowEntry[0], bars: firstSowEntry[1], dots: sowDots.length ? sowDots : undefined })
+        tracks.push({
+          type: 'sowing',
+          label: firstSowEntry[0],
+          bars: firstSowEntry[1],
+          dots: sowDots.length ? sowDots : undefined,
+        })
       }
       for (const [label, bars] of sowLabelEntries.slice(1)) {
         tracks.push({ type: 'sowing', label, bars })
@@ -285,8 +296,7 @@ const displayGroups = computed<PlantGroup[]>(() => {
 
     const row: PlantRow = { key: String(plant.id ?? plant.name), plant, tracks }
 
-    const hasVariety = 'variety' in plant && !!(plant as { variety?: string }).variety
-    const groupKey = hasVariety ? plant.name : String(plant.id ?? plant.name)
+    const groupKey = props.groupByName ? plant.name : String(plant.id ?? plant.name)
     if (!groupMap.has(groupKey)) groupMap.set(groupKey, [])
     groupMap.get(groupKey)!.push(row)
   }
