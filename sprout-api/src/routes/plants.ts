@@ -24,7 +24,6 @@ const PLANT_SELECT = `
     p.sow_dates,
     p.transplant_dates,
     p.notes,
-    COALESCE(p.overrides->>'description', pc.description) AS description,
     COALESCE(p.overrides->>'position', pc.position) AS position,
     COALESCE(p.overrides->>'hardiness', pc.hardiness) AS hardiness,
     COALESCE(p.overrides->>'spacing', pc.spacing) AS spacing,
