@@ -42,7 +42,7 @@ async function deleteAccount() {
     <DropdownMenuTrigger
       class="flex flex-col items-center gap-1 py-3 text-xs font-semibold text-foreground/60 transition-colors hover:text-foreground"
     >
-      <div class="rounded-full p-2 transition-colors flex flex-row gap-2 items-center">
+      <div class="rounded-full p-2 transition-colors flex flex-row gap-2 items-center outline-none">
         <Settings class="size-5" />
       </div>
     </DropdownMenuTrigger>
