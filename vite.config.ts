@@ -15,7 +15,7 @@ export default defineConfig({
       manifest: {
         name: 'Sprout',
         short_name: 'Sprout',
-        theme_color: '#dad7cd',
+        theme_color: '#e8e5df',
         icons: [
           {
             src: 'web-app-manifest-192x192.png',
