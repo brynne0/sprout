@@ -48,3 +48,17 @@ catalogueRoutes.get("/catalogue", async (c) => {
   );
   return c.json(rows);
 });
+
+catalogueRoutes.get("/catalogue/:id", async (c) => {
+  const rows = await query<CataloguePlant>(
+    `SELECT pc.id, pc.plant_type_id, pt.name, pc.variety, pc.position, pc.hardiness,
+              pc.spacing, pc.harvest, pc.source, pc.seed_to_harvest, pc.sowing_to_transplant,
+              pc.sowing_windows, pc.suitability, pc.harvest_windows, pc.transplant_windows
+       FROM plant_catalogue pc
+       JOIN plant_types pt ON pt.id = pc.plant_type_id
+       WHERE pc.id = $1`,
+    [c.req.param("id")],
+  );
+  if (!rows[0]) return c.json({ error: "Not found" }, 404);
+  return c.json(rows[0]);
+});
