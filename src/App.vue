@@ -23,12 +23,12 @@ router.isReady().then(() => {
     :class="
       publicRoutes.includes(route.path)
         ? 'min-w-sm'
-        : 'min-w-sm pt-[max(2rem,env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))]'
+        : 'min-w-sm pb-[calc(5rem+env(safe-area-inset-bottom))]'
     "
   >
     <AppNav v-if="routerReady && !publicRoutes.includes(route.path)" />
     <RouterView v-slot="{ Component }">
-      <KeepAlive>
+      <KeepAlive exclude="PlantDetailView">
         <component :is="Component" />
       </KeepAlive>
     </RouterView>

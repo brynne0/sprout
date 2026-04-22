@@ -20,13 +20,19 @@ const props = withDefaults(
     showDots?: boolean
     showYearNav?: boolean
     groupByName?: boolean
+    clickable?: boolean
   }>(),
   {
     showDots: false,
     showYearNav: false,
     groupByName: false,
+    clickable: false,
   },
 )
+
+const emit = defineEmits<{
+  plantClick: [plant: BasePlant]
+}>()
 
 const selectedYear = ref(today(getLocalTimeZone()).year)
 const timelineContainer = ref<HTMLElement | null>(null)
@@ -464,7 +470,12 @@ const todayX = computed(() => {
         <!-- Main plant row -->
         <template v-if="item.kind === 'plant'">
           <div class="flex flex-col min-w-0">
-            <span class="text-xs font-medium leading-tight">{{ item.row.plant.name }}</span>
+            <span
+              class="text-xs font-medium leading-tight transition-colors"
+              :class="clickable ? 'cursor-pointer hover:text-primary' : ''"
+              @click.stop="clickable && emit('plantClick', item.row.plant)"
+              >{{ item.row.plant.name }}</span
+            >
             <span
               v-if="'variety' in item.row.plant && (item.row.plant as { variety?: string }).variety"
               class="text-[10px] text-muted-foreground leading-tight"

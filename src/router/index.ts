@@ -12,6 +12,16 @@ const router = createRouter({
       path: '/catalogue',
       component: () => import('@/views/CatalogueView.vue'),
     },
+    {
+      path: '/plants/:id',
+      component: () => import('@/views/PlantDetailView.vue'),
+      meta: { activeNav: '/' },
+    },
+    {
+      path: '/catalogue/:id',
+      component: () => import('@/views/PlantDetailView.vue'),
+      meta: { cataloguePlant: true, activeNav: '/catalogue' },
+    },
     { path: '/login', component: () => import('@/views/LoginView.vue') },
     { path: '/auth/callback', component: () => import('@/views/AuthCallback.vue') },
   ],

@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { computed } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 import { Sprout, NotepadText } from 'lucide-vue-next'
 import SettingsMenu from '@/components/layout/SettingsMenu.vue'
 
+const route = useRoute()
+
 const links = [
-  { to: '/', label: 'Your Garden', icon: Sprout, exact: true },
-  { to: '/catalogue', label: 'Catalogue', icon: NotepadText, exact: false },
+  { to: '/', label: 'Your Garden', icon: Sprout },
+  { to: '/catalogue', label: 'Catalogue', icon: NotepadText },
 ]
+
+const activeTab = computed(() => (route.meta.activeNav as string | undefined) ?? route.path)
 </script>
 
 <template>
@@ -17,11 +22,13 @@ const links = [
       v-for="link in links"
       :key="link.to"
       :to="link.to"
-      class="flex flex-col items-center gap-1 py-3 text-xs font-semibold text-foreground/60 transition-colors hover:text-foreground"
-      active-class="!text-primary [&>div]:bg-primary/15"
-      :exact-active-class="link.exact ? '!text-primary [&>div]:bg-primary/15' : ''"
+      class="flex flex-col items-center gap-1 py-3 text-xs font-semibold transition-colors hover:text-foreground"
+      :class="activeTab === link.to ? 'text-primary' : 'text-foreground/60'"
     >
-      <div class="rounded-full p-2 transition-colors flex flex-row gap-2 items-center">
+      <div
+        class="rounded-full p-2 transition-colors flex flex-row gap-2 items-center"
+        :class="{ 'bg-primary/15': activeTab === link.to }"
+      >
         <component :is="link.icon" class="size-5" />
         {{ link.label }}
       </div>
