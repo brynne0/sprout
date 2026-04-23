@@ -79,7 +79,7 @@ const sowDates = ref<string[]>([])
 const transplantDates = ref<string[]>([])
 const stagingSowDate = ref<DateValue>()
 const stagingTransplantDate = ref<DateValue>()
-const notes = ref('')
+
 const year = ref<number | null>(null)
 
 const SUITABILITY_OPTIONS = ['multisow', 'interplant', 'follow-on'] as const
@@ -249,7 +249,6 @@ watch(
     customVariety.value = plant.custom_variety ?? ''
     sowDates.value = [...(plant.sow_dates ?? [])]
     transplantDates.value = [...(plant.transplant_dates ?? [])]
-    notes.value = plant.notes ?? ''
     year.value = plant.year ?? today(getLocalTimeZone()).year
     overrides.value.suitability = plant.suitability ?? []
   },
@@ -310,7 +309,6 @@ function reset() {
   transplantDates.value = []
   stagingSowDate.value = undefined
   stagingTransplantDate.value = undefined
-  notes.value = ''
   year.value = null
   showOverrides.value = false
   overrides.value = {
@@ -342,7 +340,7 @@ async function submitPlant() {
     custom_variety: customVariety.value || undefined,
     sow_dates: sowDates.value.length ? sowDates.value : undefined,
     transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
-    notes: notes.value || undefined,
+    notes: isEditMode.value ? (props.plant?.notes ?? undefined) : undefined,
     year: year.value ?? undefined,
     overrides: cleanedOverrides.value,
   }
@@ -583,11 +581,6 @@ async function submitPlant() {
               />
             </PopoverContent>
           </Popover>
-        </Field>
-
-        <Field>
-          <FieldLabel for="notes">Notes</FieldLabel>
-          <Input id="notes" v-model="notes" placeholder="Optional" />
         </Field>
 
         <Field>
