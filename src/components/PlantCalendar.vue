@@ -243,18 +243,6 @@ const todayX = computed(() => {
         />
         Harvest
       </button>
-      <span v-if="showDots" class="flex items-center gap-1.5">
-        <span class="inline-block w-3 h-3 border rounded-sm track-sowing-dot" />
-        Sow date
-      </span>
-      <span v-if="showDots" class="flex items-center gap-1.5">
-        <span class="inline-block w-3 h-3 border rounded-sm track-repot-dot" />
-        Repot date
-      </span>
-      <span v-if="showDots" class="flex items-center gap-1.5">
-        <span class="inline-block w-3 h-3 border rounded-sm track-transplant-dot" />
-        Transplant date
-      </span>
     </div>
     <div v-if="showYearNav" class="flex items-center gap-2 text-sm ml-auto">
       <button

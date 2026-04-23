@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { Track, TrackType } from '@/lib/trackUtils'
 import { TRACK_HEIGHT, TRACK_GAP, ROW_PADDING, rowHeightForTrackCount } from '@/lib/trackUtils'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -30,6 +30,14 @@ function trackTop(index: number): number {
 function isHidden(type: TrackType): boolean {
   return props.hiddenTracks?.has(type) ?? false
 }
+
+function dotLabel(type: TrackType, variant?: string): string {
+  if (variant === 'repot') return 'Repotted on'
+  if (type === 'sowing') return 'Sown on'
+  return 'Transplanted on'
+}
+
+const openDotKey = ref<string | null>(null)
 </script>
 
 <template>
@@ -78,13 +86,20 @@ function isHidden(type: TrackType): boolean {
           :style="{ left: b.x + 'px', width: b.width + 'px', top: trackTop(ti) + 'px' }"
         />
       </template>
-      <Popover v-for="(dot, di) in showDots ? (track.dots ?? []) : []" :key="`dot-${ti}-${di}`">
+      <Popover
+        v-for="(dot, di) in showDots ? (track.dots ?? []) : []"
+        :key="`dot-${ti}-${di}`"
+        :open="openDotKey === `${ti}-${di}`"
+        @update:open="(v) => (openDotKey = v ? `${ti}-${di}` : null)"
+      >
         <PopoverTrigger as-child>
           <button
             v-show="!isHidden(track.type)"
             class="absolute w-2.5 h-2.5 rounded-full cursor-pointer border border-border"
             :class="dot.variant === 'repot' ? 'track-repot-dot' : `track-${track.type}-dot`"
             :style="{ left: dot.x - 5 + 'px', top: trackTop(ti) + TRACK_HEIGHT / 2 - 5 + 'px' }"
+            @mouseenter="openDotKey = `${ti}-${di}`"
+            @mouseleave="openDotKey = null"
           />
         </PopoverTrigger>
         <PopoverContent
@@ -92,7 +107,7 @@ function isHidden(type: TrackType): boolean {
           side="top"
           :side-offset="4"
         >
-          {{ formatDate(dot.date) }}
+          {{ dotLabel(track.type, dot.variant) }} {{ formatDate(dot.date) }}
         </PopoverContent>
       </Popover>
     </template>
