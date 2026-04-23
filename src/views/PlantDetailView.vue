@@ -402,12 +402,12 @@ const infoRows = computed(() => {
               class="flex items-center gap-2.5 px-3.5 py-2.5 text-sm"
               :class="i > 0 ? 'border-t border-border/40' : ''"
             >
-              <Sprout v-if="task.type === 'sow'" class="w-4 h-4 text-primary opacity-60 shrink-0" />
+              <Sprout v-if="task.type === 'sow'" class="w-4 h-4 shrink-0 track-sowing-text" />
               <Leaf
                 v-else-if="task.type === 'transplant'"
-                class="w-3.5 h-3.5 shrink-0 opacity-75 text-yellow-600"
+                class="w-3.5 h-3.5 shrink-0 track-transplant-text"
               />
-              <Shovel v-else class="w-3.5 h-3.5 shrink-0 opacity-75 text-yellow-500" />
+              <Shovel v-else class="w-3.5 h-3.5 shrink-0 track-repot-text" />
               <span class="flex-1 font-medium">{{ task.label }} - {{ formatDate(task.date) }}</span>
             </div>
 
@@ -428,12 +428,12 @@ const infoRows = computed(() => {
                 :key="task.key"
                 class="flex items-center gap-2.5 px-3.5 py-2.5 text-sm border-t border-border/40 opacity-50"
               >
-                <Sprout v-if="task.type === 'sow'" class="w-4 h-4 text-primary shrink-0" />
+                <Sprout v-if="task.type === 'sow'" class="w-4 h-4 shrink-0 track-sowing-text" />
                 <Leaf
                   v-else-if="task.type === 'transplant'"
-                  class="w-3.5 h-3.5 shrink-0 text-yellow-600"
+                  class="w-3.5 h-3.5 shrink-0 track-transplant-text"
                 />
-                <Shovel v-else class="w-3.5 h-3.5 shrink-0 text-yellow-500" />
+                <Shovel v-else class="w-3.5 h-3.5 shrink-0 track-repot-text" />
                 <span class="flex-1">{{ task.label }} - {{ formatDate(task.date) }}</span>
               </div>
             </template>
