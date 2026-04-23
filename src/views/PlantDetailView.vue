@@ -7,11 +7,13 @@ import { useElementSize } from '@vueuse/core'
 import {
   ArrowLeft,
   Check,
+  ChevronDown,
   Clock,
   Leaf,
   MoreHorizontal,
   Pencil,
   Plus,
+  Repeat2,
   Ruler,
   Scissors,
   Sprout,
@@ -26,6 +28,7 @@ import type { TrackType } from '@/lib/trackUtils'
 import LoadingSprout from '@/components/LoadingSprout.vue'
 import PlantRow from '@/components/PlantRow.vue'
 import PlantActions from '@/components/PlantActions.vue'
+import PlantDatesDialogue from '@/components/PlantDatesDialogue.vue'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'vue-sonner'
 
@@ -39,7 +42,6 @@ const loading = ref(true)
 const editingNotes = ref(false)
 const savingNotes = ref(false)
 const notes = ref('')
-const doneTasks = ref(new Set<string>())
 
 async function fetchPlant(id: string) {
   loading.value = true
@@ -53,14 +55,6 @@ async function fetchPlant(id: string) {
       const res = await getApiPlantsById({ path: { id }, throwOnError: true })
       plant.value = res.data ?? null
       notes.value = (plant.value as Plant)?.notes ?? ''
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      const gp = plant.value as Plant
-      const initialDone = [
-        ...(gp?.sow_dates ?? []).map((d) => `${d}-sow`),
-        ...(gp?.transplant_dates ?? []).map((d) => `${d}-transplant`),
-      ].filter((key) => new Date(key.replace(/-(?:sow|transplant)$/, '')) < today)
-      doneTasks.value = new Set(initialDone)
     }
   } catch (err) {
     handleApiError(err, 'Failed to load plant')
@@ -101,7 +95,9 @@ const activeStatuses = computed<StatusEntry[]>(() => {
   return result
 })
 
-const tasks = computed(() => {
+type TaskEntry = { type: 'sow' | 'transplant' | 'repot'; date: string; label: string; key: string }
+
+const allTasks = computed<TaskEntry[]>(() => {
   if (!gardenPlant.value) return []
   return [
     ...(gardenPlant.value.sow_dates ?? []).map((d) => ({
@@ -116,17 +112,28 @@ const tasks = computed(() => {
       label: 'Transplant',
       key: `${d}-transplant`,
     })),
+    ...(gardenPlant.value.repot_dates ?? []).map((d) => ({
+      type: 'repot' as const,
+      date: d,
+      label: 'Repot',
+      key: `${d}-repot`,
+    })),
   ].sort((a, b) => a.date.localeCompare(b.date))
 })
 
-const pendingCount = computed(() => tasks.value.filter((t) => !doneTasks.value.has(t.key)).length)
+const upcomingTasks = computed(() => {
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+  return allTasks.value.filter((t) => new Date(t.date) >= now)
+})
 
-function toggleTask(key: string) {
-  const next = new Set(doneTasks.value)
-  if (next.has(key)) next.delete(key)
-  else next.add(key)
-  doneTasks.value = next
-}
+const pastTasks = computed(() => {
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+  return allTasks.value.filter((t) => new Date(t.date) < now).reverse()
+})
+
+const showHistory = ref(false)
 
 async function saveNotes() {
   if (!gardenPlant.value) return
@@ -371,49 +378,77 @@ const infoRows = computed(() => {
       </div>
 
       <!-- RIGHT COL: garden-specific only -->
-      <!-- TODO -->
       <div v-if="!isCatalogue" class="flex flex-col gap-3 sm:gap-4">
         <!-- Tasks card -->
-        <div v-if="tasks.length" class="rounded-xl border bg-card">
+        <div class="rounded-xl border bg-card">
           <div
             class="flex items-center justify-between px-3.5 pt-3.5 pb-2.5 border-b border-border/40"
           >
             <h3 class="text-sm font-semibold">Tasks</h3>
-            <span class="text-xs text-muted-foreground">{{ pendingCount }} upcoming</span>
+            <span v-if="upcomingTasks.length" class="text-xs text-muted-foreground">
+              {{ upcomingTasks.length }} upcoming
+            </span>
           </div>
           <div>
-            <button
-              v-for="task in tasks"
+            <p
+              v-if="upcomingTasks.length === 0"
+              class="px-3.5 py-3 text-sm italic text-muted-foreground opacity-70"
+            >
+              No upcoming tasks.
+            </p>
+            <div
+              v-for="(task, i) in upcomingTasks"
               :key="task.key"
-              class="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-sm border-t border-border/40 bg-transparent text-left"
-              @click="toggleTask(task.key)"
+              class="flex items-center gap-2.5 px-3.5 py-2.5 text-sm"
+              :class="i > 0 ? 'border-t border-border/40' : ''"
             >
-              <div
-                class="w-5 h-5 rounded-full shrink-0 flex items-center justify-center"
-                :style="{
-                  border: doneTasks.has(task.key)
-                    ? '1.5px solid var(--primary)'
-                    : '1.5px solid color-mix(in oklab, var(--foreground) 25%, transparent)',
-                  background: doneTasks.has(task.key) ? 'var(--primary)' : 'transparent',
-                }"
-              >
-                <Check v-if="doneTasks.has(task.key)" class="w-3 h-3 text-primary-foreground" />
-              </div>
-              <span
-                class="flex-1 font-medium"
-                :class="doneTasks.has(task.key) ? 'line-through opacity-55' : ''"
-              >
-                {{ task.label }} — {{ formatDate(task.date) }}
-              </span>
               <Sprout v-if="task.type === 'sow'" class="w-4 h-4 text-primary opacity-60 shrink-0" />
-              <Leaf v-else class="w-3.5 h-3.5 shrink-0 opacity-75 text-yellow-600" />
-            </button>
+              <Leaf
+                v-else-if="task.type === 'transplant'"
+                class="w-3.5 h-3.5 shrink-0 opacity-75 text-yellow-600"
+              />
+              <Repeat2 v-else class="w-3.5 h-3.5 shrink-0 opacity-75 text-yellow-500" />
+              <span class="flex-1 font-medium">{{ task.label }} - {{ formatDate(task.date) }}</span>
+            </div>
+
             <button
-              class="flex items-center justify-center gap-1.5 w-full px-3.5 py-2.5 border-t border-border/40 bg-transparent text-xs text-muted-foreground"
+              v-if="pastTasks.length"
+              class="flex items-center gap-1.5 w-full px-3.5 py-2.5 border-t border-border/40 text-xs text-muted-foreground"
+              @click="showHistory = !showHistory"
             >
-              <Plus class="w-3.5 h-3.5" />
-              Add date
+              <ChevronDown
+                class="w-3.5 h-3.5 transition-transform duration-200"
+                :class="{ 'rotate-180': showHistory }"
+              />
+              {{ pastTasks.length }} past {{ pastTasks.length === 1 ? 'task' : 'tasks' }}
             </button>
+            <template v-if="showHistory">
+              <div
+                v-for="task in pastTasks"
+                :key="task.key"
+                class="flex items-center gap-2.5 px-3.5 py-2.5 text-sm border-t border-border/40 opacity-50"
+              >
+                <Sprout v-if="task.type === 'sow'" class="w-4 h-4 text-primary shrink-0" />
+                <Leaf
+                  v-else-if="task.type === 'transplant'"
+                  class="w-3.5 h-3.5 shrink-0 text-yellow-600"
+                />
+                <Repeat2 v-else class="w-3.5 h-3.5 shrink-0 text-yellow-500" />
+                <span class="flex-1">{{ task.label }} - {{ formatDate(task.date) }}</span>
+              </div>
+            </template>
+
+            <PlantDatesDialogue
+              :plant="gardenPlant!"
+              @saved="fetchPlant(route.params.id as string)"
+            >
+              <button
+                class="flex items-center justify-center gap-1.5 w-full px-3.5 py-2.5 border-t border-border/40 bg-transparent text-xs text-muted-foreground"
+              >
+                <Plus class="w-3.5 h-3.5" />
+                Add date
+              </button>
+            </PlantDatesDialogue>
           </div>
         </div>
 
