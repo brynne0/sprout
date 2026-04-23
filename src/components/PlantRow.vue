@@ -38,6 +38,7 @@ function dotLabel(type: TrackType, variant?: string): string {
 }
 
 const openDotKey = ref<string | null>(null)
+const openBarKey = ref<string | null>(null)
 </script>
 
 <template>
@@ -52,22 +53,42 @@ const openDotKey = ref<string | null>(null)
     />
     <template v-for="(track, ti) in resolvedTracks" :key="`track-${ti}`">
       <template v-if="track.label && !isHidden(track.type)">
-        <Popover v-for="(b, bi) in track.bars" :key="`bar-${ti}-${bi}`">
+        <Popover
+          v-for="(b, bi) in track.bars"
+          :key="`bar-${ti}-${bi}`"
+          :open="openBarKey === `${ti}-${bi}`"
+          @update:open="
+            (v) => {
+              if (v) openBarKey = `${ti}-${bi}`
+              else if (openBarKey === `${ti}-${bi}`) openBarKey = null
+            }
+          "
+        >
           <PopoverTrigger as-child>
             <button
               class="absolute h-2.5 overflow-hidden flex items-center cursor-pointer border rounded-sm"
               :class="[`track-${track.type}-bg`, `track-${track.type}-border`]"
               :style="{ left: b.x + 'px', width: b.width + 'px', top: trackTop(ti) + 'px' }"
+              @pointerenter="
+                (e: PointerEvent) => {
+                  if (e.pointerType === 'mouse') openBarKey = `${ti}-${bi}`
+                }
+              "
+              @pointerleave="
+                (e: PointerEvent) => {
+                  if (e.pointerType === 'mouse') openBarKey = null
+                }
+              "
             >
               <span
                 v-if="b.width > 30"
-                class="text-[8px] leading-none truncate px-1 text-muted-foreground"
+                class="text-[8px] leading-none truncate px-1 text-accent-foreground"
                 >{{ track.label }}</span
               >
             </button>
           </PopoverTrigger>
           <PopoverContent
-            class="w-auto px-2 py-1 text-xs rounded-sm z-1 border"
+            class="w-auto px-2 py-1 text-xs rounded-sm border"
             :class="[`track-${track.type}-bg`, `track-${track.type}-border`]"
             side="top"
             :side-offset="4"
@@ -90,7 +111,12 @@ const openDotKey = ref<string | null>(null)
         v-for="(dot, di) in showDots ? (track.dots ?? []) : []"
         :key="`dot-${ti}-${di}`"
         :open="openDotKey === `${ti}-${di}`"
-        @update:open="(v) => (openDotKey = v ? `${ti}-${di}` : null)"
+        @update:open="
+          (v) => {
+            if (v) openDotKey = `${ti}-${di}`
+            else if (openDotKey === `${ti}-${di}`) openDotKey = null
+          }
+        "
       >
         <PopoverTrigger as-child>
           <button
@@ -98,8 +124,16 @@ const openDotKey = ref<string | null>(null)
             class="absolute w-2.5 h-2.5 rounded-full cursor-pointer border border-border"
             :class="dot.variant === 'repot' ? 'track-repot-dot' : `track-${track.type}-dot`"
             :style="{ left: dot.x - 5 + 'px', top: trackTop(ti) + TRACK_HEIGHT / 2 - 5 + 'px' }"
-            @mouseenter="openDotKey = `${ti}-${di}`"
-            @mouseleave="openDotKey = null"
+            @pointerenter="
+              (e: PointerEvent) => {
+                if (e.pointerType === 'mouse') openDotKey = `${ti}-${di}`
+              }
+            "
+            @pointerleave="
+              (e: PointerEvent) => {
+                if (e.pointerType === 'mouse') openDotKey = null
+              }
+            "
           />
         </PopoverTrigger>
         <PopoverContent
