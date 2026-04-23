@@ -3,6 +3,7 @@ defineOptions({ name: 'PlantDetailView' })
 
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useElementSize } from '@vueuse/core'
 import {
   ArrowLeft,
   Check,
@@ -20,6 +21,7 @@ import {
 import { getApiPlantsById, getApiCatalogueById, putApiPlantsById } from '@/client'
 import type { Plant, CataloguePlant } from '@/client'
 import { handleApiError, formatDate } from '@/lib/utils'
+import { computeTracksForPlant, dateToX } from '@/lib/trackUtils'
 import type { TrackType } from '@/lib/trackUtils'
 import LoadingSprout from '@/components/LoadingSprout.vue'
 import PlantRow from '@/components/PlantRow.vue'
@@ -152,6 +154,49 @@ async function saveNotes() {
   editingNotes.value = false
 }
 
+const MONTH_LABELS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
+const TRACK_LABELS: Record<TrackType, string> = {
+  sowing: 'Sow',
+  transplant: 'Transplant',
+  harvest: 'Harvest',
+}
+
+const timelineRef = ref<HTMLElement | null>(null)
+const { width: timelineWidth } = useElementSize(timelineRef)
+const monthWidth = computed(() => (timelineWidth.value > 0 ? timelineWidth.value / 12 : 0))
+const todayX = computed(() =>
+  monthWidth.value > 0
+    ? dateToX(new Date().getMonth() + 1, new Date().getDate(), monthWidth.value)
+    : null,
+)
+
+const plantTracks = computed(() =>
+  plant.value ? computeTracksForPlant(plant.value, monthWidth.value) : [],
+)
+
+const labelledRows = computed(() =>
+  (['sowing', 'transplant', 'harvest'] as TrackType[])
+    .map((type) => ({
+      type,
+      label: TRACK_LABELS[type],
+      tracks: plantTracks.value.filter((t) => t.type === type),
+    }))
+    .filter((r) => r.tracks.length > 0),
+)
+
 const infoRows = computed(() => {
   if (!plant.value) return []
   return [
@@ -282,8 +327,29 @@ const infoRows = computed(() => {
           <div class="px-3.5 pt-3.5 pb-2.5 border-b border-border/40">
             <h3 class="text-sm font-semibold">Timeline</h3>
           </div>
-          <div class="p-3.5">
-            <PlantRow :plant="plant" :show-dots="true" />
+          <div class="p-3.5 flex flex-col gap-0.5">
+            <div class="flex">
+              <div class="w-19.5 shrink-0" />
+              <div
+                ref="timelineRef"
+                class="flex flex-1 text-[10px] tracking-[0.02em] text-muted-foreground"
+              >
+                <div v-for="m in MONTH_LABELS" :key="m" class="flex-1 text-center">{{ m[0] }}</div>
+              </div>
+            </div>
+            <div v-for="row in labelledRows" :key="row.type" class="flex">
+              <div
+                class="w-19.5 shrink-0 text-[11px] font-medium text-muted-foreground flex items-center"
+              >
+                {{ row.label }}
+              </div>
+              <PlantRow
+                :tracks="row.tracks"
+                :month-width="monthWidth"
+                :show-dots="true"
+                :today-x="todayX"
+              />
+            </div>
           </div>
         </div>
 
