@@ -283,7 +283,7 @@ const infoRows = computed(() => {
             <h3 class="text-sm font-semibold">Timeline</h3>
           </div>
           <div class="p-3.5">
-            <PlantRow :plant="plant" />
+            <PlantRow :plant="plant" :show-dots="true" />
           </div>
         </div>
 
