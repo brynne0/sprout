@@ -248,6 +248,8 @@ watch(
       selectedCatalogueId.value = plant.catalogue_id
     } else if (plant.custom_variety) {
       isCustomVariety.value = true
+      const baseEntry = catalogueEntries.value.find((e) => !e.variety) ?? catalogueEntries.value[0]
+      selectedCatalogueId.value = baseEntry?.id ?? ''
     }
     customVariety.value = plant.custom_variety ?? ''
     sowDates.value = [...(plant.sow_dates ?? [])]
@@ -299,7 +301,8 @@ function selectCatalogueEntry(id: string) {
 
 function selectCustomVariety() {
   isCustomVariety.value = true
-  selectedCatalogueId.value = ''
+  const baseEntry = catalogueEntries.value.find((e) => !e.variety) ?? catalogueEntries.value[0]
+  selectedCatalogueId.value = baseEntry?.id ?? ''
   catalogueComboOpen.value = false
 }
 
