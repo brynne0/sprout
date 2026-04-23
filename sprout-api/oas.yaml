@@ -156,6 +156,25 @@ paths:
                 items:
                   $ref: "#/components/schemas/CataloguePlant"
 
+  /api/catalogue/{id}:
+    get:
+      summary: Get a single catalogue plant by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The catalogue plant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CataloguePlant"
+        "404":
+          description: Not found
+
   /auth/google:
     get:
       summary: Redirect to Google OAuth
@@ -252,6 +271,11 @@ components:
               items:
                 type: string
                 format: date
+            repot_dates:
+              type: array
+              items:
+                type: string
+                format: date
             transplant_dates:
               type: array
               items:
@@ -315,6 +339,11 @@ components:
         custom_variety:
           type: string
         sow_dates:
+          type: array
+          items:
+            type: string
+            format: date
+        repot_dates:
           type: array
           items:
             type: string

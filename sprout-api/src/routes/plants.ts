@@ -22,6 +22,7 @@ const PLANT_SELECT = `
     pt.icon,
     COALESCE(pc.variety, p.custom_variety) AS variety,
     p.sow_dates,
+    p.repot_dates,
     p.transplant_dates,
     p.notes,
     COALESCE(p.overrides->>'position', pc.position) AS position,
@@ -60,14 +61,15 @@ plantRoutes.post("/plants", async (c) => {
     catalogue_id,
     custom_variety,
     sow_dates,
+    repot_dates,
     transplant_dates,
     notes,
     overrides,
     year,
   } = await c.req.json<PlantInput>();
   const rows = await query<{ id: string }>(
-    `INSERT INTO plants (user_id, plant_type_id, catalogue_id, custom_variety, sow_dates, transplant_dates, notes, overrides, year)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8, $9)
+    `INSERT INTO plants (user_id, plant_type_id, catalogue_id, custom_variety, sow_dates, repot_dates, transplant_dates, notes, overrides, year)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)
        RETURNING id`,
     [
       userId,
@@ -75,6 +77,7 @@ plantRoutes.post("/plants", async (c) => {
       catalogue_id ?? null,
       custom_variety ?? null,
       sow_dates ?? [],
+      repot_dates ?? [],
       transplant_dates ?? [],
       notes ?? null,
       overrides ? JSON.stringify(overrides) : null,
@@ -107,6 +110,7 @@ plantRoutes.put("/plants/:id", async (c) => {
     catalogue_id,
     custom_variety,
     sow_dates,
+    repot_dates,
     transplant_dates,
     notes,
     overrides,
@@ -115,14 +119,15 @@ plantRoutes.put("/plants/:id", async (c) => {
   const rows = await query<{ id: string }>(
     `UPDATE plants SET
          plant_type_id = $1, catalogue_id = $2, custom_variety = $3,
-         sow_dates = $4, transplant_dates = $5, notes = $6, overrides = $7, year = $8
-       WHERE id = $9 AND user_id = $10
+         sow_dates = $4, repot_dates = $5, transplant_dates = $6, notes = $7, overrides = $8, year = $9
+       WHERE id = $10 AND user_id = $11
        RETURNING id`,
     [
       plant_type_id,
       catalogue_id ?? null,
       custom_variety ?? null,
       sow_dates ?? [],
+      repot_dates ?? [],
       transplant_dates ?? [],
       notes ?? null,
       overrides ? JSON.stringify(overrides) : null,

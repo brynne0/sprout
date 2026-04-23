@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { getApiCatalogue } from '@/client'
 import type { CataloguePlant } from '@/client'
 import PlantCalendar from '@/components/PlantCalendar.vue'
@@ -7,6 +8,9 @@ import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-vue-next'
 import { handleApiError } from '@/lib/utils'
+import PageHeader from '@/components/layout/PageHeader.vue'
+
+const router = useRouter()
 
 const plants = ref<CataloguePlant[]>([])
 const loading = ref(true)
@@ -32,12 +36,18 @@ onMounted(async () => {
 </script>
 
 <template>
-  <header class="mb-4 mx-4">
+  <PageHeader>
     <h1 class="text-3xl font-bold tracking-tight text-primary">Catalogue</h1>
-  </header>
+  </PageHeader>
 
   <LoadingLeaves v-if="loading" />
-  <PlantCalendar v-else :plants="filteredPlants" :group-by-name="true">
+  <PlantCalendar
+    v-else
+    :plants="filteredPlants"
+    :group-by-name="true"
+    :clickable="true"
+    @plant-click="(p) => router.push(`/catalogue/${p.id}`)"
+  >
     <template #header>
       <div class="relative max-w-sm">
         <Search class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
