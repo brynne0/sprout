@@ -1,3 +1,4 @@
+
 # Seedling 🌱
 
 A personal project to track plant sowing, transplanting and harvesting.
@@ -12,12 +13,12 @@ A personal project to track plant sowing, transplanting and harvesting.
 - Deployment: Fly.io
 
 ## Screenshots
-<img width="200" alt="No Plants Yet" src="https://github.com/user-attachments/assets/007f41b4-e10b-4c64-a7b8-69ec04bf250b" />
-<img width="200" alt="Your Garden Plant Tab" src="https://github.com/user-attachments/assets/843bc1bf-7cc7-4b58-959e-9c9f6afbc3da" />
-<img width="200" alt="Catalogue" src="https://github.com/user-attachments/assets/6667eacc-caeb-4461-ab3e-da3875acf6fd" />
-<img width="200" alt="Your Garden Calender Tab" src="https://github.com/user-attachments/assets/70f46ebd-15ff-4d96-86eb-ec2b3aae5551" />
-<img width="200" alt="Edit Plant" src="https://github.com/user-attachments/assets/dd403d45-59f5-4f82-b863-8c497452d76b" />
-<img width="200" alt="Plant Dialogue" src="https://github.com/user-attachments/assets/909ad9fe-c620-42f7-a9a0-3bd90eb3436a" />
+<img width="200" alt="No Plants Yet" src="https://github.com/user-attachments/assets/4c8701a0-f634-4fba-a59c-33a0abe8d0dd" />
+<img width="200" alt="Catalogue" src="https://github.com/user-attachments/assets/99f6bc33-e185-44d4-84e2-7de2e5b7eb61" />
+<img width="200" alt="Plant Details" src="https://github.com/user-attachments/assets/22e2f0f4-fa31-433d-9c3d-0103051d8f0d" />
+<img width="200" alt="Your Garden Plant Tab" src="https://github.com/user-attachments/assets/9220cb9e-6dc2-474e-9d15-3ac20747d850" />
+<img width="200" alt="Edit Plant" src="https://github.com/user-attachments/assets/9154b2df-a990-49ae-bc99-0a064ece64c1" />
+<img width="200" alt="Plant Dialogue" src="https://github.com/user-attachments/assets/210cfa5c-27b4-417e-b5e0-fe856ba49259" />
 
 ## Deployment
 https://growasprout.com/
