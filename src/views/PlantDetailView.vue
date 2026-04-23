@@ -13,7 +13,7 @@ import {
   MoreHorizontal,
   Pencil,
   Plus,
-  Repeat2,
+  Shovel,
   Ruler,
   Scissors,
   Sprout,
@@ -407,7 +407,7 @@ const infoRows = computed(() => {
                 v-else-if="task.type === 'transplant'"
                 class="w-3.5 h-3.5 shrink-0 opacity-75 text-yellow-600"
               />
-              <Repeat2 v-else class="w-3.5 h-3.5 shrink-0 opacity-75 text-yellow-500" />
+              <Shovel v-else class="w-3.5 h-3.5 shrink-0 opacity-75 text-yellow-500" />
               <span class="flex-1 font-medium">{{ task.label }} - {{ formatDate(task.date) }}</span>
             </div>
 
@@ -433,7 +433,7 @@ const infoRows = computed(() => {
                   v-else-if="task.type === 'transplant'"
                   class="w-3.5 h-3.5 shrink-0 text-yellow-600"
                 />
-                <Repeat2 v-else class="w-3.5 h-3.5 shrink-0 text-yellow-500" />
+                <Shovel v-else class="w-3.5 h-3.5 shrink-0 text-yellow-500" />
                 <span class="flex-1">{{ task.label }} - {{ formatDate(task.date) }}</span>
               </div>
             </template>

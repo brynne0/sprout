@@ -132,49 +132,6 @@ async function save() {
         </Field>
 
         <Field>
-          <FieldLabel>Transplant Dates</FieldLabel>
-          <div v-if="transplantDates.length" class="flex flex-wrap gap-2">
-            <span
-              v-for="(d, i) in transplantDates"
-              :key="i"
-              class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
-            >
-              {{ formatDate(d) }}
-              <button
-                type="button"
-                class="text-muted-foreground hover:text-foreground"
-                @click="transplantDates.splice(i, 1)"
-              >
-                <X class="h-3 w-3" />
-              </button>
-            </span>
-          </div>
-          <Popover v-model:open="showTransplantPicker">
-            <PopoverTrigger as-child>
-              <Button type="button" variant="outline" size="sm" class="w-full">
-                <Plus /> Add transplant date
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent class="w-auto p-0">
-              <Calendar
-                v-model="stagingTransplant"
-                :initial-focus="true"
-                :default-placeholder="defaultPlaceholder"
-                layout="month-and-year"
-                @update:model-value="
-                  (v: DateValue | undefined) => {
-                    if (!v) return
-                    transplantDates.push(v.toString())
-                    stagingTransplant = undefined
-                    showTransplantPicker = false
-                  }
-                "
-              />
-            </PopoverContent>
-          </Popover>
-        </Field>
-
-        <Field>
           <FieldLabel>Repot Dates</FieldLabel>
           <div v-if="repotDates.length" class="flex flex-wrap gap-2">
             <span
@@ -217,6 +174,49 @@ async function save() {
           </Popover>
         </Field>
       </FieldGroup>
+
+      <Field>
+        <FieldLabel>Transplant Dates</FieldLabel>
+        <div v-if="transplantDates.length" class="flex flex-wrap gap-2">
+          <span
+            v-for="(d, i) in transplantDates"
+            :key="i"
+            class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
+          >
+            {{ formatDate(d) }}
+            <button
+              type="button"
+              class="text-muted-foreground hover:text-foreground"
+              @click="transplantDates.splice(i, 1)"
+            >
+              <X class="h-3 w-3" />
+            </button>
+          </span>
+        </div>
+        <Popover v-model:open="showTransplantPicker">
+          <PopoverTrigger as-child>
+            <Button type="button" variant="outline" size="sm" class="w-full">
+              <Plus /> Add transplant date
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent class="w-auto p-0">
+            <Calendar
+              v-model="stagingTransplant"
+              :initial-focus="true"
+              :default-placeholder="defaultPlaceholder"
+              layout="month-and-year"
+              @update:model-value="
+                (v: DateValue | undefined) => {
+                  if (!v) return
+                  transplantDates.push(v.toString())
+                  stagingTransplant = undefined
+                  showTransplantPicker = false
+                }
+              "
+            />
+          </PopoverContent>
+        </Popover>
+      </Field>
 
       <DialogFooter>
         <DialogClose as-child>
