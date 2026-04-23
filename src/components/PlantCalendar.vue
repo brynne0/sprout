@@ -248,6 +248,10 @@ const todayX = computed(() => {
         Sow date
       </span>
       <span v-if="showDots" class="flex items-center gap-1.5">
+        <span class="inline-block w-3 h-3 border rounded-sm track-repot-dot" />
+        Repot date
+      </span>
+      <span v-if="showDots" class="flex items-center gap-1.5">
         <span class="inline-block w-3 h-3 border rounded-sm track-transplant-dot" />
         Transplant date
       </span>

@@ -77,8 +77,10 @@ const isCustomVariety = ref(false)
 
 const sowDates = ref<string[]>([])
 const transplantDates = ref<string[]>([])
+const repotDates = ref<string[]>([])
 const stagingSowDate = ref<DateValue>()
 const stagingTransplantDate = ref<DateValue>()
+const stagingRepotDate = ref<DateValue>()
 
 const year = ref<number | null>(null)
 
@@ -110,6 +112,7 @@ const showHarvestPicker = ref(false)
 const showTransplantPicker = ref(false)
 const showSowDatePicker = ref(false)
 const showTransplantDatePicker = ref(false)
+const showRepotDatePicker = ref(false)
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -249,6 +252,7 @@ watch(
     customVariety.value = plant.custom_variety ?? ''
     sowDates.value = [...(plant.sow_dates ?? [])]
     transplantDates.value = [...(plant.transplant_dates ?? [])]
+    repotDates.value = [...(plant.repot_dates ?? [])]
     year.value = plant.year ?? today(getLocalTimeZone()).year
     overrides.value.suitability = plant.suitability ?? []
   },
@@ -307,8 +311,10 @@ function reset() {
   catalogueEntries.value = []
   sowDates.value = []
   transplantDates.value = []
+  repotDates.value = []
   stagingSowDate.value = undefined
   stagingTransplantDate.value = undefined
+  stagingRepotDate.value = undefined
   year.value = null
   showOverrides.value = false
   overrides.value = {
@@ -340,6 +346,7 @@ async function submitPlant() {
     custom_variety: customVariety.value || undefined,
     sow_dates: sowDates.value.length ? sowDates.value : undefined,
     transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
+    repot_dates: repotDates.value.length ? repotDates.value : undefined,
     notes: isEditMode.value ? (props.plant?.notes ?? undefined) : undefined,
     year: year.value ?? undefined,
     overrides: cleanedOverrides.value,
@@ -532,6 +539,49 @@ async function submitPlant() {
                     sowDates.push(v.toString())
                     stagingSowDate = undefined
                     showSowDatePicker = false
+                  }
+                "
+              />
+            </PopoverContent>
+          </Popover>
+        </Field>
+
+        <Field>
+          <FieldLabel>Repot Dates</FieldLabel>
+          <div v-if="repotDates.length" class="flex flex-wrap gap-2">
+            <span
+              v-for="(d, i) in repotDates"
+              :key="i"
+              class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
+            >
+              {{ formatDate(d) }}
+              <button
+                type="button"
+                class="text-muted-foreground hover:text-foreground"
+                @click="repotDates.splice(i, 1)"
+              >
+                <X class="h-3 w-3" />
+              </button>
+            </span>
+          </div>
+          <Popover v-model:open="showRepotDatePicker">
+            <PopoverTrigger as-child>
+              <Button type="button" variant="outline" size="sm" class="w-full">
+                <Plus /> Add repot date
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="w-auto p-0">
+              <Calendar
+                v-model="stagingRepotDate"
+                :initial-focus="true"
+                :default-placeholder="defaultPlaceholder"
+                layout="month-and-year"
+                @update:model-value="
+                  (v: DateValue | undefined) => {
+                    if (!v) return
+                    repotDates.push(v.toString())
+                    stagingRepotDate = undefined
+                    showRepotDatePicker = false
                   }
                 "
               />

@@ -94,10 +94,13 @@
     @apply border-yellow-600/55;
   }
   .track-transplant-dot {
-    @apply bg-yellow-600;
+    @apply bg-yellow-500;
+  }
+  .track-repot-dot {
+    @apply bg-yellow-400;
   }
   .track-transplant-text {
-    @apply text-yellow-700;
+    @apply text-yellow-600;
   }
 
   .track-harvest-bg {
@@ -110,7 +113,7 @@
     @apply bg-rose-500;
   }
   .track-harvest-text {
-    @apply text-rose-600;
+    @apply text-rose-700;
   }
 }
 

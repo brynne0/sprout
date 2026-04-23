@@ -158,8 +158,8 @@ function isHidden(type: TrackType): boolean {
             <PopoverTrigger as-child>
               <button
                 v-show="!isHidden(track.type)"
-                class="absolute w-2.5 h-2.5 rounded-full z-10 cursor-pointer border-2 border-background"
-                :class="`track-${track.type}-dot`"
+                class="absolute w-2.5 h-2.5 rounded-full z-10 cursor-pointer border border-border"
+                :class="dot.variant === 'repot' ? 'track-repot-dot' : `track-${track.type}-dot`"
                 :style="{ left: dot.x - 5 + 'px', top: trackTop(ti) + TRACK_HEIGHT / 2 - 5 + 'px' }"
               />
             </PopoverTrigger>
@@ -227,8 +227,8 @@ function isHidden(type: TrackType): boolean {
         <PopoverTrigger as-child>
           <button
             v-show="!isHidden(track.type)"
-            class="absolute w-2.5 h-2.5 rounded-full z-10 cursor-pointer border-2 border-background"
-            :class="`track-${track.type}-dot`"
+            class="absolute w-2.5 h-2.5 rounded-full z-10 cursor-pointer border border-border"
+            :class="dot.variant === 'repot' ? 'track-repot-dot' : `track-${track.type}-dot`"
             :style="{ left: dot.x - 5 + 'px', top: trackTop(ti) + TRACK_HEIGHT / 2 - 5 + 'px' }"
           />
         </PopoverTrigger>

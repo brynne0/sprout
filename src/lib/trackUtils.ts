@@ -9,7 +9,7 @@ export const ROW_PADDING = 8
 const DUMMY_YEAR = 2000
 
 export type Bar = { x: number; width: number; start: string; end: string }
-export type Dot = { x: number; date: string }
+export type Dot = { x: number; date: string; variant?: 'repot' }
 
 export type Track = {
   type: TrackType
@@ -96,14 +96,30 @@ export function computeTracksForPlant(
       : []
   ).filter((d) => selectedYear === undefined || new Date(d).getFullYear() === selectedYear)
 
+  const rawRepotDates = (
+    'repot_dates' in plant && Array.isArray(plant.repot_dates)
+      ? (plant.repot_dates as string[])
+      : []
+  ).filter((d) => selectedYear === undefined || new Date(d).getFullYear() === selectedYear)
+
   const sowDots: Dot[] = rawSowDates.map((d) => {
     const md = parseDateMonthDay(d)
     return { x: dateToX(md.month, md.day, monthWidth), date: d.substring(0, 10) }
   })
-  const transplantDots: Dot[] = rawTransplantDates.map((d) => {
-    const md = parseDateMonthDay(d)
-    return { x: dateToX(md.month, md.day, monthWidth), date: d.substring(0, 10) }
-  })
+  const transplantDots: Dot[] = [
+    ...rawTransplantDates.map((d) => {
+      const md = parseDateMonthDay(d)
+      return { x: dateToX(md.month, md.day, monthWidth), date: d.substring(0, 10) }
+    }),
+    ...rawRepotDates.map((d) => {
+      const md = parseDateMonthDay(d)
+      return {
+        x: dateToX(md.month, md.day, monthWidth),
+        date: d.substring(0, 10),
+        variant: 'repot' as const,
+      }
+    }),
+  ]
 
   const sowing = extractTracks((plant.sowing_windows ?? []) as WindowData[], monthWidth)
   const transplant = extractTracks((plant.transplant_windows ?? []) as WindowData[], monthWidth)
