@@ -336,7 +336,7 @@ const infoRows = computed(() => {
           </div>
           <div class="p-3.5 flex flex-col gap-0.5">
             <div class="flex">
-              <div class="w-19.5 shrink-0" />
+              <div class="w-15 shrink-0" />
               <div
                 ref="timelineRef"
                 class="flex flex-1 text-[10px] tracking-[0.02em] text-muted-foreground"
@@ -346,7 +346,7 @@ const infoRows = computed(() => {
             </div>
             <div v-for="row in labelledRows" :key="row.type" class="flex">
               <div
-                class="w-19.5 shrink-0 text-[11px] font-medium text-muted-foreground flex items-center"
+                class="w-15 shrink-0 text-[11px] font-medium text-muted-foreground flex items-center"
               >
                 {{ row.label }}
               </div>
@@ -382,7 +382,7 @@ const infoRows = computed(() => {
         <!-- Tasks card -->
         <div class="rounded-xl border bg-card">
           <div
-            class="flex items-center justify-between px-3.5 pt-3.5 pb-2.5 border-b border-border/40"
+            class="flex items-center justify-between px-3.5 pt-3.5 pb-2.5 border-b border-border/40 gap-4"
           >
             <h3 class="text-sm font-semibold">Tasks</h3>
             <span v-if="upcomingTasks.length" class="text-xs text-muted-foreground">
