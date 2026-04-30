@@ -215,8 +215,13 @@ async function onPlantAdded() {
 
 <template>
   <main>
-    <PageHeader class="flex items-center justify-between">
-      <h1 class="text-3xl font-bold tracking-tight text-primary">Your Garden</h1>
+    <PageHeader class="flex items-start justify-between">
+      <div>
+        <p class="text-[11.5px] font-medium uppercase tracking-widest text-muted-foreground">
+          {{ today.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }) }}
+        </p>
+        <h1 class="text-3xl font-bold tracking-tight text-primary mt-0.5">Your Garden</h1>
+      </div>
       <PlantDialogue
         v-if="!loading && plants.length > 0"
         v-model:open="dialogOpen"
