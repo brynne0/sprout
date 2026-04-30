@@ -49,7 +49,7 @@ function windowStatus(plant: Plant, today: Date) {
   return { sowNow, transplantNow, harvestNow, hasSowed, hasTransplanted }
 }
 
-function currentBucket(plant: Plant, today: Date): 'sow' | 'transplant' | 'harvest' | 'resting' {
+function currentBucket(plant: Plant, today: Date): BucketKey {
   const s = windowStatus(plant, today)
   if (s.harvestNow && (s.hasSowed || s.hasTransplanted)) return 'harvest'
   if (s.transplantNow && s.hasSowed && !s.hasTransplanted) return 'transplant'
@@ -57,6 +57,7 @@ function currentBucket(plant: Plant, today: Date): 'sow' | 'transplant' | 'harve
   if (s.harvestNow) return 'harvest'
   if (s.transplantNow) return 'transplant'
   if (s.sowNow) return 'sow'
+  if (s.hasSowed || s.hasTransplanted) return 'growing'
   return 'resting'
 }
 
@@ -169,19 +170,26 @@ const visibleTasks = computed(() =>
 )
 
 // Plants grouped by current window status
-type BucketKey = 'sow' | 'transplant' | 'harvest' | 'resting'
+type BucketKey = 'sow' | 'transplant' | 'harvest' | 'growing' | 'resting'
 
-const BUCKET_ORDER: BucketKey[] = ['sow', 'transplant', 'harvest', 'resting']
+const BUCKET_ORDER: BucketKey[] = ['sow', 'transplant', 'growing', 'harvest', 'resting']
 
 const BUCKET_META: Record<BucketKey, { label: string; color: string }> = {
   sow: { label: 'Sow now', color: 'var(--color-primary)' },
   transplant: { label: 'Transplant now', color: 'oklch(0.55 0.12 80)' },
+  growing: { label: 'Growing', color: 'var(--color-secondary)' },
   harvest: { label: 'Harvest now', color: 'oklch(0.52 0.18 25)' },
   resting: { label: 'Off season', color: 'oklch(0.50 0.01 50)' },
 }
 
 const groupedByWindow = computed(() => {
-  const buckets: Record<BucketKey, Plant[]> = { sow: [], transplant: [], harvest: [], resting: [] }
+  const buckets: Record<BucketKey, Plant[]> = {
+    sow: [],
+    transplant: [],
+    harvest: [],
+    growing: [],
+    resting: [],
+  }
   for (const p of plants.value) {
     const b = currentBucket(p, today)
     buckets[b].push(p)
@@ -218,7 +226,9 @@ async function onPlantAdded() {
     <PageHeader class="flex items-start justify-between">
       <div>
         <p class="text-[11.5px] font-medium uppercase tracking-widest text-muted-foreground">
-          {{ today.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }) }}
+          {{
+            today.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' })
+          }}
         </p>
         <h1 class="text-3xl font-bold tracking-tight text-primary mt-0.5">Your Garden</h1>
       </div>
