@@ -32,12 +32,15 @@ const saving = ref(false)
 const sowDates = ref<string[]>([])
 const transplantDates = ref<string[]>([])
 const repotDates = ref<string[]>([])
+const harvestDates = ref<string[]>([])
 const stagingSow = ref<DateValue>()
 const stagingTransplant = ref<DateValue>()
 const stagingRepot = ref<DateValue>()
+const stagingHarvest = ref<DateValue>()
 const showSowPicker = ref(false)
 const showTransplantPicker = ref(false)
 const showRepotPicker = ref(false)
+const showHarvestPicker = ref(false)
 const defaultPlaceholder = today(getLocalTimeZone())
 
 watch(open, (isOpen) => {
@@ -45,6 +48,7 @@ watch(open, (isOpen) => {
     sowDates.value = [...(props.plant.sow_dates ?? [])]
     transplantDates.value = [...(props.plant.transplant_dates ?? [])]
     repotDates.value = [...(props.plant.repot_dates ?? [])]
+    harvestDates.value = [...(props.plant.harvest_dates ?? [])]
   }
 })
 
@@ -60,6 +64,7 @@ async function save() {
         sow_dates: sowDates.value.length ? sowDates.value : undefined,
         transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
         repot_dates: repotDates.value.length ? repotDates.value : undefined,
+        harvest_dates: harvestDates.value.length ? harvestDates.value : undefined,
         notes: props.plant.notes,
         year: props.plant.year,
       },
@@ -217,6 +222,49 @@ async function save() {
           </PopoverContent>
         </Popover>
       </Field>
+
+        <Field>
+          <FieldLabel>Harvest Dates</FieldLabel>
+          <div v-if="harvestDates.length" class="flex flex-wrap gap-2">
+            <span
+              v-for="(d, i) in harvestDates"
+              :key="i"
+              class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
+            >
+              {{ formatDate(d) }}
+              <button
+                type="button"
+                class="text-muted-foreground hover:text-foreground"
+                @click="harvestDates.splice(i, 1)"
+              >
+                <X class="h-3 w-3" />
+              </button>
+            </span>
+          </div>
+          <Popover v-model:open="showHarvestPicker">
+            <PopoverTrigger as-child>
+              <Button type="button" variant="outline" size="sm" class="w-full">
+                <Plus /> Add harvest date
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="w-auto p-0">
+              <Calendar
+                v-model="stagingHarvest"
+                :initial-focus="true"
+                :default-placeholder="defaultPlaceholder"
+                layout="month-and-year"
+                @update:model-value="
+                  (v: DateValue | undefined) => {
+                    if (!v) return
+                    harvestDates.push(v.toString())
+                    stagingHarvest = undefined
+                    showHarvestPicker = false
+                  }
+                "
+              />
+            </PopoverContent>
+          </Popover>
+        </Field>
 
       <DialogFooter>
         <DialogClose as-child>

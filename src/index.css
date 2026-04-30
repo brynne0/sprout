@@ -97,26 +97,26 @@
     @apply bg-yellow-500;
   }
   .track-repot-dot {
-    background: oklch(0.62 0.10 50);
+    background: oklch(0.62 0.1 50);
   }
   .track-transplant-text {
     @apply text-yellow-600;
   }
   .track-repot-text {
-    color: oklch(0.62 0.10 50);
+    color: oklch(0.62 0.1 50);
   }
 
   .track-harvest-bg {
-    @apply bg-rose-500/20;
+    @apply bg-red-500/20;
   }
   .track-harvest-border {
-    @apply border-rose-500/50;
+    @apply border-red-500/50;
   }
   .track-harvest-dot {
-    @apply bg-rose-500;
+    @apply bg-red-500;
   }
   .track-harvest-text {
-    @apply text-rose-700;
+    @apply text-red-700;
   }
 }
 

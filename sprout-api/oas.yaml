@@ -9,14 +9,14 @@ paths:
     get:
       summary: Returns the user's plants
       responses:
-        "200":
+        '200':
           description: A JSON array of plants
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Plant"
+                  $ref: '#/components/schemas/Plant'
     post:
       summary: Add a plant
       requestBody:
@@ -24,14 +24,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PlantInput"
+              $ref: '#/components/schemas/PlantInput'
       responses:
-        "201":
+        '201':
           description: Plant added
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Plant"
+                $ref: '#/components/schemas/Plant'
 
   /api/plants/{id}:
     parameters:
@@ -45,12 +45,12 @@ paths:
     get:
       summary: Get a plant
       responses:
-        "200":
+        '200':
           description: The fetched plant
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Plant"
+                $ref: '#/components/schemas/Plant'
 
     put:
       summary: Update a plant
@@ -59,19 +59,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PlantInput"
+              $ref: '#/components/schemas/PlantInput'
       responses:
-        "200":
+        '200':
           description: Plant updated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Plant"
+                $ref: '#/components/schemas/Plant'
 
     delete:
       summary: Delete a plant
       responses:
-        "204":
+        '204':
           description: Plant deleted
 
   /api/plants/{id}/archive:
@@ -85,25 +85,25 @@ paths:
     patch:
       summary: Archive a plant
       responses:
-        "200":
+        '200':
           description: Plant archived
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Plant"
+                $ref: '#/components/schemas/Plant'
 
   /api/plant-types:
     get:
       summary: Get all plant types
       responses:
-        "200":
+        '200':
           description: A list of unique plant type names
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/PlantType"
+                  $ref: '#/components/schemas/PlantType'
 
   /api/plant-types/{id}:
     parameters:
@@ -116,12 +116,12 @@ paths:
     get:
       summary: Get a plant type
       responses:
-        "200":
+        '200':
           description: The fetched plant type
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PlantType"
+                $ref: '#/components/schemas/PlantType'
 
   /api/plant-types/{id}/catalogue:
     parameters:
@@ -134,27 +134,27 @@ paths:
     get:
       summary: Get catalogue entries for a plant type
       responses:
-        "200":
+        '200':
           description: Catalogue entries for this plant type
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/CataloguePlant"
+                  $ref: '#/components/schemas/CataloguePlant'
 
   /api/catalogue:
     get:
       summary: Get all catalogue plants (flat list)
       responses:
-        "200":
+        '200':
           description: All catalogue entries with resolved plant names
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/CataloguePlant"
+                  $ref: '#/components/schemas/CataloguePlant'
 
   /api/catalogue/{id}:
     get:
@@ -166,34 +166,34 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: The catalogue plant
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CataloguePlant"
-        "404":
+                $ref: '#/components/schemas/CataloguePlant'
+        '404':
           description: Not found
 
   /auth/google:
     get:
       summary: Redirect to Google OAuth
       responses:
-        "302":
+        '302':
           description: Redirects to Google login
 
   /auth/google/callback:
     get:
       summary: Google OAuth callback
       responses:
-        "302":
+        '302':
           description: Redirects to frontend with JWT token
 
   /auth/user:
     delete:
       summary: Delete the user's account and plants
       responses:
-        "204":
+        '204':
           description: Account deleted
 
 security:
@@ -232,22 +232,22 @@ components:
         sowing_windows:
           type: array
           items:
-            $ref: "#/components/schemas/Window"
+            $ref: '#/components/schemas/Window'
         harvest_windows:
           type: array
           items:
-            $ref: "#/components/schemas/Window"
+            $ref: '#/components/schemas/Window'
         transplant_windows:
           type: array
           items:
-            $ref: "#/components/schemas/Window"
+            $ref: '#/components/schemas/Window'
       required:
         - id
         - name
 
     Plant:
       allOf:
-        - $ref: "#/components/schemas/BasePlant"
+        - $ref: '#/components/schemas/BasePlant'
         - type: object
           properties:
             plant_type_id:
@@ -281,6 +281,11 @@ components:
               items:
                 type: string
                 format: date
+            harvest_dates:
+              type: array
+              items:
+                type: string
+                format: date
             icon:
               type: string
             notes:
@@ -308,7 +313,7 @@ components:
 
     CataloguePlant:
       allOf:
-        - $ref: "#/components/schemas/BasePlant"
+        - $ref: '#/components/schemas/BasePlant'
         - type: object
           properties:
             plant_type_id:
@@ -353,12 +358,17 @@ components:
           items:
             type: string
             format: date
+        harvest_dates:
+          type: array
+          items:
+            type: string
+            format: date
         notes:
           type: string
         year:
           type: integer
         overrides:
-          $ref: "#/components/schemas/PlantOverrides"
+          $ref: '#/components/schemas/PlantOverrides'
 
     PlantOverrides:
       type: object
@@ -387,15 +397,15 @@ components:
         sowing_windows:
           type: array
           items:
-            $ref: "#/components/schemas/Window"
+            $ref: '#/components/schemas/Window'
         harvest_windows:
           type: array
           items:
-            $ref: "#/components/schemas/Window"
+            $ref: '#/components/schemas/Window'
         transplant_windows:
           type: array
           items:
-            $ref: "#/components/schemas/Window"
+            $ref: '#/components/schemas/Window'
 
     Window:
       type: object

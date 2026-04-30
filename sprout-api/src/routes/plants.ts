@@ -24,6 +24,7 @@ const PLANT_SELECT = `
     p.sow_dates,
     p.repot_dates,
     p.transplant_dates,
+    p.harvest_dates,
     p.notes,
     COALESCE(p.overrides->>'position', pc.position) AS position,
     COALESCE(p.overrides->>'hardiness', pc.hardiness) AS hardiness,
@@ -63,13 +64,14 @@ plantRoutes.post("/plants", async (c) => {
     sow_dates,
     repot_dates,
     transplant_dates,
+    harvest_dates,
     notes,
     overrides,
     year,
   } = await c.req.json<PlantInput>();
   const rows = await query<{ id: string }>(
-    `INSERT INTO plants (user_id, plant_type_id, catalogue_id, custom_variety, sow_dates, repot_dates, transplant_dates, notes, overrides, year)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8, $9, $10)
+    `INSERT INTO plants (user_id, plant_type_id, catalogue_id, custom_variety, sow_dates, repot_dates, transplant_dates, harvest_dates, notes, overrides, year)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
        RETURNING id`,
     [
       userId,
@@ -79,6 +81,7 @@ plantRoutes.post("/plants", async (c) => {
       sow_dates ?? [],
       repot_dates ?? [],
       transplant_dates ?? [],
+      harvest_dates ?? [],
       notes ?? null,
       overrides ? JSON.stringify(overrides) : null,
       year ?? null,
@@ -112,6 +115,7 @@ plantRoutes.put("/plants/:id", async (c) => {
     sow_dates,
     repot_dates,
     transplant_dates,
+    harvest_dates,
     notes,
     overrides,
     year,
@@ -119,8 +123,8 @@ plantRoutes.put("/plants/:id", async (c) => {
   const rows = await query<{ id: string }>(
     `UPDATE plants SET
          plant_type_id = $1, catalogue_id = $2, custom_variety = $3,
-         sow_dates = $4, repot_dates = $5, transplant_dates = $6, notes = $7, overrides = $8, year = $9
-       WHERE id = $10 AND user_id = $11
+         sow_dates = $4, repot_dates = $5, transplant_dates = $6, harvest_dates = $7, notes = $8, overrides = $9, year = $10
+       WHERE id = $11 AND user_id = $12
        RETURNING id`,
     [
       plant_type_id,
@@ -129,6 +133,7 @@ plantRoutes.put("/plants/:id", async (c) => {
       sow_dates ?? [],
       repot_dates ?? [],
       transplant_dates ?? [],
+      harvest_dates ?? [],
       notes ?? null,
       overrides ? JSON.stringify(overrides) : null,
       year ?? null,

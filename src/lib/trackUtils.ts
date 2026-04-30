@@ -102,6 +102,17 @@ export function computeTracksForPlant(
       : []
   ).filter((d) => selectedYear === undefined || new Date(d).getFullYear() === selectedYear)
 
+  const rawHarvestDates = (
+    'harvest_dates' in plant && Array.isArray(plant.harvest_dates)
+      ? (plant.harvest_dates as string[])
+      : []
+  ).filter((d) => selectedYear === undefined || new Date(d).getFullYear() === selectedYear)
+
+  const harvestDots: Dot[] = rawHarvestDates.map((d) => {
+    const md = parseDateMonthDay(d)
+    return { x: dateToX(md.month, md.day, monthWidth), date: d.substring(0, 10) }
+  })
+
   const sowDots: Dot[] = rawSowDates.map((d) => {
     const md = parseDateMonthDay(d)
     return { x: dateToX(md.month, md.day, monthWidth), date: d.substring(0, 10) }
@@ -156,8 +167,8 @@ export function computeTracksForPlant(
   }
 
   // Harvest tracks
-  if (harvest.unlabelledBars.length) {
-    tracks.push({ type: 'harvest', bars: harvest.unlabelledBars })
+  if (harvest.unlabelledBars.length || harvestDots.length) {
+    tracks.push({ type: 'harvest', bars: harvest.unlabelledBars, dots: harvestDots.length ? harvestDots : undefined })
   }
   for (const [label, bars] of harvest.labelGroups) {
     tracks.push({ type: 'harvest', label, bars })

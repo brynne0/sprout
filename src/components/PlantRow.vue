@@ -37,6 +37,7 @@ function dotLabel(type: TrackType, date: string, variant?: string): string {
   const future = date > todayStr
   if (variant === 'repot') return future ? 'Repot on' : 'Repotted on'
   if (type === 'sowing') return future ? 'Sow on' : 'Sown on'
+  if (type === 'harvest') return future ? 'Harvest on' : 'Harvested on'
   return future ? 'Transplant on' : 'Transplanted on'
 }
 
