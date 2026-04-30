@@ -24,6 +24,7 @@ const router = createRouter({
     },
     { path: '/login', component: () => import('@/views/LoginView.vue') },
     { path: '/auth/callback', component: () => import('@/views/AuthCallback.vue') },
+    { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
 
