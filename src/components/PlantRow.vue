@@ -31,10 +31,13 @@ function isHidden(type: TrackType): boolean {
   return props.hiddenTracks?.has(type) ?? false
 }
 
-function dotLabel(type: TrackType, variant?: string): string {
-  if (variant === 'repot') return 'Repotted on'
-  if (type === 'sowing') return 'Sown on'
-  return 'Transplanted on'
+const todayStr = new Date().toISOString().slice(0, 10)
+
+function dotLabel(type: TrackType, date: string, variant?: string): string {
+  const future = date > todayStr
+  if (variant === 'repot') return future ? 'Repot on' : 'Repotted on'
+  if (type === 'sowing') return future ? 'Sow on' : 'Sown on'
+  return future ? 'Transplant on' : 'Transplanted on'
 }
 
 const openDotKey = ref<string | null>(null)
@@ -141,7 +144,7 @@ const openBarKey = ref<string | null>(null)
           side="top"
           :side-offset="4"
         >
-          {{ dotLabel(track.type, dot.variant) }} {{ formatDate(dot.date) }}
+          {{ dotLabel(track.type, dot.date, dot.variant) }} {{ formatDate(dot.date) }}
         </PopoverContent>
       </Popover>
     </template>
