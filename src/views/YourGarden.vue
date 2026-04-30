@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Plus, Sprout, CalendarDays, ChevronDown } from 'lucide-vue-next'
+import { Plus, Sprout, Shovel, Scissors, Replace, ChevronDown, ChevronRight } from 'lucide-vue-next'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import {
   Empty,
@@ -13,35 +13,187 @@ import {
 } from '@/components/ui/empty'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import type { Plant } from '@/client'
+import type { Plant, Window as PlantWindow } from '@/client'
 import { getApiPlants } from '@/client'
 import PlantDialogue from '@/components/PlantDialogue.vue'
 import PlantActions from '@/components/PlantActions.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import { handleApiError } from '@/lib/utils'
+
 const router = useRouter()
 const plants = ref<Plant[]>([])
 const dialogOpen = ref(false)
 const loading = ref(true)
-import { formatDate } from '@/lib/utils'
 
-const groupedPlants = computed(() => {
-  const groups = new Map<string, Plant[]>()
-  for (const plant of plants.value) {
-    const cat = plant.category_name ?? 'Uncategorised'
-    if (!groups.has(cat)) groups.set(cat, [])
-    groups.get(cat)!.push(plant)
+// Window status utils
+function monthDay(d: Date): number {
+  return (d.getMonth() + 1) * 100 + d.getDate()
+}
+
+function inWindow(today: Date, w: PlantWindow): boolean {
+  const ps = w.start.split('-').map(Number)
+  const pe = w.end.split('-').map(Number)
+  const t = monthDay(today)
+  const s = (ps[0] ?? 0) * 100 + (ps[1] ?? 0)
+  const e = (pe[0] ?? 0) * 100 + (pe[1] ?? 0)
+  return s <= e ? t >= s && t <= e : t >= s || t <= e
+}
+
+function windowStatus(plant: Plant, today: Date) {
+  const sowNow = (plant.sowing_windows ?? []).some((w) => inWindow(today, w))
+  const transplantNow = (plant.transplant_windows ?? []).some((w) => inWindow(today, w))
+  const harvestNow = (plant.harvest_windows ?? []).some((w) => inWindow(today, w))
+  const hasSowed = (plant.sow_dates ?? []).length > 0
+  const hasTransplanted = (plant.transplant_dates ?? []).length > 0
+  return { sowNow, transplantNow, harvestNow, hasSowed, hasTransplanted }
+}
+
+function currentBucket(plant: Plant, today: Date): 'sow' | 'transplant' | 'harvest' | 'resting' {
+  const s = windowStatus(plant, today)
+  if (s.harvestNow && (s.hasSowed || s.hasTransplanted)) return 'harvest'
+  if (s.transplantNow && s.hasSowed && !s.hasTransplanted) return 'transplant'
+  if (s.sowNow && !s.hasSowed) return 'sow'
+  if (s.harvestNow) return 'harvest'
+  if (s.transplantNow) return 'transplant'
+  if (s.sowNow) return 'sow'
+  return 'resting'
+}
+
+function plantHint(plant: Plant, today: Date): { label: string; color: string } | null {
+  const s = windowStatus(plant, today)
+  if (s.harvestNow) return null
+  if (s.transplantNow) {
+    if (s.hasTransplanted) return { label: 'Transplanted', color: 'var(--color-muted-foreground)' }
+    if (s.hasSowed) return { label: 'Transplant', color: 'oklch(0.45 0.12 80)' }
   }
-  for (const groupPlants of groups.values()) {
-    groupPlants.sort((a, b) => a.name.localeCompare(b.name))
+  if (s.sowNow) {
+    if (s.hasSowed) return { label: 'Sown', color: 'var(--color-muted-foreground)' }
+    return { label: 'Sow', color: 'var(--color-primary)' }
   }
-  return Array.from(groups, ([label, plants]) => ({ label, plants })).sort((a, b) =>
-    a.label.localeCompare(b.label),
-  )
+  return null
+}
+
+// Season summary counts
+const today = new Date()
+const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+
+const seasonCounts = computed(() => {
+  let sow = 0,
+    transplant = 0,
+    harvest = 0
+  for (const p of plants.value) {
+    const s = windowStatus(p, today)
+    if (s.sowNow) sow++
+    if (s.transplantNow) transplant++
+    if (s.harvestNow) harvest++
+  }
+  return { sow, transplant, harvest }
 })
 
+// Task reminders
+const MS_DAY = 24 * 60 * 60 * 1000
+
+function parseISO(s: string): Date {
+  const p = s.substring(0, 10).split('-').map(Number)
+  return new Date(p[0] ?? 0, (p[1] ?? 1) - 1, p[2] ?? 1)
+}
+
+function fmtRelative(date: Date): string {
+  const diff = Math.round((date.getTime() - todayStart.getTime()) / MS_DAY)
+  if (diff === 0) return 'Today'
+  if (diff === 1) return 'Tomorrow'
+  if (diff > 1 && diff < 7) return `In ${diff} days`
+  if (diff < 0 && diff > -7) return `${-diff}d ago`
+  return date.toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })
+}
+
+type TaskType = 'sow' | 'transplant' | 'repot'
+
+interface Task {
+  key: string
+  type: TaskType
+  plant: Plant
+  date: Date
+}
+
+const TASK_META: Record<TaskType, { verb: string; color: string; bg: string }> = {
+  sow: {
+    verb: 'Sow',
+    color: 'var(--color-primary)',
+    bg: 'color-mix(in oklab, var(--color-primary) 18%, transparent)',
+  },
+  transplant: {
+    verb: 'Transplant',
+    color: 'oklch(0.45 0.12 80)',
+    bg: 'oklch(0.55 0.12 80 / 0.18)',
+  },
+  repot: {
+    verb: 'Repot',
+    color: 'oklch(0.62 0.10 50)',
+    bg: 'oklch(0.50 0.10 50 / 0.15)',
+  },
+}
+
+const tasks = computed((): Task[] => {
+  const result: Task[] = []
+
+  for (const plant of plants.value) {
+    for (const ds of plant.sow_dates ?? []) {
+      const date = parseISO(ds)
+      if (date >= todayStart)
+        result.push({ type: 'sow', plant, date, key: `sow-${plant.id}-${ds}` })
+    }
+    for (const ds of plant.transplant_dates ?? []) {
+      const date = parseISO(ds)
+      if (date >= todayStart)
+        result.push({ type: 'transplant', plant, date, key: `tp-${plant.id}-${ds}` })
+    }
+    for (const ds of plant.repot_dates ?? []) {
+      const date = parseISO(ds)
+      if (date >= todayStart)
+        result.push({ type: 'repot', plant, date, key: `rp-${plant.id}-${ds}` })
+    }
+  }
+
+  result.sort((a, b) => a.date.getTime() - b.date.getTime())
+
+  return result
+})
+
+const tasksExpanded = ref(false)
+const TASKS_MAX = 6
+
+const visibleTasks = computed(() =>
+  tasksExpanded.value ? tasks.value : tasks.value.slice(0, TASKS_MAX),
+)
+
+// Plants grouped by current window status
+type BucketKey = 'sow' | 'transplant' | 'harvest' | 'resting'
+
+const BUCKET_ORDER: BucketKey[] = ['sow', 'transplant', 'harvest', 'resting']
+
+const BUCKET_META: Record<BucketKey, { label: string; color: string }> = {
+  sow: { label: 'Sow now', color: 'var(--color-primary)' },
+  transplant: { label: 'Transplant now', color: 'oklch(0.55 0.12 80)' },
+  harvest: { label: 'Harvest now', color: 'oklch(0.52 0.18 25)' },
+  resting: { label: 'Off season', color: 'oklch(0.50 0.01 50)' },
+}
+
+const groupedByWindow = computed(() => {
+  const buckets: Record<BucketKey, Plant[]> = { sow: [], transplant: [], harvest: [], resting: [] }
+  for (const p of plants.value) {
+    const b = currentBucket(p, today)
+    buckets[b].push(p)
+  }
+  return BUCKET_ORDER.filter((k) => buckets[k].length > 0).map((k) => ({
+    key: k,
+    meta: BUCKET_META[k],
+    plants: [...buckets[k]].sort((a, b) => a.name.localeCompare(b.name)),
+  }))
+})
+
+// Data fetching
 async function fetchPlants() {
   try {
     const res = await getApiPlants({ throwOnError: true })
@@ -83,83 +235,165 @@ async function onPlantAdded() {
     <div v-else-if="!loading && plants.length > 0">
       <Tabs default-value="gardenList">
         <TabsList class="mx-4">
-          <TabsTrigger value="gardenList"> Plants </TabsTrigger>
-          <TabsTrigger value="gardenCalendar"> Calendar </TabsTrigger>
+          <TabsTrigger value="gardenList">Plants</TabsTrigger>
+          <TabsTrigger value="gardenCalendar">Calendar</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="gardenList" class="px-4">
-          <template v-for="group in groupedPlants" :key="group.label">
-            <h3
-              v-if="groupedPlants.length > 1"
-              class="text-sm font-medium text-muted-foreground mt-4 mb-2 first:mt-0"
-            >
-              {{ group.label }}
-            </h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              <Collapsible v-for="plant in group.plants" :key="plant.id" class="rounded-xl border">
-                <div class="flex items-center gap-4 py-2 px-4">
-                  <!-- <img
-                  v-if="plant.icon"
-                  :src="`/icons/${plant.icon}`"
-                  :alt="plant.name"
-                  class="w-12 h-12 rounded-lg object-cover shrink-0 brightness-90"
+        <TabsContent value="gardenList" class="px-4 flex flex-col gap-4">
+          <!-- Season summary -->
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px]">
+            <span class="inline-flex items-center gap-1">
+              <Sprout :size="11" class="text-primary" />
+              <span class="font-semibold tabular-nums text-primary">{{ seasonCounts.sow }}</span>
+              <span class="text-muted-foreground">to sow</span>
+            </span>
+            <span class="text-border">·</span>
+            <span class="inline-flex items-center gap-1">
+              <Shovel :size="11" style="color: oklch(0.55 0.12 80)" />
+              <span class="font-semibold tabular-nums" style="color: oklch(0.55 0.12 80)">{{
+                seasonCounts.transplant
+              }}</span>
+              <span class="text-muted-foreground">to transplant</span>
+            </span>
+            <span class="text-border">·</span>
+            <span class="inline-flex items-center gap-1">
+              <Scissors :size="11" style="color: oklch(0.52 0.18 25)" />
+              <span class="font-semibold tabular-nums" style="color: oklch(0.52 0.18 25)">{{
+                seasonCounts.harvest
+              }}</span>
+              <span class="text-muted-foreground">to harvest</span>
+            </span>
+          </div>
+
+          <!-- Task reminders -->
+          <section
+            v-if="tasks.length > 0"
+            class="rounded-2xl border px-3 py-2 bg-card border-border"
+          >
+            <header class="flex items-center justify-between pt-1 pb-0.5">
+              <h2 class="text-[13px] font-semibold">
+                Reminders
+                <span class="ml-1.5 text-[11.5px] font-normal text-muted-foreground">{{
+                  tasks.length
+                }}</span>
+              </h2>
+              <button
+                v-if="tasks.length > TASKS_MAX"
+                class="flex items-center gap-0.5 text-[11.5px] font-medium text-muted-foreground"
+                @click="tasksExpanded = !tasksExpanded"
+              >
+                {{ tasksExpanded ? 'Show less' : 'Show all' }}
+                <ChevronDown
+                  :size="12"
+                  class="transition-transform duration-200"
+                  :class="{ 'rotate-180': tasksExpanded }"
                 />
-                <div v-else class="w-12 h-12 rounded-lg flex items-center justify-center shrink-0">
-                  <Sprout class="w-8 h-8 text-primary" />
-                </div> -->
-                  <div class="min-w-0 flex-1">
-                    <h3
-                      class="font-medium truncate cursor-pointer hover:text-primary transition-colors"
-                      @click="router.push(`/plants/${plant.id}`)"
+              </button>
+            </header>
+            <div
+              class="flex flex-col divide-y divide-[color-mix(in_oklab,var(--color-foreground)_6%,transparent)]"
+            >
+              <button
+                v-for="task in visibleTasks"
+                :key="task.key"
+                class="-mx-1 px-1 rounded-md text-left transition-colors hover:bg-[color-mix(in_oklab,var(--color-foreground)_3%,transparent)]"
+                @click="router.push(`/plants/${task.plant.id}`)"
+              >
+                <div class="flex items-center gap-2.5 py-1.5">
+                  <span
+                    class="grid place-items-center w-7 h-7 rounded-lg shrink-0"
+                    :style="{
+                      background: TASK_META[task.type].bg,
+                      color: TASK_META[task.type].color,
+                    }"
+                  >
+                    <Sprout v-if="task.type === 'sow'" :size="14" />
+                    <Replace v-else-if="task.type === 'repot'" :size="14" />
+                    <Shovel v-else :size="14" />
+                  </span>
+                  <div class="min-w-0 flex-1 flex items-baseline gap-1.5">
+                    <span class="text-[13.5px] font-medium">
+                      {{ TASK_META[task.type].verb }} {{ task.plant.name }}
+                    </span>
+                    <span
+                      v-if="task.plant.variety"
+                      class="text-[11.5px] truncate text-muted-foreground"
                     >
-                      {{ plant.name }}
-                      <span v-if="plant.variety" class="font-normal text-muted-foreground">
-                        · {{ plant.variety }}
-                      </span>
-                    </h3>
+                      {{ task.plant.variety }}
+                    </span>
                   </div>
-                  <div class="flex items-center gap-1 shrink-0">
-                    <CollapsibleTrigger
-                      v-if="
-                        (plant.sow_dates ?? []).length ||
-                        (plant.transplant_dates ?? []).length ||
-                        plant.notes
-                      "
-                      class="p-1 rounded-md hover:bg-muted transition-colors"
-                    >
-                      <ChevronDown
-                        class="w-4 h-4 text-muted-foreground transition-transform duration-200 in-data-[state=open]:rotate-180"
-                      />
-                    </CollapsibleTrigger>
-                    <PlantActions
-                      :plant="plant"
-                      @updated="fetchPlants"
-                      @archived="plants = plants.filter((p) => p.id !== $event)"
-                      @deleted="fetchPlants"
-                    />
-                  </div>
+                  <span
+                    class="text-[11.5px] font-medium tabular-nums shrink-0 text-muted-foreground"
+                  >
+                    {{ fmtRelative(task.date) }}
+                  </span>
                 </div>
-                <CollapsibleContent>
-                  <div class="px-4 pb-3 pt-0 text-sm text-muted-foreground flex flex-col gap-1">
-                    <div v-if="(plant.sow_dates ?? []).length" class="flex items-center gap-2">
-                      <CalendarDays class="w-3.5 h-3.5" />
-                      <span>Sow: {{ plant.sow_dates!.map(formatDate).join(', ') }}</span>
-                    </div>
-                    <div
-                      v-if="(plant.transplant_dates ?? []).length"
-                      class="flex items-center gap-2"
-                    >
-                      <CalendarDays class="w-3.5 h-3.5" />
-                      <span
-                        >Transplant: {{ plant.transplant_dates!.map(formatDate).join(', ') }}</span
+              </button>
+            </div>
+          </section>
+
+          <!-- Plants grouped by window status -->
+          <div class="flex flex-col gap-5">
+            <section v-for="group in groupedByWindow" :key="group.key">
+              <header class="flex items-center gap-2 mb-2 px-0.5">
+                <span
+                  class="w-2 h-2 rounded-full shrink-0"
+                  :style="{ background: group.meta.color }"
+                />
+                <h3 class="text-[14px] font-semibold">{{ group.meta.label }}</h3>
+              </header>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5">
+                <button
+                  v-for="plant in group.plants"
+                  :key="plant.id"
+                  class="flex items-center gap-3 px-3 py-2 rounded-xl border bg-card border-border text-left cursor-pointer transition-colors hover:bg-[color-mix(in_oklab,var(--color-foreground)_3%,transparent)]"
+                  @click="router.push(`/plants/${plant.id}`)"
+                >
+                  <!-- Plant icon -->
+                  <img
+                    v-if="plant.icon"
+                    :src="`/icons/${plant.icon}`"
+                    :alt="plant.name"
+                    class="shrink-0 w-8 h-8 object-contain"
+                    style="filter: brightness(0.95)"
+                  />
+                  <div
+                    v-else
+                    class="shrink-0 w-8 h-8 rounded-full grid place-items-center"
+                    style="background: color-mix(in oklab, var(--color-primary) 10%, transparent)"
+                  >
+                    <Sprout :size="16" class="text-primary" />
+                  </div>
+                  <!-- Name + variety -->
+                  <div class="min-w-0 flex-1">
+                    <div class="text-[13.5px] font-medium truncate">
+                      {{ plant.name
+                      }}<span v-if="plant.variety" class="font-normal text-muted-foreground">
+                        · {{ plant.variety }}</span
                       >
                     </div>
-                    <p v-if="plant.notes">{{ plant.notes }}</p>
                   </div>
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
-          </template>
+                  <!-- Status hint -->
+                  <span
+                    v-if="plantHint(plant, today)"
+                    class="text-[11px] font-medium shrink-0"
+                    :style="{ color: plantHint(plant, today)?.color }"
+                  >
+                    {{ plantHint(plant, today)?.label }}
+                  </span>
+                  <!-- Also keep plant actions accessible -->
+                  <PlantActions
+                    :plant="plant"
+                    @updated="fetchPlants"
+                    @archived="plants = plants.filter((p) => p.id !== $event)"
+                    @deleted="fetchPlants"
+                    @click.stop
+                  />
+                  <ChevronRight :size="14" class="text-muted-foreground opacity-50 shrink-0" />
+                </button>
+              </div>
+            </section>
+          </div>
         </TabsContent>
 
         <TabsContent value="gardenCalendar">
