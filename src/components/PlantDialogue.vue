@@ -773,48 +773,6 @@ async function submitPlant() {
               </Popover>
             </Field>
 
-            <!-- Harvest windows -->
-            <Field>
-              <FieldLabel>Harvest windows</FieldLabel>
-              <div v-if="harvestWindows.length" class="flex flex-wrap gap-2">
-                <span
-                  v-for="(w, i) in harvestWindows"
-                  :key="i"
-                  class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
-                >
-                  {{ formatWindow(w) }}
-                  <button
-                    type="button"
-                    class="text-muted-foreground hover:text-foreground"
-                    @click="harvestWindows.splice(i, 1)"
-                  >
-                    <X class="h-3 w-3" />
-                  </button>
-                </span>
-              </div>
-              <Popover v-model:open="showHarvestPicker">
-                <PopoverTrigger as-child>
-                  <Button type="button" variant="outline" size="sm" class="w-full">
-                    <Plus /> Add harvest window
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent class="w-auto p-0">
-                  <RangeCalendar v-model="stagingHarvest" />
-                  <div class="p-2">
-                    <Button
-                      type="button"
-                      size="sm"
-                      class="w-full"
-                      :disabled="!stagingHarvest?.start || !stagingHarvest?.end"
-                      @click="confirmHarvestWindow"
-                    >
-                      Add window
-                    </Button>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </Field>
-
             <!-- Transplant windows -->
             <Field>
               <FieldLabel>Transplant windows</FieldLabel>
@@ -849,6 +807,48 @@ async function submitPlant() {
                       class="w-full"
                       :disabled="!stagingTransplant?.start || !stagingTransplant?.end"
                       @click="confirmTransplantWindow"
+                    >
+                      Add window
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </Field>
+
+            <!-- Harvest windows -->
+            <Field>
+              <FieldLabel>Harvest windows</FieldLabel>
+              <div v-if="harvestWindows.length" class="flex flex-wrap gap-2">
+                <span
+                  v-for="(w, i) in harvestWindows"
+                  :key="i"
+                  class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
+                >
+                  {{ formatWindow(w) }}
+                  <button
+                    type="button"
+                    class="text-muted-foreground hover:text-foreground"
+                    @click="harvestWindows.splice(i, 1)"
+                  >
+                    <X class="h-3 w-3" />
+                  </button>
+                </span>
+              </div>
+              <Popover v-model:open="showHarvestPicker">
+                <PopoverTrigger as-child>
+                  <Button type="button" variant="outline" size="sm" class="w-full">
+                    <Plus /> Add harvest window
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-auto p-0">
+                  <RangeCalendar v-model="stagingHarvest" />
+                  <div class="p-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      class="w-full"
+                      :disabled="!stagingHarvest?.start || !stagingHarvest?.end"
+                      @click="confirmHarvestWindow"
                     >
                       Add window
                     </Button>

@@ -97,13 +97,13 @@
     @apply bg-yellow-500;
   }
   .track-repot-dot {
-    @apply bg-amber-500;
+    background: oklch(0.62 0.10 50);
   }
   .track-transplant-text {
     @apply text-yellow-600;
   }
   .track-repot-text {
-    @apply text-amber-600;
+    color: oklch(0.62 0.10 50);
   }
 
   .track-harvest-bg {
