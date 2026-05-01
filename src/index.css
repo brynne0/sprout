@@ -37,6 +37,10 @@
   --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
   --sidebar-border: oklch(0 0 0 / 15%);
   --sidebar-ring: oklch(0.709 0.01 56.259);
+
+  --transplant: oklch(0.45 0.12 80);
+  --harvest: oklch(0.52 0.18 25);
+  --repot: oklch(0.62 0.10 50);
 }
 
 .dark {
@@ -97,13 +101,13 @@
     @apply bg-yellow-500;
   }
   .track-repot-dot {
-    background: oklch(0.62 0.1 50);
+    background: var(--repot);
   }
   .track-transplant-text {
-    @apply text-yellow-600;
+    color: var(--transplant);
   }
   .track-repot-text {
-    color: oklch(0.62 0.1 50);
+    color: var(--repot);
   }
 
   .track-harvest-bg {
@@ -116,7 +120,7 @@
     @apply bg-red-500;
   }
   .track-harvest-text {
-    @apply text-red-700;
+    color: var(--harvest);
   }
 }
 
@@ -183,6 +187,9 @@
   --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
+  --color-transplant: var(--transplant);
+  --color-harvest: var(--harvest);
+  --color-repot: var(--repot);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);

@@ -66,7 +66,7 @@ function plantHint(plant: Plant, today: Date): { label: string; color: string } 
   if (s.harvestNow) return null
   if (s.transplantNow) {
     if (s.hasTransplanted) return { label: 'Transplanted', color: 'var(--color-muted-foreground)' }
-    if (s.hasSowed) return { label: 'Transplant', color: 'oklch(0.45 0.12 80)' }
+    if (s.hasSowed) return { label: 'Transplant', color: 'var(--color-transplant)' }
   }
   if (s.sowNow) {
     if (s.hasSowed) return { label: 'Sown', color: 'var(--color-muted-foreground)' }
@@ -75,22 +75,8 @@ function plantHint(plant: Plant, today: Date): { label: string; color: string } 
   return null
 }
 
-// Season summary counts
 const today = new Date()
 const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-
-const seasonCounts = computed(() => {
-  let sow = 0,
-    transplant = 0,
-    harvest = 0
-  for (const p of plants.value) {
-    const s = windowStatus(p, today)
-    if (s.sowNow) sow++
-    if (s.transplantNow) transplant++
-    if (s.harvestNow) harvest++
-  }
-  return { sow, transplant, harvest }
-})
 
 // Task reminders
 const MS_DAY = 24 * 60 * 60 * 1000
@@ -109,7 +95,7 @@ function fmtRelative(date: Date): string {
   return date.toLocaleDateString('en-AU', { month: 'short', day: 'numeric' })
 }
 
-type TaskType = 'sow' | 'transplant' | 'repot'
+type TaskType = 'sow' | 'transplant' | 'repot' | 'harvest'
 
 interface Task {
   key: string
@@ -126,13 +112,18 @@ const TASK_META: Record<TaskType, { verb: string; color: string; bg: string }> =
   },
   transplant: {
     verb: 'Transplant',
-    color: 'oklch(0.45 0.12 80)',
-    bg: 'oklch(0.55 0.12 80 / 0.18)',
+    color: 'var(--color-transplant)',
+    bg: 'color-mix(in oklab, var(--color-transplant) 18%, transparent)',
   },
   repot: {
     verb: 'Repot',
-    color: 'oklch(0.62 0.10 50)',
-    bg: 'oklch(0.50 0.10 50 / 0.15)',
+    color: 'var(--color-repot)',
+    bg: 'color-mix(in oklab, var(--color-repot) 15%, transparent)',
+  },
+  harvest: {
+    verb: 'Harvest',
+    color: 'var(--color-harvest)',
+    bg: 'color-mix(in oklab, var(--color-harvest) 15%, transparent)',
   },
 }
 
@@ -155,6 +146,11 @@ const tasks = computed((): Task[] => {
       if (date >= todayStart)
         result.push({ type: 'repot', plant, date, key: `rp-${plant.id}-${ds}` })
     }
+    for (const ds of plant.harvest_dates ?? []) {
+      const date = parseISO(ds)
+      if (date >= todayStart)
+        result.push({ type: 'harvest', plant, date, key: `hv-${plant.id}-${ds}` })
+    }
   }
 
   result.sort((a, b) => a.date.getTime() - b.date.getTime())
@@ -165,9 +161,42 @@ const tasks = computed((): Task[] => {
 const tasksExpanded = ref(false)
 const TASKS_MAX = 6
 
-const visibleTasks = computed(() =>
-  tasksExpanded.value ? tasks.value : tasks.value.slice(0, TASKS_MAX),
-)
+interface TaskGroup {
+  label: string
+  tasks: Task[]
+}
+
+const groupedTasks = computed((): TaskGroup[] => {
+  const thisWeek: Task[] = []
+  const nextWeek: Task[] = []
+  const later: Task[] = []
+
+  for (const task of tasks.value) {
+    const diff = Math.round((task.date.getTime() - todayStart.getTime()) / MS_DAY)
+    if (diff <= 6) thisWeek.push(task)
+    else if (diff <= 13) nextWeek.push(task)
+    else later.push(task)
+  }
+
+  const groups: TaskGroup[] = []
+  if (thisWeek.length) groups.push({ label: 'This week', tasks: thisWeek })
+  if (nextWeek.length) groups.push({ label: 'Next week', tasks: nextWeek })
+  if (later.length) groups.push({ label: 'Later', tasks: later })
+  return groups
+})
+
+const visibleGroups = computed((): TaskGroup[] => {
+  if (tasksExpanded.value) return groupedTasks.value
+
+  let remaining = TASKS_MAX
+  const result: TaskGroup[] = []
+  for (const group of groupedTasks.value) {
+    if (remaining <= 0) break
+    result.push({ label: group.label, tasks: group.tasks.slice(0, remaining) })
+    remaining -= group.tasks.length
+  }
+  return result
+})
 
 // Plants grouped by current window status
 type BucketKey = 'sow' | 'transplant' | 'harvest' | 'growing' | 'resting'
@@ -176,9 +205,9 @@ const BUCKET_ORDER: BucketKey[] = ['sow', 'transplant', 'growing', 'harvest', 'r
 
 const BUCKET_META: Record<BucketKey, { label: string; color: string }> = {
   sow: { label: 'Sow now', color: 'var(--color-primary)' },
-  transplant: { label: 'Transplant now', color: 'oklch(0.55 0.12 80)' },
+  transplant: { label: 'Transplant now', color: 'var(--color-transplant)' },
   growing: { label: 'Growing', color: 'var(--color-secondary)' },
-  harvest: { label: 'Harvest now', color: 'oklch(0.52 0.18 25)' },
+  harvest: { label: 'Harvest now', color: 'var(--color-harvest)' },
   resting: { label: 'Off season', color: 'oklch(0.50 0.01 50)' },
 }
 
@@ -255,31 +284,6 @@ async function onPlantAdded() {
         </TabsList>
 
         <TabsContent value="gardenList" class="px-4 flex flex-col gap-4">
-          <!-- Season summary -->
-          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px]">
-            <span class="inline-flex items-center gap-1">
-              <Sprout :size="11" class="text-primary" />
-              <span class="font-semibold tabular-nums text-primary">{{ seasonCounts.sow }}</span>
-              <span class="text-muted-foreground">to sow</span>
-            </span>
-            <span class="text-border">·</span>
-            <span class="inline-flex items-center gap-1">
-              <Shovel :size="11" style="color: oklch(0.55 0.12 80)" />
-              <span class="font-semibold tabular-nums" style="color: oklch(0.55 0.12 80)">{{
-                seasonCounts.transplant
-              }}</span>
-              <span class="text-muted-foreground">to transplant</span>
-            </span>
-            <span class="text-border">·</span>
-            <span class="inline-flex items-center gap-1">
-              <Scissors :size="11" style="color: oklch(0.52 0.18 25)" />
-              <span class="font-semibold tabular-nums" style="color: oklch(0.52 0.18 25)">{{
-                seasonCounts.harvest
-              }}</span>
-              <span class="text-muted-foreground">to harvest</span>
-            </span>
-          </div>
-
           <!-- Task reminders -->
           <section
             v-if="tasks.length > 0"
@@ -305,45 +309,55 @@ async function onPlantAdded() {
                 />
               </button>
             </header>
-            <div
-              class="flex flex-col divide-y divide-[color-mix(in_oklab,var(--color-foreground)_6%,transparent)]"
-            >
-              <button
-                v-for="task in visibleTasks"
-                :key="task.key"
-                class="-mx-1 px-1 rounded-md text-left transition-colors hover:bg-[color-mix(in_oklab,var(--color-foreground)_3%,transparent)]"
-                @click="router.push(`/plants/${task.plant.id}`)"
-              >
-                <div class="flex items-center gap-2.5 py-1.5">
-                  <span
-                    class="grid place-items-center w-7 h-7 rounded-lg shrink-0"
-                    :style="{
-                      background: TASK_META[task.type].bg,
-                      color: TASK_META[task.type].color,
-                    }"
+            <div>
+              <template v-for="group in visibleGroups" :key="group.label">
+                <p
+                  class="text-[10.5px] font-medium uppercase tracking-widest text-muted-foreground px-1 pt-2.5 pb-0.5 first:pt-1"
+                >
+                  {{ group.label }}
+                </p>
+                <div
+                  class="flex flex-col divide-y divide-[color-mix(in_oklab,var(--color-foreground)_6%,transparent)]"
+                >
+                  <button
+                    v-for="task in group.tasks"
+                    :key="task.key"
+                    class="-mx-1 px-1 rounded-md text-left transition-colors hover:bg-[color-mix(in_oklab,var(--color-foreground)_3%,transparent)]"
+                    @click="router.push(`/plants/${task.plant.id}`)"
                   >
-                    <Sprout v-if="task.type === 'sow'" :size="14" />
-                    <Replace v-else-if="task.type === 'repot'" :size="14" />
-                    <Shovel v-else :size="14" />
-                  </span>
-                  <div class="min-w-0 flex-1 flex items-baseline gap-1.5">
-                    <span class="text-[13.5px] font-medium">
-                      {{ TASK_META[task.type].verb }} {{ task.plant.name }}
-                    </span>
-                    <span
-                      v-if="task.plant.variety"
-                      class="text-[11.5px] truncate text-muted-foreground"
-                    >
-                      {{ task.plant.variety }}
-                    </span>
-                  </div>
-                  <span
-                    class="text-[11.5px] font-medium tabular-nums shrink-0 text-muted-foreground"
-                  >
-                    {{ fmtRelative(task.date) }}
-                  </span>
+                    <div class="flex items-center gap-2.5 py-1.5">
+                      <span
+                        class="grid place-items-center w-7 h-7 rounded-lg shrink-0"
+                        :style="{
+                          background: TASK_META[task.type].bg,
+                          color: TASK_META[task.type].color,
+                        }"
+                      >
+                        <Sprout v-if="task.type === 'sow'" :size="14" />
+                        <Replace v-else-if="task.type === 'repot'" :size="14" />
+                        <Scissors v-else-if="task.type === 'harvest'" :size="14" />
+                        <Shovel v-else :size="14" />
+                      </span>
+                      <div class="min-w-0 flex-1 flex items-baseline gap-1.5">
+                        <span class="text-[13.5px] font-medium">
+                          {{ TASK_META[task.type].verb }} {{ task.plant.name }}
+                        </span>
+                        <span
+                          v-if="task.plant.variety"
+                          class="text-[11.5px] truncate text-muted-foreground"
+                        >
+                          {{ task.plant.variety }}
+                        </span>
+                      </div>
+                      <span
+                        class="text-[11.5px] font-medium tabular-nums shrink-0 text-muted-foreground"
+                      >
+                        {{ fmtRelative(task.date) }}
+                      </span>
+                    </div>
+                  </button>
                 </div>
-              </button>
+              </template>
             </div>
           </section>
 
