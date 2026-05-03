@@ -26,6 +26,8 @@ const props = defineProps<ToasterProps>()
       '--error-border': 'var(--error-text)',
       '--warning-border': 'var(--warning-text)',
       '--info-border': 'var(--info-text)',
+      '--success-bg': 'color-mix(in oklab, var(--success) 18%, var(--popover))',
+      '--error-bg': 'color-mix(in oklab, var(--error) 18%, var(--popover))',
     }"
     v-bind="props"
   >
