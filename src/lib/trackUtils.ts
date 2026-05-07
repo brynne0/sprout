@@ -1,4 +1,5 @@
 import type { BasePlant } from '@/client'
+import { toLocalDateStr } from '@/lib/utils'
 
 export type TrackType = 'sowing' | 'transplant' | 'harvest'
 
@@ -30,7 +31,7 @@ export function daysInMonth(month: number): number {
 }
 
 export function parseDateMonthDay(dateStr: string): { month: number; day: number } {
-  const parts = dateStr.substring(0, 10).split('-').map(Number)
+  const parts = toLocalDateStr(dateStr).split('-').map(Number)
   return { month: parts[1]!, day: parts[2]! }
 }
 
@@ -88,45 +89,53 @@ export function computeTracksForPlant(
 
   const rawSowDates = (
     'sow_dates' in plant && Array.isArray(plant.sow_dates) ? (plant.sow_dates as string[]) : []
-  ).filter((d) => selectedYear === undefined || new Date(d).getFullYear() === selectedYear)
+  ).filter(
+    (d) => selectedYear === undefined || Number(toLocalDateStr(d).substring(0, 4)) === selectedYear,
+  )
 
   const rawTransplantDates = (
     'transplant_dates' in plant && Array.isArray(plant.transplant_dates)
       ? (plant.transplant_dates as string[])
       : []
-  ).filter((d) => selectedYear === undefined || new Date(d).getFullYear() === selectedYear)
+  ).filter(
+    (d) => selectedYear === undefined || Number(toLocalDateStr(d).substring(0, 4)) === selectedYear,
+  )
 
   const rawRepotDates = (
     'repot_dates' in plant && Array.isArray(plant.repot_dates)
       ? (plant.repot_dates as string[])
       : []
-  ).filter((d) => selectedYear === undefined || new Date(d).getFullYear() === selectedYear)
+  ).filter(
+    (d) => selectedYear === undefined || Number(toLocalDateStr(d).substring(0, 4)) === selectedYear,
+  )
 
   const rawHarvestDates = (
     'harvest_dates' in plant && Array.isArray(plant.harvest_dates)
       ? (plant.harvest_dates as string[])
       : []
-  ).filter((d) => selectedYear === undefined || new Date(d).getFullYear() === selectedYear)
+  ).filter(
+    (d) => selectedYear === undefined || Number(toLocalDateStr(d).substring(0, 4)) === selectedYear,
+  )
 
   const harvestDots: Dot[] = rawHarvestDates.map((d) => {
     const md = parseDateMonthDay(d)
-    return { x: dateToX(md.month, md.day, monthWidth), date: d.substring(0, 10) }
+    return { x: dateToX(md.month, md.day, monthWidth), date: toLocalDateStr(d) }
   })
 
   const sowDots: Dot[] = rawSowDates.map((d) => {
     const md = parseDateMonthDay(d)
-    return { x: dateToX(md.month, md.day, monthWidth), date: d.substring(0, 10) }
+    return { x: dateToX(md.month, md.day, monthWidth), date: toLocalDateStr(d) }
   })
   const transplantDots: Dot[] = [
     ...rawTransplantDates.map((d) => {
       const md = parseDateMonthDay(d)
-      return { x: dateToX(md.month, md.day, monthWidth), date: d.substring(0, 10) }
+      return { x: dateToX(md.month, md.day, monthWidth), date: toLocalDateStr(d) }
     }),
     ...rawRepotDates.map((d) => {
       const md = parseDateMonthDay(d)
       return {
         x: dateToX(md.month, md.day, monthWidth),
-        date: d.substring(0, 10),
+        date: toLocalDateStr(d),
         variant: 'repot' as const,
       }
     }),
@@ -168,7 +177,11 @@ export function computeTracksForPlant(
 
   // Harvest tracks
   if (harvest.unlabelledBars.length || harvestDots.length) {
-    tracks.push({ type: 'harvest', bars: harvest.unlabelledBars, dots: harvestDots.length ? harvestDots : undefined })
+    tracks.push({
+      type: 'harvest',
+      bars: harvest.unlabelledBars,
+      dots: harvestDots.length ? harvestDots : undefined,
+    })
   }
   for (const [label, bars] of harvest.labelGroups) {
     tracks.push({ type: 'harvest', label, bars })

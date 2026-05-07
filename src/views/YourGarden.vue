@@ -14,12 +14,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import type { Plant, Window as PlantWindow } from '@/client'
+import { isDateUpcoming, handleApiError } from '@/lib/utils'
 import { getApiPlants } from '@/client'
 import PlantDialogue from '@/components/PlantDialogue.vue'
 import PlantActions from '@/components/PlantActions.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
-import { handleApiError } from '@/lib/utils'
 
 const router = useRouter()
 const plants = ref<Plant[]>([])
@@ -44,8 +44,8 @@ function windowStatus(plant: Plant, today: Date) {
   const sowNow = (plant.sowing_windows ?? []).some((w) => inWindow(today, w))
   const transplantNow = (plant.transplant_windows ?? []).some((w) => inWindow(today, w))
   const harvestNow = (plant.harvest_windows ?? []).some((w) => inWindow(today, w))
-  const hasSowed = (plant.sow_dates ?? []).length > 0
-  const hasTransplanted = (plant.transplant_dates ?? []).length > 0
+  const hasSowed = (plant.sow_dates ?? []).some((d) => !isDateUpcoming(d))
+  const hasTransplanted = (plant.transplant_dates ?? []).some((d) => !isDateUpcoming(d))
   return { sowNow, transplantNow, harvestNow, hasSowed, hasTransplanted }
 }
 
@@ -63,15 +63,7 @@ function currentBucket(plant: Plant, today: Date): BucketKey {
 
 function plantHint(plant: Plant, today: Date): { label: string; color: string } | null {
   const s = windowStatus(plant, today)
-  if (s.harvestNow) return null
-  if (s.transplantNow) {
-    if (s.hasTransplanted) return { label: 'Transplanted', color: 'var(--color-muted-foreground)' }
-    if (s.hasSowed) return { label: 'Transplant', color: 'var(--color-transplant)' }
-  }
-  if (s.sowNow) {
-    if (s.hasSowed) return { label: 'Sown', color: 'var(--color-muted-foreground)' }
-    return { label: 'Sow', color: 'var(--color-primary)' }
-  }
+  if (s.hasTransplanted) return { label: 'Transplanted', color: 'var(--color-muted-foreground)' }
   return null
 }
 
@@ -395,7 +387,7 @@ async function onPlantAdded() {
                   </div>
                   <!-- Name + variety -->
                   <div class="min-w-0 flex-1">
-                    <div class="text-[13.5px] font-medium truncate">
+                    <div class="text-[13.5px] font-medium line-clamp-2">
                       {{ plant.name
                       }}<span v-if="plant.variety" class="font-normal text-muted-foreground">
                         · {{ plant.variety }}</span

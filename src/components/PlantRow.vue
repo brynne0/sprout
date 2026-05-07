@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import type { Track, TrackType } from '@/lib/trackUtils'
 import { TRACK_HEIGHT, TRACK_GAP, ROW_PADDING, rowHeightForTrackCount } from '@/lib/trackUtils'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { formatDate } from '@/lib/utils'
+import { formatDate, isDateUpcoming } from '@/lib/utils'
 
 const props = withDefaults(
   defineProps<{
@@ -31,14 +31,12 @@ function isHidden(type: TrackType): boolean {
   return props.hiddenTracks?.has(type) ?? false
 }
 
-const todayStr = new Date().toISOString().slice(0, 10)
-
 function dotLabel(type: TrackType, date: string, variant?: string): string {
-  const future = date > todayStr
-  if (variant === 'repot') return future ? 'Repot on' : 'Repotted on'
-  if (type === 'sowing') return future ? 'Sow on' : 'Sown on'
-  if (type === 'harvest') return future ? 'Harvest on' : 'Harvested on'
-  return future ? 'Transplant on' : 'Transplanted on'
+  const upcoming = isDateUpcoming(date)
+  if (variant === 'repot') return upcoming ? 'Repot on' : 'Repotted on'
+  if (type === 'sowing') return upcoming ? 'Sow on' : 'Sown on'
+  if (type === 'harvest') return upcoming ? 'Harvest on' : 'Harvested on'
+  return upcoming ? 'Transplant on' : 'Transplanted on'
 }
 
 const openDotKey = ref<string | null>(null)
