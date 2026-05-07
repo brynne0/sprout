@@ -495,7 +495,7 @@ async function submitPlant() {
           />
         </Field>
 
-        <Field>
+        <Field v-if="!isEditMode">
           <FieldLabel>Sow Dates</FieldLabel>
           <div v-if="sowDates.length" class="flex flex-wrap gap-2">
             <span
