@@ -79,8 +79,6 @@ const sowDates = ref<string[]>([])
 const transplantDates = ref<string[]>([])
 const repotDates = ref<string[]>([])
 const stagingSowDate = ref<DateValue>()
-const stagingTransplantDate = ref<DateValue>()
-const stagingRepotDate = ref<DateValue>()
 
 const year = ref<number | null>(null)
 
@@ -111,8 +109,6 @@ const showSowingPicker = ref(false)
 const showHarvestPicker = ref(false)
 const showTransplantPicker = ref(false)
 const showSowDatePicker = ref(false)
-const showTransplantDatePicker = ref(false)
-const showRepotDatePicker = ref(false)
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -142,10 +138,6 @@ function highlightWindow(day: DateValue, windows: Window[]): string | false {
 
 function isInSowWindow(day: DateValue): string | false {
   return highlightWindow(day, selectedCatalogueEntry.value?.sowing_windows ?? [])
-}
-
-function isInTransplantWindow(day: DateValue): string | false {
-  return highlightWindow(day, selectedCatalogueEntry.value?.transplant_windows ?? [])
 }
 
 function formatWindow(w: Window): string {
@@ -316,8 +308,6 @@ function reset() {
   transplantDates.value = []
   repotDates.value = []
   stagingSowDate.value = undefined
-  stagingTransplantDate.value = undefined
-  stagingRepotDate.value = undefined
   year.value = null
   showOverrides.value = false
   overrides.value = {
@@ -542,93 +532,6 @@ async function submitPlant() {
                     sowDates.push(v.toString())
                     stagingSowDate = undefined
                     showSowDatePicker = false
-                  }
-                "
-              />
-            </PopoverContent>
-          </Popover>
-        </Field>
-
-        <Field>
-          <FieldLabel>Repot Dates</FieldLabel>
-          <div v-if="repotDates.length" class="flex flex-wrap gap-2">
-            <span
-              v-for="(d, i) in repotDates"
-              :key="i"
-              class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
-            >
-              {{ formatDate(d) }}
-              <button
-                type="button"
-                class="text-muted-foreground hover:text-foreground"
-                @click="repotDates.splice(i, 1)"
-              >
-                <X class="h-3 w-3" />
-              </button>
-            </span>
-          </div>
-          <Popover v-model:open="showRepotDatePicker">
-            <PopoverTrigger as-child>
-              <Button type="button" variant="outline" size="sm" class="w-full">
-                <Plus /> Add repot date
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent class="w-auto p-0">
-              <Calendar
-                v-model="stagingRepotDate"
-                :initial-focus="true"
-                :default-placeholder="defaultPlaceholder"
-                layout="month-and-year"
-                @update:model-value="
-                  (v: DateValue | undefined) => {
-                    if (!v) return
-                    repotDates.push(v.toString())
-                    stagingRepotDate = undefined
-                    showRepotDatePicker = false
-                  }
-                "
-              />
-            </PopoverContent>
-          </Popover>
-        </Field>
-
-        <Field>
-          <FieldLabel>Transplant Dates</FieldLabel>
-          <div v-if="transplantDates.length" class="flex flex-wrap gap-2">
-            <span
-              v-for="(d, i) in transplantDates"
-              :key="i"
-              class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
-            >
-              {{ formatDate(d) }}
-              <button
-                type="button"
-                class="text-muted-foreground hover:text-foreground"
-                @click="transplantDates.splice(i, 1)"
-              >
-                <X class="h-3 w-3" />
-              </button>
-            </span>
-          </div>
-          <Popover v-model:open="showTransplantDatePicker">
-            <PopoverTrigger as-child>
-              <Button type="button" variant="outline" size="sm" class="w-full">
-                <Plus /> Add transplant date
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent class="w-auto p-0">
-              <Calendar
-                v-model="stagingTransplantDate"
-                :initial-focus="true"
-                :default-placeholder="defaultPlaceholder"
-                layout="month-and-year"
-                :highlight-date="isInTransplantWindow"
-                @update:model-value="
-                  (v: DateValue | undefined) => {
-                    if (!v) return
-                    transplantDates.push(v.toString())
-                    stagingTransplantDate = undefined
-                    showTransplantDatePicker = false
                   }
                 "
               />
