@@ -335,7 +335,7 @@ async function submitPlant() {
   loading.value = true
   const body = {
     plant_type_id: selectedPlantTypeId.value,
-    catalogue_id: selectedCatalogueId.value || undefined,
+    catalogue_id: isCustomVariety.value ? undefined : selectedCatalogueId.value || undefined,
     custom_variety: customVariety.value || undefined,
     sow_dates: sowDates.value.length ? sowDates.value : undefined,
     transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
