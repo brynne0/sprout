@@ -22,7 +22,7 @@ import {
 } from 'lucide-vue-next'
 import { getApiPlantsById, getApiCatalogueById, putApiPlantsById } from '@/client'
 import type { Plant, CataloguePlant } from '@/client'
-import { handleApiError, formatDate } from '@/lib/utils'
+import { handleApiError, formatDate, toLocalDateStr, localToday } from '@/lib/utils'
 import { computeTracksForPlant, dateToX } from '@/lib/trackUtils'
 import type { TrackType } from '@/lib/trackUtils'
 import LoadingSprout from '@/components/LoadingSprout.vue'
@@ -121,17 +121,13 @@ const allTasks = computed<TaskEntry[]>(() => {
   ].sort((a, b) => a.date.localeCompare(b.date))
 })
 
-const upcomingTasks = computed(() => {
-  const now = new Date()
-  now.setHours(0, 0, 0, 0)
-  return allTasks.value.filter((t) => new Date(t.date) >= now)
-})
+const upcomingTasks = computed(() =>
+  allTasks.value.filter((t) => toLocalDateStr(t.date) >= localToday()),
+)
 
-const pastTasks = computed(() => {
-  const now = new Date()
-  now.setHours(0, 0, 0, 0)
-  return allTasks.value.filter((t) => new Date(t.date) < now).reverse()
-})
+const pastTasks = computed(() =>
+  allTasks.value.filter((t) => toLocalDateStr(t.date) < localToday()).reverse(),
+)
 
 const showHistory = ref(false)
 
