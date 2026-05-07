@@ -387,7 +387,7 @@ async function onPlantAdded() {
                   </div>
                   <!-- Name + variety -->
                   <div class="min-w-0 flex-1">
-                    <div class="text-[13.5px] font-medium truncate">
+                    <div class="text-[13.5px] font-medium line-clamp-2">
                       {{ plant.name
                       }}<span v-if="plant.variety" class="font-normal text-muted-foreground">
                         · {{ plant.variety }}</span
