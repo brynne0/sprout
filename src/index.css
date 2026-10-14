@@ -49,6 +49,11 @@
   --transplant-bg: #f0d5a5;
   --repot-bg: #fdceb2;
   --harvest-bg: #f2bbb6;
+
+  --sow-dot: #22882a;
+  --transplant-dot: #df9800;
+  --repot-dot: #ea7d2e;
+  --harvest-dot: #d02b34;
 }
 
 .dark {
@@ -95,6 +100,11 @@
   --transplant-bg: #483100;
   --repot-bg: #4d2c15;
   --harvest-bg: #562421;
+
+  --sow-dot: #449d46;
+  --transplant-dot: #b88000;
+  --repot-dot: #bf6420;
+  --harvest-dot: #d24c4c;
 }
 
 @layer components {
@@ -105,7 +115,7 @@
     border-color: color-mix(in oklab, var(--sow) 50%, var(--sow-bg));
   }
   .track-sowing-dot {
-    background-color: var(--sow);
+    background-color: var(--sow-dot);
   }
   .track-sowing-text {
     color: var(--sow);
@@ -118,14 +128,14 @@
     border-color: color-mix(in oklab, var(--transplant) 50%, var(--transplant-bg));
   }
   .track-transplant-dot {
-    background-color: var(--transplant);
+    background-color: var(--transplant-dot);
   }
   .track-transplant-text {
     color: var(--transplant);
   }
 
   .track-repot-dot {
-    background-color: var(--repot);
+    background-color: var(--repot-dot);
   }
   .track-repot-text {
     color: var(--repot);
@@ -138,7 +148,7 @@
     border-color: color-mix(in oklab, var(--harvest) 50%, var(--harvest-bg));
   }
   .track-harvest-dot {
-    background-color: var(--harvest);
+    background-color: var(--harvest-dot);
   }
   .track-harvest-text {
     color: var(--harvest);

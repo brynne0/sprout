@@ -180,10 +180,10 @@ type BucketKey = 'sow' | 'transplant' | 'harvest' | 'growing' | 'resting'
 const BUCKET_ORDER: BucketKey[] = ['sow', 'transplant', 'growing', 'harvest', 'resting']
 
 const BUCKET_META: Record<BucketKey, { label: string; color: string }> = {
-  sow: { label: 'Sow now', color: 'var(--color-primary)' },
-  transplant: { label: 'Transplant now', color: 'var(--color-transplant)' },
+  sow: { label: 'Sow now', color: 'var(--sow-dot)' },
+  transplant: { label: 'Transplant now', color: 'var(--transplant-dot)' },
   growing: { label: 'Growing', color: 'var(--color-secondary)' },
-  harvest: { label: 'Harvest now', color: 'var(--color-harvest)' },
+  harvest: { label: 'Harvest now', color: 'var(--harvest-dot)' },
   resting: { label: 'Off season', color: 'var(--color-muted-foreground)' },
 }
 
