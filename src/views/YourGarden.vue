@@ -97,26 +97,10 @@ interface Task {
 }
 
 const TASK_META: Record<TaskType, { verb: string; color: string; bg: string }> = {
-  sow: {
-    verb: 'Sow',
-    color: 'var(--color-primary)',
-    bg: 'color-mix(in oklab, var(--color-primary) 18%, transparent)',
-  },
-  transplant: {
-    verb: 'Transplant',
-    color: 'var(--color-transplant)',
-    bg: 'color-mix(in oklab, var(--color-transplant) 18%, transparent)',
-  },
-  repot: {
-    verb: 'Repot',
-    color: 'var(--color-repot)',
-    bg: 'color-mix(in oklab, var(--color-repot) 15%, transparent)',
-  },
-  harvest: {
-    verb: 'Harvest',
-    color: 'var(--color-harvest)',
-    bg: 'color-mix(in oklab, var(--color-harvest) 15%, transparent)',
-  },
+  sow: { verb: 'Sow', color: 'var(--sow)', bg: 'var(--sow-bg)' },
+  transplant: { verb: 'Transplant', color: 'var(--transplant)', bg: 'var(--transplant-bg)' },
+  repot: { verb: 'Repot', color: 'var(--repot)', bg: 'var(--repot-bg)' },
+  harvest: { verb: 'Harvest', color: 'var(--harvest)', bg: 'var(--harvest-bg)' },
 }
 
 const tasks = computed((): Task[] => {

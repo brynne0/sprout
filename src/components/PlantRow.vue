@@ -50,7 +50,7 @@ const openBarKey = ref<string | null>(null)
   >
     <div
       v-if="resolvedTodayX !== null"
-      class="absolute top-0 bottom-0 border-l-2 border-dashed border-primary/60"
+      class="pointer-events-none absolute top-0 bottom-0 z-10 border-l-2 border-dashed border-primary/60"
       :style="{ left: resolvedTodayX + 'px' }"
     />
     <template v-for="(track, ti) in resolvedTracks" :key="`track-${ti}`">

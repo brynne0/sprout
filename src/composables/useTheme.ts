@@ -1,7 +1,7 @@
 import { watchEffect } from 'vue'
 import { createSharedComposable, useColorMode } from '@vueuse/core'
 
-const STATUS_BAR = { light: '#e8e5df', dark: '#1d2620' }
+const STATUS_BAR = { light: '#e8e5df', dark: '#141615' }
 
 export const useTheme = createSharedComposable(() => {
   const mode = useColorMode({ storageKey: 'sprout-theme' })

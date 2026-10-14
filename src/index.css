@@ -40,92 +40,105 @@
 
   --success: oklch(0.6 0.18 145);
   --error: var(--destructive);
-  --transplant: oklch(0.45 0.12 80);
-  --harvest: oklch(0.52 0.18 25);
-  --repot: oklch(0.62 0.1 50);
+  --transplant: #643f00;
+  --harvest: #682222;
+  --repot: #743200;
+  --sow: #1a491b;
+
+  --sow-bg: #afceae;
+  --transplant-bg: #f0d5a5;
+  --repot-bg: #fdceb2;
+  --harvest-bg: #f2bbb6;
 }
 
 .dark {
   color-scheme: dark;
-  --background: #1d2620;
+  --background: #141615;
   --foreground: #e8e5df;
-  --card: #26322a;
+  --card: #1c1f1d;
   --card-foreground: #e8e5df;
-  --popover: #2b382f;
+  --popover: #212422;
   --popover-foreground: #e8e5df;
-  --primary: #8fb08b;
-  --primary-foreground: #142019;
-  --secondary: #3a5a40;
+  --primary: #8fae8b;
+  --primary-foreground: #121613;
+  --secondary: #2a332c;
   --secondary-foreground: #e8e5df;
   --muted: color-mix(in oklab, var(--primary) 14%, transparent);
-  --muted-foreground: #a3ab9c;
+  --muted-foreground: #a0a59e;
   --accent: color-mix(in oklab, var(--primary) 14%, transparent);
   --accent-foreground: #e8e5df;
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
-  --ring: #6b8a68;
+  --ring: #5f7a5c;
   --chart-1: oklch(0.845 0.143 164.978);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.596 0.145 163.225);
   --chart-4: oklch(0.508 0.118 165.612);
   --chart-5: oklch(0.432 0.095 166.913);
-  --sidebar: #1d2620;
+  --sidebar: #141615;
   --sidebar-foreground: #e8e5df;
-  --sidebar-primary: #8fb08b;
-  --sidebar-primary-foreground: #142019;
-  --sidebar-accent: #26322a;
+  --sidebar-primary: #8fae8b;
+  --sidebar-primary-foreground: #121613;
+  --sidebar-accent: #1c1f1d;
   --sidebar-accent-foreground: #e8e5df;
   --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: #6b8a68;
+  --sidebar-ring: #5f7a5c;
 
   --success: oklch(0.74 0.16 145);
-  --transplant: oklch(0.78 0.12 85);
-  --harvest: oklch(0.72 0.15 25);
-  --repot: oklch(0.76 0.09 55);
+  --transplant: #efc876;
+  --harvest: #ffb3ab;
+  --repot: #fcbf95;
+  --sow: #addda7;
+
+  --sow-bg: #223d20;
+  --transplant-bg: #483100;
+  --repot-bg: #4d2c15;
+  --harvest-bg: #562421;
 }
 
 @layer components {
   .track-sowing-bg {
-    @apply bg-primary/20;
+    background-color: var(--sow-bg);
   }
   .track-sowing-border {
-    @apply border-primary/45;
+    border-color: color-mix(in oklab, var(--sow) 50%, var(--sow-bg));
   }
   .track-sowing-dot {
-    @apply bg-primary;
+    background-color: var(--sow);
   }
   .track-sowing-text {
-    @apply text-primary;
+    color: var(--sow);
   }
 
   .track-transplant-bg {
-    @apply bg-yellow-600/20;
+    background-color: var(--transplant-bg);
   }
   .track-transplant-border {
-    @apply border-yellow-600/55;
+    border-color: color-mix(in oklab, var(--transplant) 50%, var(--transplant-bg));
   }
   .track-transplant-dot {
-    @apply bg-yellow-500;
-  }
-  .track-repot-dot {
-    background: var(--repot);
+    background-color: var(--transplant);
   }
   .track-transplant-text {
     color: var(--transplant);
+  }
+
+  .track-repot-dot {
+    background-color: var(--repot);
   }
   .track-repot-text {
     color: var(--repot);
   }
 
   .track-harvest-bg {
-    @apply bg-red-500/20;
+    background-color: var(--harvest-bg);
   }
   .track-harvest-border {
-    @apply border-red-500/50;
+    border-color: color-mix(in oklab, var(--harvest) 50%, var(--harvest-bg));
   }
   .track-harvest-dot {
-    @apply bg-red-500;
+    background-color: var(--harvest);
   }
   .track-harvest-text {
     color: var(--harvest);
