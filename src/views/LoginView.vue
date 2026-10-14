@@ -11,20 +11,27 @@
     <div v-if="sent" class="flex w-full max-w-2xs flex-col items-center gap-3 text-center">
       <p class="text-sm text-foreground/60">
         We've sent a sign-in link to
-        <span class="font-semibold text-foreground">{{ email }}</span>. Check your inbox.
+        <span class="font-semibold text-foreground">{{ email }}</span
+        >. Check your inbox.
       </p>
       <Button variant="link" size="sm" @click="sent = false">Use a different email</Button>
     </div>
 
     <form v-else class="flex w-full max-w-2xs flex-col gap-3" @submit.prevent="sendLink">
-      <Input
-        v-model="email"
-        type="email"
-        required
-        autocomplete="email"
-        placeholder="you@example.com"
-        aria-label="Email address"
-      />
+      <div class="relative">
+        <Mail
+          class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+        />
+        <Input
+          v-model="email"
+          type="email"
+          required
+          autocomplete="email"
+          placeholder="Email address"
+          aria-label="Email address"
+          class="pl-9"
+        />
+      </div>
       <Button type="submit" class="rounded-xl" :disabled="sending">
         <Spinner v-if="sending" />
         Email me a sign-in link
@@ -35,7 +42,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Sprout } from 'lucide-vue-next'
+import { Mail, Sprout } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
