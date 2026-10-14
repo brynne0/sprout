@@ -22,26 +22,20 @@ const props = defineProps<ToasterProps>()
       '--normal-text': 'var(--popover-foreground)',
       '--normal-border': 'var(--border)',
       '--border-radius': 'var(--radius)',
-      '--success-border': 'var(--success-text)',
-      '--error-border': 'var(--error-text)',
-      '--warning-border': 'var(--warning-text)',
-      '--info-border': 'var(--info-text)',
-      '--success-bg': 'color-mix(in oklab, var(--success) 5%, var(--popover))',
-      '--error-bg': 'color-mix(in oklab, var(--error) 5%, var(--popover))',
     }"
     v-bind="props"
   >
     <template #success-icon>
-      <CircleCheckIcon class="size-4" />
+      <CircleCheckIcon class="size-4 text-primary" />
     </template>
     <template #info-icon>
       <InfoIcon class="size-4" />
     </template>
     <template #warning-icon>
-      <TriangleAlertIcon class="size-4" />
+      <TriangleAlertIcon class="size-4 text-warning" />
     </template>
     <template #error-icon>
-      <OctagonXIcon class="size-4" />
+      <OctagonXIcon class="size-4 text-destructive" />
     </template>
     <template #loading-icon>
       <div>
