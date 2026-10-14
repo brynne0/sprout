@@ -200,7 +200,7 @@ const BUCKET_META: Record<BucketKey, { label: string; color: string }> = {
   transplant: { label: 'Transplant now', color: 'var(--color-transplant)' },
   growing: { label: 'Growing', color: 'var(--color-secondary)' },
   harvest: { label: 'Harvest now', color: 'var(--color-harvest)' },
-  resting: { label: 'Off season', color: 'oklch(0.50 0.01 50)' },
+  resting: { label: 'Off season', color: 'var(--color-muted-foreground)' },
 }
 
 const groupedByWindow = computed(() => {

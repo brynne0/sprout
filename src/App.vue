@@ -4,7 +4,9 @@ import { useRoute, useRouter } from 'vue-router'
 import AppNav from '@/components/layout/AppNav.vue'
 import LoadingSprout from '@/components/LoadingSprout.vue'
 import { Toaster } from '@/components/ui/sonner'
+import { useTheme } from '@/composables/useTheme'
 
+const { state: theme } = useTheme()
 const route = useRoute()
 const router = useRouter()
 const publicRoutes = ['/login', '/auth/callback']
@@ -16,7 +18,7 @@ router.isReady().then(() => {
 </script>
 
 <template>
-  <Toaster position="top-right" richColors />
+  <Toaster position="top-right" richColors :theme="theme" />
   <LoadingSprout v-if="!routerReady" />
   <div
     v-else

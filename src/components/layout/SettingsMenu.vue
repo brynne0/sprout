@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { Settings, LogOut } from 'lucide-vue-next'
+import { Settings, LogOut, Sun, Moon, Monitor } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/composables/useAuth'
+import { useTheme } from '@/composables/useTheme'
 import { ref } from 'vue'
 import {
   AlertDialog,
@@ -23,6 +28,7 @@ import { supabase } from '@/lib/supabase'
 
 // Signing out fires SIGNED_OUT, which redirects to /login (see main.ts).
 const { signOut } = useAuth()
+const { store: theme } = useTheme()
 const showDeleteAccount = ref(false)
 
 async function logout() {
@@ -51,6 +57,22 @@ async function deleteAccount() {
       </div>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" side="top" class="mr-2">
+      <DropdownMenuLabel class="text-xs text-muted-foreground">Theme</DropdownMenuLabel>
+      <DropdownMenuRadioGroup v-model="theme">
+        <DropdownMenuRadioItem value="light">
+          <Sun class="size-4" />
+          Light
+        </DropdownMenuRadioItem>
+        <DropdownMenuRadioItem value="dark">
+          <Moon class="size-4" />
+          Dark
+        </DropdownMenuRadioItem>
+        <DropdownMenuRadioItem value="auto">
+          <Monitor class="size-4" />
+          System
+        </DropdownMenuRadioItem>
+      </DropdownMenuRadioGroup>
+      <DropdownMenuSeparator />
       <DropdownMenuItem @click="showDeleteAccount = true"> Delete Account </DropdownMenuItem>
       <DropdownMenuItem @click="logout">
         <LogOut class="size-4" />
