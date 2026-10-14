@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { Sprout, NotepadText } from 'lucide-vue-next'
+import { Sprout, NotepadText } from '@lucide/vue'
 import SettingsMenu from '@/components/layout/SettingsMenu.vue'
 
 const route = useRoute()

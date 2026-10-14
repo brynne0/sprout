@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Settings, LogOut, Sun, Moon, Monitor } from 'lucide-vue-next'
+import { Settings, LogOut, Sun, Moon, Monitor } from '@lucide/vue'
 import { toast } from 'vue-sonner'
 import {
   DropdownMenu,

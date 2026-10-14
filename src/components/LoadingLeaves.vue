@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Leaf } from 'lucide-vue-next'
+import { Leaf } from '@lucide/vue'
 defineProps<{ small?: boolean }>()
 </script>
 

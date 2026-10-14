@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 import { today, getLocalTimeZone } from '@internationalized/date'
 import type { BasePlant } from '@/types'
 import { useElementSize } from '@vueuse/core'
-import { ChevronLeft, ChevronRight, ArrowUpDown, Rows3 } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, ArrowUpDown, Rows3 } from '@lucide/vue'
 import {
   DropdownMenu,
   DropdownMenuContent,

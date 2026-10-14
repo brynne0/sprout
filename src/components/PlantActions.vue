@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Archive, MoreHorizontal, Pencil, Trash2 } from 'lucide-vue-next'
+import { Archive, MoreHorizontal, Pencil, Trash2 } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
 import type { Plant } from '@/types'
 import { toast } from 'vue-sonner'

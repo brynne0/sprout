@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Plus, Sprout, Shovel, Scissors, Replace, ChevronDown, ChevronRight } from 'lucide-vue-next'
+import { Plus, Sprout, Shovel, Scissors, Replace, ChevronDown, ChevronRight } from '@lucide/vue'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import {
   Empty,

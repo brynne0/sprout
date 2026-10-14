@@ -19,7 +19,7 @@ import {
   Sprout,
   Sun,
   Thermometer,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
 import type { Plant, CataloguePlant } from '@/types'
 import { handleApiError, formatDate, toLocalDateStr, localToday } from '@/lib/utils'

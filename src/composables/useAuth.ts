@@ -25,9 +25,14 @@ export function useAuth() {
     if (error) throw error
   }
 
+  async function verifyCode(email: string, token: string) {
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: 'email' })
+    if (error) throw error
+  }
+
   async function signOut(scope: 'global' | 'local' = 'global') {
     await supabase.auth.signOut({ scope })
   }
 
-  return { session, isAuthenticated, ready, signInWithEmail, signOut }
+  return { session, isAuthenticated, ready, signInWithEmail, verifyCode, signOut }
 }

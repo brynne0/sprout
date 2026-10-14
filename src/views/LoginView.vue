@@ -10,11 +10,30 @@
 
     <div v-if="sent" class="flex w-full max-w-2xs flex-col items-center gap-3 text-center">
       <p class="text-sm text-foreground/60">
-        We've sent a sign-in link to
+        We've sent a sign-in code to
         <span class="font-semibold text-foreground">{{ email }}</span
-        >. Check your inbox.
+        >. Enter it below, or tap the link in the email.
       </p>
-      <Button variant="link" size="sm" @click="sent = false">Use a different email</Button>
+      <form class="flex w-full flex-col gap-3" @submit.prevent="submitCode">
+        <InputOTP
+          v-model="code"
+          :maxlength="6"
+          :pattern="REGEXP_ONLY_DIGITS"
+          :disabled="verifying"
+          aria-label="Sign-in code"
+          class="justify-center"
+          @complete="submitCode"
+        >
+          <InputOTPGroup>
+            <InputOTPSlot v-for="i in 6" :key="i" :index="i - 1" />
+          </InputOTPGroup>
+        </InputOTP>
+        <Button type="submit" class="rounded-xl" :disabled="verifying || code.length < 6">
+          <Spinner v-if="verifying" />
+          Sign in
+        </Button>
+      </form>
+      <Button variant="link" size="sm" @click="useDifferentEmail">Use a different email</Button>
     </div>
 
     <form v-else class="flex w-full max-w-2xs flex-col gap-3" @submit.prevent="sendLink">
@@ -42,18 +61,24 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Mail, Sprout } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
+import { Mail, Sprout } from '@lucide/vue'
+import { REGEXP_ONLY_DIGITS } from 'vue-input-otp'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
 import { Spinner } from '@/components/ui/spinner'
 import { useAuth } from '@/composables/useAuth'
 
-const { signInWithEmail } = useAuth()
+const router = useRouter()
+const { signInWithEmail, verifyCode } = useAuth()
 
 const email = ref('')
 const sending = ref(false)
 const sent = ref(false)
+const code = ref('')
+const verifying = ref(false)
 
 async function sendLink() {
   sending.value = true
@@ -64,5 +89,23 @@ async function sendLink() {
     toast.error('Could not send the sign-in link. Please try again.')
   }
   sending.value = false
+}
+
+async function submitCode() {
+  // Typing the last digit and pressing Enter would otherwise both submit.
+  if (verifying.value) return
+  verifying.value = true
+  try {
+    await verifyCode(email.value.trim(), code.value.trim())
+    router.replace('/')
+  } catch {
+    toast.error('That code is invalid or has expired.')
+  }
+  verifying.value = false
+}
+
+function useDifferentEmail() {
+  sent.value = false
+  code.value = ''
 }
 </script>

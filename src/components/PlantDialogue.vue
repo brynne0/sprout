@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import { ChevronDown, ChevronsUpDown, Check, Plus, X } from 'lucide-vue-next'
+import { ChevronDown, ChevronsUpDown, Check, Plus, X } from '@lucide/vue'
 import {
   Dialog,
   DialogClose,

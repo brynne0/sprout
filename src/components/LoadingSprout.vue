@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Sprout } from 'lucide-vue-next'
+import { Sprout } from '@lucide/vue'
 </script>
 
 <template>

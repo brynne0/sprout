@@ -6,7 +6,7 @@ import type { CataloguePlant } from '@/types'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import { Input } from '@/components/ui/input'
-import { Search } from 'lucide-vue-next'
+import { Search } from '@lucide/vue'
 import { handleApiError } from '@/lib/utils'
 import PageHeader from '@/components/layout/PageHeader.vue'
 
