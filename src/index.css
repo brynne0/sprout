@@ -53,6 +53,17 @@
   --transplant-dot: #df9800;
   --repot-dot: #ea7d2e;
   --harvest-dot: #d02b34;
+
+  --produce-red: #c23a22;
+  --produce-orange: #ad4f10;
+  --produce-yellow: #876405;
+  --produce-leaf: #477f28;
+  --produce-deep: #2c6330;
+  --produce-sage: #5c7250;
+  --produce-purple: #7a4fa3;
+  --produce-beet: #a32f5b;
+  --produce-earth: #8a6a35;
+  --produce-tint: 14%;
 }
 
 .dark {
@@ -104,6 +115,17 @@
   --transplant-dot: #b88000;
   --repot-dot: #bf6420;
   --harvest-dot: #d24c4c;
+
+  --produce-red: #f2836a;
+  --produce-orange: #f0a463;
+  --produce-yellow: #e3bd4f;
+  --produce-leaf: #9acd72;
+  --produce-deep: #8cc58a;
+  --produce-sage: #adc4a0;
+  --produce-purple: #bb9ade;
+  --produce-beet: #e886ab;
+  --produce-earth: #d1ad72;
+  --produce-tint: 18%;
 }
 
 @layer components {

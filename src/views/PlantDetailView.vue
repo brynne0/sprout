@@ -28,6 +28,7 @@ import type { TrackType } from '@/lib/trackUtils'
 import LoadingSprout from '@/components/LoadingSprout.vue'
 import PlantRow from '@/components/PlantRow.vue'
 import PlantActions from '@/components/PlantActions.vue'
+import PlantIcon from '@/components/PlantIcon.vue'
 import PlantDatesDialogue from '@/components/PlantDatesDialogue.vue'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'vue-sonner'
@@ -264,14 +265,12 @@ const infoRows = computed(() => {
 
       <!-- Plant identity -->
       <div class="flex gap-3.5 sm:gap-5 items-center">
-        <div
-          class="shrink-0 flex items-center justify-center w-16 h-16 rounded-xl sm:w-20 sm:h-20 sm:rounded-2xl overflow-hidden"
-          style="background: color-mix(in oklab, var(--background) 75%, transparent)"
-        >
-          <span class="text-2xl sm:text-3xl font-medium text-primary">
-            {{ plant.name.charAt(0).toUpperCase() }}
-          </span>
-        </div>
+        <PlantIcon
+          :name="plant.name"
+          :icon="(plant as Plant).icon"
+          :colour="(plant as Plant).colour"
+          class="w-16 h-16 rounded-xl sm:w-20 sm:h-20 sm:rounded-2xl text-2xl sm:text-3xl"
+        />
         <div class="min-w-0 flex-1">
           <div
             v-if="(plant as Plant).category_name"

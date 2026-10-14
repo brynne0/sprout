@@ -18,6 +18,7 @@ import { isDateUpcoming, handleApiError } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import PlantDialogue from '@/components/PlantDialogue.vue'
 import PlantActions from '@/components/PlantActions.vue'
+import PlantIcon from '@/components/PlantIcon.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
 
@@ -359,13 +360,12 @@ async function onPlantAdded() {
                   class="flex items-center gap-3 px-3 py-2 rounded-xl border bg-card border-border text-left cursor-pointer transition-colors hover:bg-[color-mix(in_oklab,var(--color-foreground)_3%,transparent)]"
                   @click="router.push(`/plants/${plant.id}`)"
                 >
-                  <!-- Plant initial -->
-                  <div
-                    class="shrink-0 w-8 h-8 rounded-full grid place-items-center text-sm font-semibold text-primary"
-                    style="background: color-mix(in oklab, var(--color-primary) 10%, transparent)"
-                  >
-                    {{ plant.name.charAt(0).toUpperCase() }}
-                  </div>
+                  <PlantIcon
+                    :name="plant.name"
+                    :icon="plant.icon"
+                    :colour="plant.colour"
+                    class="w-8 h-8 rounded-full text-sm"
+                  />
                   <!-- Name + variety -->
                   <div class="min-w-0 flex-1">
                     <div class="text-[13.5px] font-medium line-clamp-2">

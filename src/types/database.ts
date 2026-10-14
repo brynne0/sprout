@@ -111,18 +111,21 @@ export type Database = {
       plant_types: {
         Row: {
           category_id: number | null
+          colour: string | null
           icon: string | null
           id: string
           name: string
         }
         Insert: {
           category_id?: number | null
+          colour?: string | null
           icon?: string | null
           id?: string
           name: string
         }
         Update: {
           category_id?: number | null
+          colour?: string | null
           icon?: string | null
           id?: string
           name?: string
@@ -245,6 +248,7 @@ export type Database = {
           archived_at: string | null
           catalogue_id: string | null
           category_name: string | null
+          colour: string | null
           custom_variety: string | null
           hardiness: string | null
           harvest: string | null

@@ -37,6 +37,7 @@ export type Plant = BasePlant & {
   transplant_dates?: string[]
   harvest_dates?: string[]
   icon?: string
+  colour?: string
   notes?: string
   year?: number
   category_name?: string
@@ -47,6 +48,7 @@ export type PlantType = {
   name: string
   category_id?: number
   icon?: string
+  colour?: string
 }
 
 export type CataloguePlant = BasePlant & {

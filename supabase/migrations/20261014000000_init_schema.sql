@@ -11,7 +11,8 @@ CREATE TABLE plant_types (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL UNIQUE,
     category_id INTEGER REFERENCES plant_categories(id),
-    icon TEXT
+    icon TEXT,
+    colour TEXT
 );
 
 CREATE TABLE plant_catalogue (
@@ -89,6 +90,7 @@ SELECT
     p.custom_variety,
     pt.name,
     pt.icon,
+    pt.colour,
     COALESCE(pc.variety, p.custom_variety) AS variety,
     p.sow_dates,
     p.repot_dates,
