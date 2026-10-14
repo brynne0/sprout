@@ -268,13 +268,9 @@ const infoRows = computed(() => {
           class="shrink-0 flex items-center justify-center w-16 h-16 rounded-xl sm:w-20 sm:h-20 sm:rounded-2xl overflow-hidden"
           style="background: color-mix(in oklab, var(--background) 75%, transparent)"
         >
-          <img
-            v-if="(plant as Plant).icon"
-            :src="`/icons/${(plant as Plant).icon}`"
-            :alt="plant.name"
-            class="w-[82%] h-[82%] object-contain"
-          />
-          <Sprout v-else class="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
+          <span class="text-2xl sm:text-3xl font-medium text-primary">
+            {{ plant.name.charAt(0).toUpperCase() }}
+          </span>
         </div>
         <div class="min-w-0 flex-1">
           <div

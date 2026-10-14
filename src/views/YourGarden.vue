@@ -359,20 +359,12 @@ async function onPlantAdded() {
                   class="flex items-center gap-3 px-3 py-2 rounded-xl border bg-card border-border text-left cursor-pointer transition-colors hover:bg-[color-mix(in_oklab,var(--color-foreground)_3%,transparent)]"
                   @click="router.push(`/plants/${plant.id}`)"
                 >
-                  <!-- Plant icon -->
-                  <img
-                    v-if="plant.icon"
-                    :src="`/icons/${plant.icon}`"
-                    :alt="plant.name"
-                    class="shrink-0 w-8 h-8 object-contain"
-                    style="filter: brightness(0.95)"
-                  />
+                  <!-- Plant initial -->
                   <div
-                    v-else
-                    class="shrink-0 w-8 h-8 rounded-full grid place-items-center"
+                    class="shrink-0 w-8 h-8 rounded-full grid place-items-center text-sm font-semibold text-primary"
                     style="background: color-mix(in oklab, var(--color-primary) 10%, transparent)"
                   >
-                    <Sprout :size="16" class="text-primary" />
+                    {{ plant.name.charAt(0).toUpperCase() }}
                   </div>
                   <!-- Name + variety -->
                   <div class="min-w-0 flex-1">
