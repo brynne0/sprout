@@ -1,4 +1,4 @@
-import type { BasePlant } from '@/client'
+import type { BasePlant } from '@/types'
 import { toLocalDateStr } from '@/lib/utils'
 
 export type TrackType = 'sowing' | 'transplant' | 'harvest'

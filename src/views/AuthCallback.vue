@@ -6,19 +6,20 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { toast } from 'vue-sonner'
 import { useAuth } from '@/composables/useAuth'
 
-const route = useRoute()
 const router = useRouter()
-const { setToken } = useAuth()
+const { isAuthenticated } = useAuth()
 
+// supabase-js reads the session from the magic-link URL itself; the router
+// guard has already waited for that by the time this mounts.
 onMounted(() => {
-  const token = route.query.token as string | undefined
-  if (token) {
-    setToken(token)
+  if (isAuthenticated.value) {
     router.replace('/')
   } else {
+    toast.error('That sign-in link is invalid or has expired.')
     router.replace('/login')
   }
 })

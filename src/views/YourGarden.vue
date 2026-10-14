@@ -13,9 +13,9 @@ import {
 } from '@/components/ui/empty'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
-import type { Plant, Window as PlantWindow } from '@/client'
+import type { Plant, Window as PlantWindow } from '@/types'
 import { isDateUpcoming, handleApiError } from '@/lib/utils'
-import { getApiPlants } from '@/client'
+import { supabase } from '@/lib/supabase'
 import PlantDialogue from '@/components/PlantDialogue.vue'
 import PlantActions from '@/components/PlantActions.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
@@ -225,8 +225,13 @@ const groupedByWindow = computed(() => {
 // Data fetching
 async function fetchPlants() {
   try {
-    const res = await getApiPlants({ throwOnError: true })
-    plants.value = res.data ?? []
+    const { data } = await supabase
+      .from('plants_with_details')
+      .select('*')
+      .is('archived_at', null)
+      .order('name')
+      .throwOnError()
+    plants.value = data as unknown as Plant[]
   } catch (error) {
     handleApiError(error, 'Failed to load plants')
   }

@@ -33,13 +33,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import type { PlantType, CataloguePlant, Plant } from '@/client'
-import {
-  postApiPlants,
-  putApiPlantsById,
-  getApiPlantTypes,
-  getApiPlantTypesByIdCatalogue,
-} from '@/client'
+import type { PlantType, CataloguePlant, Plant } from '@/types'
+import type { Json } from '@/types/database'
+import { supabase } from '@/lib/supabase'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
@@ -221,9 +217,18 @@ const cleanedOverrides = computed(() => {
 
 const loading = ref(false)
 
+async function fetchCatalogueEntries(plantTypeId: string): Promise<CataloguePlant[]> {
+  const { data } = await supabase
+    .from('catalogue_with_details')
+    .select('*')
+    .eq('plant_type_id', plantTypeId)
+    .order('variety', { nullsFirst: true })
+  return (data ?? []) as unknown as CataloguePlant[]
+}
+
 onMounted(async () => {
-  const res = await getApiPlantTypes()
-  plantTypes.value = res.data ?? []
+  const { data } = await supabase.from('plant_types').select('id, name, category_id, icon').order('name')
+  plantTypes.value = (data ?? []) as unknown as PlantType[]
 })
 
 // Pre-fill fields when editing
@@ -233,8 +238,7 @@ watch(
     if (!plant) return
     selectedPlantTypeId.value = plant.plant_type_id ?? ''
     if (plant.plant_type_id) {
-      const res = await getApiPlantTypesByIdCatalogue({ path: { id: plant.plant_type_id } })
-      catalogueEntries.value = res.data ?? []
+      catalogueEntries.value = await fetchCatalogueEntries(plant.plant_type_id)
     }
     if (plant.catalogue_id) {
       selectedCatalogueId.value = plant.catalogue_id
@@ -261,8 +265,7 @@ watch(selectedPlantTypeId, async (id) => {
   isCustomVariety.value = false
   catalogueEntries.value = []
   if (id) {
-    const res = await getApiPlantTypesByIdCatalogue({ path: { id } })
-    catalogueEntries.value = res.data ?? []
+    catalogueEntries.value = await fetchCatalogueEntries(id)
     // Auto-select if there's only one entry with no variety
     const single = catalogueEntries.value[0]
     if (catalogueEntries.value.length === 1 && single && !single.variety) {
@@ -333,26 +336,22 @@ function reset() {
 
 async function submitPlant() {
   loading.value = true
+  // Explicit nulls so that clearing a field in edit mode actually clears it
   const body = {
     plant_type_id: selectedPlantTypeId.value,
-    catalogue_id: isCustomVariety.value ? undefined : selectedCatalogueId.value || undefined,
-    custom_variety: customVariety.value || undefined,
-    sow_dates: sowDates.value.length ? sowDates.value : undefined,
-    transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
-    repot_dates: repotDates.value.length ? repotDates.value : undefined,
-    notes: isEditMode.value ? (props.plant?.notes ?? undefined) : undefined,
-    year: year.value ?? undefined,
-    overrides: cleanedOverrides.value,
+    catalogue_id: isCustomVariety.value ? null : selectedCatalogueId.value || null,
+    custom_variety: customVariety.value || null,
+    sow_dates: sowDates.value,
+    transplant_dates: transplantDates.value,
+    repot_dates: repotDates.value,
+    year: year.value,
+    overrides: (cleanedOverrides.value ?? null) as Json,
   }
   try {
     if (isEditMode.value && props.plant) {
-      await putApiPlantsById({
-        throwOnError: true,
-        path: { id: props.plant.id },
-        body,
-      })
+      await supabase.from('plants').update(body).eq('id', props.plant.id).throwOnError()
     } else {
-      await postApiPlants({ throwOnError: true, body })
+      await supabase.from('plants').insert(body).throwOnError()
     }
     reset()
     emit('plantAdded')

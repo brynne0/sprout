@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Archive, MoreHorizontal, Pencil, Trash2 } from 'lucide-vue-next'
-import { deleteApiPlantsById, patchApiPlantsByIdArchive } from '@/client'
-import type { Plant } from '@/client'
+import { supabase } from '@/lib/supabase'
+import type { Plant } from '@/types'
 import { toast } from 'vue-sonner'
 import {
   DropdownMenu,
@@ -24,7 +24,11 @@ const editOpen = ref(false)
 
 async function archive() {
   try {
-    await patchApiPlantsByIdArchive({ path: { id: props.plant.id }, throwOnError: true })
+    await supabase
+      .from('plants')
+      .update({ archived_at: new Date().toISOString() })
+      .eq('id', props.plant.id)
+      .throwOnError()
     toast.success(`${props.plant.name} archived`)
     emit('archived', props.plant.id)
   } catch {
@@ -34,7 +38,7 @@ async function archive() {
 
 async function remove() {
   try {
-    await deleteApiPlantsById({ path: { id: props.plant.id }, throwOnError: true })
+    await supabase.from('plants').delete().eq('id', props.plant.id).throwOnError()
     toast.success(`${props.plant.name} removed from your garden`)
     emit('deleted', props.plant.id)
   } catch {

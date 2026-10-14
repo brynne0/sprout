@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run generate && run-p type-check \"build-only {@}\" --",
+    "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
@@ -13,11 +13,12 @@
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
     "format": "prettier --write --experimental-cli src/",
-    "generate": "openapi-ts"
+    "gen:types": "supabase gen types typescript --local > src/types/database.ts"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.2.10",
     "@fontsource-variable/geist": "^5.2.8",
+    "@supabase/supabase-js": "^2.117.3",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/vue-table": "^8.21.3",
     "@vueuse/core": "^14.2.1",
@@ -32,8 +33,6 @@
     "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
-    "@hey-api/client-fetch": "^0.13.1",
-    "@hey-api/openapi-ts": "^0.94.1",
     "@tsconfig/node24": "^24.0.4",
     "@types/node": "^24.12.0",
     "@vitejs/plugin-vue": "^6.0.4",

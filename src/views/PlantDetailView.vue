@@ -20,8 +20,8 @@ import {
   Sun,
   Thermometer,
 } from 'lucide-vue-next'
-import { getApiPlantsById, getApiCatalogueById, putApiPlantsById } from '@/client'
-import type { Plant, CataloguePlant } from '@/client'
+import { supabase } from '@/lib/supabase'
+import type { Plant, CataloguePlant } from '@/types'
 import { handleApiError, formatDate, toLocalDateStr, localToday } from '@/lib/utils'
 import { computeTracksForPlant, dateToX } from '@/lib/trackUtils'
 import type { TrackType } from '@/lib/trackUtils'
@@ -49,11 +49,21 @@ async function fetchPlant(id: string) {
   editingNotes.value = false
   try {
     if (isCatalogue.value) {
-      const res = await getApiCatalogueById({ path: { id }, throwOnError: true })
-      plant.value = res.data ?? null
+      const { data } = await supabase
+        .from('catalogue_with_details')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle()
+        .throwOnError()
+      plant.value = data as unknown as CataloguePlant | null
     } else {
-      const res = await getApiPlantsById({ path: { id }, throwOnError: true })
-      plant.value = res.data ?? null
+      const { data } = await supabase
+        .from('plants_with_details')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle()
+        .throwOnError()
+      plant.value = data as unknown as Plant | null
       notes.value = (plant.value as Plant)?.notes ?? ''
     }
   } catch (err) {
@@ -135,19 +145,11 @@ async function saveNotes() {
   if (!gardenPlant.value) return
   savingNotes.value = true
   try {
-    await putApiPlantsById({
-      path: { id: gardenPlant.value.id },
-      body: {
-        plant_type_id: gardenPlant.value.plant_type_id ?? '',
-        catalogue_id: gardenPlant.value.catalogue_id,
-        custom_variety: gardenPlant.value.custom_variety,
-        sow_dates: gardenPlant.value.sow_dates,
-        transplant_dates: gardenPlant.value.transplant_dates,
-        notes: notes.value,
-        year: gardenPlant.value.year,
-      },
-      throwOnError: true,
-    })
+    await supabase
+      .from('plants')
+      .update({ notes: notes.value })
+      .eq('id', gardenPlant.value.id)
+      .throwOnError()
     plant.value = { ...gardenPlant.value, notes: notes.value }
     toast.success('Notes saved')
   } catch {

@@ -16,8 +16,8 @@ import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
-import { putApiPlantsById } from '@/client'
-import type { Plant } from '@/client'
+import { supabase } from '@/lib/supabase'
+import type { Plant } from '@/types'
 import { formatDate } from '@/lib/utils'
 import { today, getLocalTimeZone } from '@internationalized/date'
 import type { DateValue } from 'reka-ui'
@@ -55,21 +55,16 @@ watch(open, (isOpen) => {
 async function save() {
   saving.value = true
   try {
-    await putApiPlantsById({
-      path: { id: props.plant.id },
-      body: {
-        plant_type_id: props.plant.plant_type_id ?? '',
-        catalogue_id: props.plant.catalogue_id,
-        custom_variety: props.plant.custom_variety,
-        sow_dates: sowDates.value.length ? sowDates.value : undefined,
-        transplant_dates: transplantDates.value.length ? transplantDates.value : undefined,
-        repot_dates: repotDates.value.length ? repotDates.value : undefined,
-        harvest_dates: harvestDates.value.length ? harvestDates.value : undefined,
-        notes: props.plant.notes,
-        year: props.plant.year,
-      },
-      throwOnError: true,
-    })
+    await supabase
+      .from('plants')
+      .update({
+        sow_dates: sowDates.value,
+        transplant_dates: transplantDates.value,
+        repot_dates: repotDates.value,
+        harvest_dates: harvestDates.value,
+      })
+      .eq('id', props.plant.id)
+      .throwOnError()
     emit('saved')
     open.value = false
     toast.success('Dates saved')

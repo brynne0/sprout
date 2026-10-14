@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getApiCatalogue } from '@/client'
-import type { CataloguePlant } from '@/client'
+import { supabase } from '@/lib/supabase'
+import type { CataloguePlant } from '@/types'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import { Input } from '@/components/ui/input'
@@ -26,8 +26,13 @@ const filteredPlants = computed(() => {
 
 onMounted(async () => {
   try {
-    const res = await getApiCatalogue({ throwOnError: true })
-    plants.value = res.data ?? []
+    const { data } = await supabase
+      .from('catalogue_with_details')
+      .select('*')
+      .order('name')
+      .order('variety', { nullsFirst: true })
+      .throwOnError()
+    plants.value = data as unknown as CataloguePlant[]
   } catch (error) {
     handleApiError(error, 'Failed to load catalogue')
   }

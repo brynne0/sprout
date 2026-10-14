@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Settings, LogOut } from 'lucide-vue-next'
-import { useRouter } from 'vue-router'
+import { toast } from 'vue-sonner'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -19,21 +19,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { deleteAuthUser } from '@/client'
+import { supabase } from '@/lib/supabase'
 
-const router = useRouter()
-const { clearToken } = useAuth()
+// Signing out fires SIGNED_OUT, which redirects to /login (see main.ts).
+const { signOut } = useAuth()
 const showDeleteAccount = ref(false)
 
-function logout() {
-  clearToken()
-  router.push('/login')
+async function logout() {
+  await signOut()
 }
 
 async function deleteAccount() {
-  await deleteAuthUser()
-  clearToken()
-  router.push('/login')
+  try {
+    await supabase.rpc('delete_my_account').throwOnError()
+  } catch {
+    toast.error('Failed to delete account. Please try again.')
+    return
+  }
+  // The user no longer exists server-side, so only clear the local session.
+  await signOut('local')
 }
 </script>
 

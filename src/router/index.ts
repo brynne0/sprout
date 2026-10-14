@@ -30,10 +30,14 @@ const router = createRouter({
 
 const publicRoutes = ['/login', '/auth/callback']
 
-router.beforeEach((to) => {
-  const { isAuthenticated } = useAuth()
+router.beforeEach(async (to) => {
+  const { isAuthenticated, ready } = useAuth()
+  await ready
   if (!isAuthenticated.value && !publicRoutes.includes(to.path)) {
     return '/login'
+  }
+  if (isAuthenticated.value && to.path === '/login') {
+    return '/'
   }
 })
 
