@@ -100,6 +100,7 @@ async function submitCode() {
     router.replace('/')
   } catch {
     toast.error('That code is invalid or has expired.')
+    code.value = ''
   }
   verifying.value = false
 }
