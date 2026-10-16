@@ -36,9 +36,11 @@ export type Database = {
     Tables: {
       plant_catalogue: {
         Row: {
+          flowering_windows: Json | null
           hardiness: string | null
           harvest: string | null
           harvest_windows: Json | null
+          height: string | null
           id: string
           plant_type_id: string
           position: string | null
@@ -52,9 +54,11 @@ export type Database = {
           variety: string | null
         }
         Insert: {
+          flowering_windows?: Json | null
           hardiness?: string | null
           harvest?: string | null
           harvest_windows?: Json | null
+          height?: string | null
           id?: string
           plant_type_id: string
           position?: string | null
@@ -68,9 +72,11 @@ export type Database = {
           variety?: string | null
         }
         Update: {
+          flowering_windows?: Json | null
           hardiness?: string | null
           harvest?: string | null
           harvest_windows?: Json | null
+          height?: string | null
           id?: string
           plant_type_id?: string
           position?: string | null
@@ -114,6 +120,7 @@ export type Database = {
           colour: string | null
           icon: string | null
           id: string
+          kind: Database["public"]["Enums"]["plant_kind"]
           name: string
         }
         Insert: {
@@ -121,6 +128,7 @@ export type Database = {
           colour?: string | null
           icon?: string | null
           id?: string
+          kind?: Database["public"]["Enums"]["plant_kind"]
           name: string
         }
         Update: {
@@ -128,6 +136,7 @@ export type Database = {
           colour?: string | null
           icon?: string | null
           id?: string
+          kind?: Database["public"]["Enums"]["plant_kind"]
           name?: string
         }
         Relationships: [
@@ -217,10 +226,13 @@ export type Database = {
     Views: {
       catalogue_with_details: {
         Row: {
+          flowering_windows: Json | null
           hardiness: string | null
           harvest: string | null
           harvest_windows: Json | null
+          height: string | null
           id: string | null
+          kind: Database["public"]["Enums"]["plant_kind"] | null
           name: string | null
           plant_type_id: string | null
           position: string | null
@@ -250,12 +262,15 @@ export type Database = {
           category_name: string | null
           colour: string | null
           custom_variety: string | null
+          flowering_windows: Json | null
           hardiness: string | null
           harvest: string | null
           harvest_dates: string[] | null
           harvest_windows: Json | null
+          height: string | null
           icon: string | null
           id: string | null
+          kind: Database["public"]["Enums"]["plant_kind"] | null
           name: string | null
           notes: string | null
           plant_type_id: string | null
@@ -301,6 +316,7 @@ export type Database = {
       delete_my_account: { Args: never; Returns: undefined }
     }
     Enums: {
+      plant_kind: "vegetable" | "herb" | "fruit" | "flower"
       suitability_tag: "multisow" | "interplant" | "follow-on" | "intersow"
     }
     CompositeTypes: {
@@ -432,6 +448,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      plant_kind: ["vegetable", "herb", "fruit", "flower"],
       suitability_tag: ["multisow", "interplant", "follow-on", "intersow"],
     },
   },

@@ -2,10 +2,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabase'
-import type { CataloguePlant } from '@/types'
+import type { CataloguePlant, PlantKind } from '@/types'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import { Input } from '@/components/ui/input'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Search } from '@lucide/vue'
 import { handleApiError } from '@/lib/utils'
 import PageHeader from '@/components/layout/PageHeader.vue'
@@ -15,12 +16,24 @@ const router = useRouter()
 const plants = ref<CataloguePlant[]>([])
 const loading = ref(true)
 const searchQuery = ref('')
+const selectedKind = ref<PlantKind | 'all'>('all')
+
+const kindFilters: { kind: PlantKind | 'all'; label: string }[] = [
+  { kind: 'all', label: 'All' },
+  { kind: 'vegetable', label: 'Veg' },
+  { kind: 'herb', label: 'Herbs' },
+  { kind: 'fruit', label: 'Fruit' },
+  { kind: 'flower', label: 'Flowers' },
+]
 
 const filteredPlants = computed(() => {
   const q = searchQuery.value.toLowerCase().trim()
-  if (!q) return plants.value
   return plants.value.filter(
-    (p) => p.name.toLowerCase().includes(q) || (p.variety && p.variety.toLowerCase().includes(q)),
+    (p) =>
+      (selectedKind.value === 'all' || p.kind === selectedKind.value) &&
+      (!q ||
+        p.name.toLowerCase().includes(q) ||
+        (p.variety && p.variety.toLowerCase().includes(q))),
   )
 })
 
@@ -58,6 +71,19 @@ onMounted(async () => {
         <Search class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input v-model="searchQuery" placeholder="Search plants..." class="pl-8 h-8" />
       </div>
+      <!-- Clicking the active item emits an empty value; ignore it so one is always selected -->
+      <ToggleGroup
+        type="single"
+        variant="outline"
+        size="sm"
+        class="mt-3"
+        :model-value="selectedKind"
+        @update:model-value="(v) => v && (selectedKind = v as PlantKind | 'all')"
+      >
+        <ToggleGroupItem v-for="f in kindFilters" :key="f.kind" :value="f.kind">
+          {{ f.label }}
+        </ToggleGroupItem>
+      </ToggleGroup>
     </template>
   </PlantCalendar>
 </template>

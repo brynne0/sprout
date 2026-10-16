@@ -3,6 +3,8 @@
 
 export type SuitabilityTag = 'multisow' | 'interplant' | 'follow-on'
 
+export type PlantKind = 'vegetable' | 'herb' | 'fruit' | 'flower'
+
 export type Window = {
   /** Start of window as MM-DD (e.g. "01-15") */
   start: string
@@ -25,6 +27,8 @@ export type BasePlant = {
   sowing_windows?: Window[]
   harvest_windows?: Window[]
   transplant_windows?: Window[]
+  flowering_windows?: Window[]
+  height?: string
 }
 
 export type Plant = BasePlant & {
@@ -55,4 +59,5 @@ export type CataloguePlant = BasePlant & {
   plant_type_id?: string
   suitability?: SuitabilityTag[]
   source?: string
+  kind?: PlantKind
 }

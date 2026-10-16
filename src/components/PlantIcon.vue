@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue'
-import { Bean, Broccoli, Carrot, Leaf, LeafyGreen } from '@lucide/vue'
+import { Bean, Broccoli, Carrot, Flower, Flower2, Leaf, LeafyGreen } from '@lucide/vue'
 
 // Icon keys come from plant_types.icon. Lucide icons are used where they exist;
 // everything else is a custom SVG in src/icons/<key>.svg.
@@ -8,6 +8,8 @@ const lucideIcons: Record<string, Component> = {
   bean: Bean,
   broccoli: Broccoli,
   carrot: Carrot,
+  flower: Flower,
+  'flower-2': Flower2,
   leaf: Leaf,
   'leafy-green': LeafyGreen,
 }

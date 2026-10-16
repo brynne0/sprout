@@ -1,4 +1,5 @@
 CREATE TYPE suitability_tag AS ENUM ('multisow', 'interplant', 'follow-on', 'intersow');
+CREATE TYPE plant_kind AS ENUM ('vegetable', 'herb', 'fruit', 'flower');
 
 -- Shared reference data (read-only for users)
 
@@ -12,7 +13,8 @@ CREATE TABLE plant_types (
     name TEXT NOT NULL UNIQUE,
     category_id INTEGER REFERENCES plant_categories(id),
     icon TEXT,
-    colour TEXT
+    colour TEXT,
+    kind plant_kind NOT NULL DEFAULT 'vegetable'
 );
 
 CREATE TABLE plant_catalogue (
@@ -23,10 +25,12 @@ CREATE TABLE plant_catalogue (
     sowing_to_transplant TEXT,
     position TEXT,
     spacing TEXT,
+    height TEXT,
     hardiness TEXT,
     sowing_windows JSONB,
     harvest_windows JSONB,
     transplant_windows JSONB,
+    flowering_windows JSONB,
     harvest TEXT,
     suitability suitability_tag[],
     source TEXT,
@@ -91,6 +95,7 @@ SELECT
     pt.name,
     pt.icon,
     pt.colour,
+    pt.kind,
     COALESCE(pc.variety, p.custom_variety) AS variety,
     p.sow_dates,
     p.repot_dates,
@@ -100,6 +105,7 @@ SELECT
     COALESCE(p.overrides->>'position', pc.position) AS position,
     COALESCE(p.overrides->>'hardiness', pc.hardiness) AS hardiness,
     COALESCE(p.overrides->>'spacing', pc.spacing) AS spacing,
+    COALESCE(p.overrides->>'height', pc.height) AS height,
     COALESCE(p.overrides->>'seed_to_harvest', pc.seed_to_harvest) AS seed_to_harvest,
     COALESCE(p.overrides->>'sowing_to_transplant', pc.sowing_to_transplant) AS sowing_to_transplant,
     COALESCE(p.overrides->>'harvest', pc.harvest) AS harvest,
@@ -107,6 +113,7 @@ SELECT
     COALESCE(p.overrides->'sowing_windows', pc.sowing_windows) AS sowing_windows,
     COALESCE(p.overrides->'harvest_windows', pc.harvest_windows) AS harvest_windows,
     COALESCE(p.overrides->'transplant_windows', pc.transplant_windows) AS transplant_windows,
+    COALESCE(p.overrides->'flowering_windows', pc.flowering_windows) AS flowering_windows,
     p.year,
     p.archived_at,
     pcat.name AS category_name
@@ -122,10 +129,12 @@ SELECT
     pc.id,
     pc.plant_type_id,
     pt.name,
+    pt.kind,
     pc.variety,
     pc.position,
     pc.hardiness,
     pc.spacing,
+    pc.height,
     pc.harvest,
     pc.source,
     pc.seed_to_harvest,
@@ -133,7 +142,8 @@ SELECT
     pc.suitability,
     pc.sowing_windows,
     pc.harvest_windows,
-    pc.transplant_windows
+    pc.transplant_windows,
+    pc.flowering_windows
 FROM plant_catalogue pc
 JOIN plant_types pt ON pt.id = pc.plant_type_id;
 
