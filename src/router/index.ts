@@ -13,6 +13,10 @@ const router = createRouter({
       component: () => import('@/views/CatalogueView.vue'),
     },
     {
+      path: '/settings',
+      component: () => import('@/views/SettingsView.vue'),
+    },
+    {
       path: '/plants/:id',
       component: () => import('@/views/PlantDetailView.vue'),
       meta: { activeNav: '/' },
