@@ -269,7 +269,7 @@ const infoRows = computed(() => {
           :name="plant.name"
           :icon="(plant as Plant).icon"
           :colour="(plant as Plant).colour"
-          class="w-16 h-16 rounded-xl sm:w-20 sm:h-20 sm:rounded-2xl text-2xl sm:text-3xl"
+          class="w-16 h-16 rounded-xl sm:w-20 sm:h-20 sm:rounded-2xl text-2xl sm:text-3xl border"
         />
         <div class="min-w-0 flex-1">
           <div

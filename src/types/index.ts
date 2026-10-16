@@ -29,6 +29,9 @@ export type BasePlant = {
   transplant_windows?: Window[]
   flowering_windows?: Window[]
   height?: string
+  icon?: string
+  colour?: string
+  category_name?: string
 }
 
 export type Plant = BasePlant & {
@@ -40,11 +43,8 @@ export type Plant = BasePlant & {
   repot_dates?: string[]
   transplant_dates?: string[]
   harvest_dates?: string[]
-  icon?: string
-  colour?: string
   notes?: string
   year?: number
-  category_name?: string
 }
 
 export type PlantType = {

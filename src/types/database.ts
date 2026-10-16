@@ -226,11 +226,14 @@ export type Database = {
     Views: {
       catalogue_with_details: {
         Row: {
+          category_name: string | null
+          colour: string | null
           flowering_windows: Json | null
           hardiness: string | null
           harvest: string | null
           harvest_windows: Json | null
           height: string | null
+          icon: string | null
           id: string | null
           kind: Database["public"]["Enums"]["plant_kind"] | null
           name: string | null

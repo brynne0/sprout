@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Plus, Sprout, Shovel, Scissors, Replace, ChevronDown, ChevronRight } from '@lucide/vue'
+import { Plus, Sprout, Shovel, Scissors, Replace, ChevronDown } from '@lucide/vue'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import {
   Empty,
@@ -391,7 +391,6 @@ async function onPlantAdded() {
                     @deleted="fetchPlants"
                     @click.stop
                   />
-                  <ChevronRight :size="14" class="text-muted-foreground opacity-50 shrink-0" />
                 </button>
               </div>
             </section>

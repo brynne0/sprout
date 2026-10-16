@@ -122,13 +122,15 @@ JOIN plant_types pt ON pt.id = p.plant_type_id
 LEFT JOIN plant_catalogue pc ON pc.id = p.catalogue_id
 LEFT JOIN plant_categories pcat ON pcat.id = pt.category_id;
 
--- Catalogue entries with their plant type name.
+-- Catalogue entries with their plant type's name, icon, colour and category.
 
 CREATE VIEW catalogue_with_details WITH (security_invoker = true) AS
 SELECT
     pc.id,
     pc.plant_type_id,
     pt.name,
+    pt.icon,
+    pt.colour,
     pt.kind,
     pc.variety,
     pc.position,
@@ -143,9 +145,11 @@ SELECT
     pc.sowing_windows,
     pc.harvest_windows,
     pc.transplant_windows,
-    pc.flowering_windows
+    pc.flowering_windows,
+    pcat.name AS category_name
 FROM plant_catalogue pc
-JOIN plant_types pt ON pt.id = pc.plant_type_id;
+JOIN plant_types pt ON pt.id = pc.plant_type_id
+LEFT JOIN plant_categories pcat ON pcat.id = pt.category_id;
 
 -- Lets a signed-in user delete their own account; their plants cascade.
 
