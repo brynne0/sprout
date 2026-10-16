@@ -7,7 +7,6 @@ import { useElementSize } from '@vueuse/core'
 import {
   ArrowLeft,
   Check,
-  ChevronDown,
   Clock,
   Leaf,
   MoreHorizontal,
@@ -33,7 +32,12 @@ import PlantIcon from '@/components/PlantIcon.vue'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'vue-sonner'
 
@@ -143,8 +147,6 @@ const upcomingTasks = computed(() =>
 const pastTasks = computed(() =>
   allTasks.value.filter((t) => toLocalDateStr(t.date) < localToday()).reverse(),
 )
-
-const showHistory = ref(false)
 
 async function saveNotes() {
   if (!gardenPlant.value) return
@@ -411,32 +413,30 @@ const infoRows = computed(() => {
               <span class="flex-1 font-medium">{{ task.label }} - {{ formatDate(task.date) }}</span>
             </div>
 
-            <Collapsible v-if="pastTasks.length" v-model:open="showHistory">
-              <CollapsibleTrigger
-                class="flex items-center gap-1.5 w-full px-3.5 py-2.5 border-t border-border/40 text-xs text-muted-foreground"
-              >
-                <ChevronDown
-                  class="w-3.5 h-3.5 transition-transform duration-200"
-                  :class="{ 'rotate-180': showHistory }"
-                />
-                {{ pastTasks.length }} past {{ pastTasks.length === 1 ? 'task' : 'tasks' }}
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div
-                  v-for="task in pastTasks"
-                  :key="task.key"
-                  class="flex items-center gap-2.5 px-3.5 py-2.5 text-sm border-t border-border/40 opacity-50"
+            <Accordion v-if="pastTasks.length" type="single" collapsible>
+              <AccordionItem value="past-tasks">
+                <AccordionTrigger
+                  class="px-3.5 py-2.5 rounded-none border-t border-border/40 text-xs font-normal text-muted-foreground [&>svg]:size-3.5"
                 >
-                  <Sprout v-if="task.type === 'sow'" class="w-4 h-4 shrink-0 track-sowing-text" />
-                  <Leaf
-                    v-else-if="task.type === 'transplant'"
-                    class="w-3.5 h-3.5 shrink-0 track-transplant-text"
-                  />
-                  <Shovel v-else class="w-3.5 h-3.5 shrink-0 track-repot-text" />
-                  <span class="flex-1">{{ task.label }} - {{ formatDate(task.date) }}</span>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+                  {{ pastTasks.length }} past {{ pastTasks.length === 1 ? 'task' : 'tasks' }}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div
+                    v-for="task in pastTasks"
+                    :key="task.key"
+                    class="flex items-center gap-2.5 px-3.5 py-2.5 text-sm border-t border-border/40 opacity-50"
+                  >
+                    <Sprout v-if="task.type === 'sow'" class="w-4 h-4 shrink-0 track-sowing-text" />
+                    <Leaf
+                      v-else-if="task.type === 'transplant'"
+                      class="w-3.5 h-3.5 shrink-0 track-transplant-text"
+                    />
+                    <Shovel v-else class="w-3.5 h-3.5 shrink-0 track-repot-text" />
+                    <span class="flex-1">{{ task.label }} - {{ formatDate(task.date) }}</span>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
 
             <RouterLink
               :to="`/plants/${gardenPlant!.id}/edit`"
