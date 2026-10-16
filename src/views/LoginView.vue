@@ -36,21 +36,26 @@
       <Button variant="link" size="sm" @click="useDifferentEmail">Use a different email</Button>
     </div>
 
-    <form v-else class="flex w-full max-w-2xs flex-col gap-3" @submit.prevent="sendLink">
-      <div class="relative">
-        <Mail
-          class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-        />
-        <Input
-          v-model="email"
-          type="email"
-          required
-          autocomplete="email"
-          placeholder="Email address"
-          aria-label="Email address"
-          class="pl-9"
-        />
-      </div>
+    <form v-else class="flex w-full max-w-2xs flex-col gap-3" novalidate @submit.prevent="sendLink">
+      <Field :data-invalid="!!emailError || undefined">
+        <div class="relative">
+          <Mail
+            class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+          />
+          <Input
+            v-model="email"
+            type="email"
+            autocomplete="email"
+            placeholder="Email address"
+            aria-label="Email address"
+            aria-describedby="email-error"
+            :aria-invalid="!!emailError || undefined"
+            class="pl-9"
+            @update:model-value="emailError = ''"
+          />
+        </div>
+        <FieldError id="email-error" :errors="[emailError]" />
+      </Field>
       <Button type="submit" class="rounded-xl" :disabled="sending">
         <Spinner v-if="sending" />
         Email me a sign-in link
@@ -66,6 +71,7 @@ import { Mail, Sprout } from '@lucide/vue'
 import { REGEXP_ONLY_DIGITS } from 'vue-input-otp'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
+import { Field, FieldError } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
 import { Spinner } from '@/components/ui/spinner'
@@ -74,13 +80,21 @@ import { useAuth } from '@/composables/useAuth'
 const router = useRouter()
 const { signInWithEmail, verifyCode } = useAuth()
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 const email = ref('')
+const emailError = ref('')
 const sending = ref(false)
 const sent = ref(false)
 const code = ref('')
 const verifying = ref(false)
 
 async function sendLink() {
+  const trimmed = email.value.trim()
+  if (!EMAIL_PATTERN.test(trimmed)) {
+    emailError.value = trimmed ? 'Enter a valid email address.' : 'Enter your email address.'
+    return
+  }
   sending.value = true
   try {
     await signInWithEmail(email.value.trim())
