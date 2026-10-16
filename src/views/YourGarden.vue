@@ -273,17 +273,18 @@ onActivated(() => {
                 }}</span>
               </CardTitle>
               <CardAction v-if="tasks.length > TASKS_MAX">
-                <button
-                  class="flex items-center gap-0.5 text-[11.5px] font-medium text-muted-foreground"
+                <Button
+                  variant="ghost-muted"
+                  size="xs"
+                  :aria-expanded="tasksExpanded"
                   @click="tasksExpanded = !tasksExpanded"
                 >
                   {{ tasksExpanded ? 'Show less' : 'Show all' }}
                   <ChevronDown
-                    :size="12"
-                    class="transition-transform duration-200"
+                    class="size-3 transition-transform duration-200"
                     :class="{ 'rotate-180': tasksExpanded }"
                   />
-                </button>
+                </Button>
               </CardAction>
             </CardHeader>
             <CardContent class="pt-0">
@@ -349,43 +350,46 @@ onActivated(() => {
                 <h3 class="text-[14px] font-semibold">{{ group.meta.label }}</h3>
               </header>
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5">
-                <button
+                <div
                   v-for="plant in group.plants"
                   :key="plant.id"
-                  class="flex items-center gap-3 px-3 py-2 rounded-xl border bg-card border-border text-left cursor-pointer transition-colors hover:bg-[color-mix(in_oklab,var(--color-foreground)_3%,transparent)]"
-                  @click="router.push(`/plants/${plant.id}`)"
+                  class="flex items-center gap-1 pr-2 rounded-xl border bg-card border-border transition-colors hover:bg-[color-mix(in_oklab,var(--color-foreground)_3%,transparent)]"
                 >
-                  <PlantIcon
-                    :name="plant.name"
-                    :icon="plant.icon"
-                    :colour="plant.colour"
-                    class="w-8 h-8 rounded-full text-sm"
-                  />
-                  <!-- Name + variety -->
-                  <div class="min-w-0 flex-1">
-                    <div class="text-[13.5px] font-medium line-clamp-2">
-                      {{ plant.name
-                      }}<span v-if="plant.variety" class="font-normal text-muted-foreground">
-                        · {{ plant.variety }}</span
-                      >
-                    </div>
-                  </div>
-                  <!-- Status hint -->
-                  <span
-                    v-if="plantHint(plant, today)"
-                    class="text-[11px] font-medium shrink-0"
-                    :style="{ color: plantHint(plant, today)?.color }"
+                  <RouterLink
+                    :to="`/plants/${plant.id}`"
+                    class="flex flex-1 min-w-0 items-center gap-3 pl-3 py-2 rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
                   >
-                    {{ plantHint(plant, today)?.label }}
-                  </span>
-                  <!-- Also keep plant actions accessible -->
+                    <PlantIcon
+                      :name="plant.name"
+                      :icon="plant.icon"
+                      :colour="plant.colour"
+                      class="w-8 h-8 rounded-full text-sm"
+                    />
+                    <!-- Name + variety -->
+                    <div class="min-w-0 flex-1">
+                      <div class="text-[13.5px] font-medium line-clamp-2">
+                        {{ plant.name
+                        }}<span v-if="plant.variety" class="font-normal text-muted-foreground">
+                          · {{ plant.variety }}</span
+                        >
+                      </div>
+                    </div>
+                    <!-- Status hint -->
+                    <span
+                      v-if="plantHint(plant, today)"
+                      class="text-[11px] font-medium shrink-0"
+                      :style="{ color: plantHint(plant, today)?.color }"
+                    >
+                      {{ plantHint(plant, today)?.label }}
+                    </span>
+                  </RouterLink>
+                  <!-- Sibling of the link, not inside it, so the menu button is valid HTML -->
                   <PlantActions
                     :plant="plant"
                     @archived="plants = plants.filter((p) => p.id !== $event)"
                     @deleted="fetchPlants"
-                    @click.stop
                   />
-                </button>
+                </div>
               </div>
             </section>
           </div>

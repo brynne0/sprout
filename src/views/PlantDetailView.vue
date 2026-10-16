@@ -32,6 +32,8 @@ import PlantActions from '@/components/PlantActions.vue'
 import PlantIcon from '@/components/PlantIcon.vue'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'vue-sonner'
 
@@ -236,13 +238,15 @@ const infoRows = computed(() => {
     >
       <!-- Nav row -->
       <div class="flex items-center justify-between mb-3.5 sm:mb-5">
-        <button
-          class="p-1.5 rounded-lg"
-          style="background: color-mix(in oklab, var(--background) 70%, transparent)"
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          class="bg-background/70"
+          aria-label="Back"
           @click="router.back()"
         >
-          <ArrowLeft class="w-4.5 h-4.5" />
-        </button>
+          <ArrowLeft class="size-4.5" />
+        </Button>
 
         <PlantActions
           v-if="plant && !isCatalogue"
@@ -250,12 +254,14 @@ const infoRows = computed(() => {
           @archived="router.back()"
           @deleted="router.back()"
         >
-          <button
-            class="p-1.5 rounded-lg"
-            style="background: color-mix(in oklab, var(--background) 70%, transparent)"
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            class="bg-background/70"
+            aria-label="Plant actions"
           >
-            <MoreHorizontal class="w-4 h-4" />
-          </button>
+            <MoreHorizontal />
+          </Button>
         </PlantActions>
         <div v-else class="w-7" />
       </div>
@@ -405,32 +411,32 @@ const infoRows = computed(() => {
               <span class="flex-1 font-medium">{{ task.label }} - {{ formatDate(task.date) }}</span>
             </div>
 
-            <button
-              v-if="pastTasks.length"
-              class="flex items-center gap-1.5 w-full px-3.5 py-2.5 border-t border-border/40 text-xs text-muted-foreground"
-              @click="showHistory = !showHistory"
-            >
-              <ChevronDown
-                class="w-3.5 h-3.5 transition-transform duration-200"
-                :class="{ 'rotate-180': showHistory }"
-              />
-              {{ pastTasks.length }} past {{ pastTasks.length === 1 ? 'task' : 'tasks' }}
-            </button>
-            <template v-if="showHistory">
-              <div
-                v-for="task in pastTasks"
-                :key="task.key"
-                class="flex items-center gap-2.5 px-3.5 py-2.5 text-sm border-t border-border/40 opacity-50"
+            <Collapsible v-if="pastTasks.length" v-model:open="showHistory">
+              <CollapsibleTrigger
+                class="flex items-center gap-1.5 w-full px-3.5 py-2.5 border-t border-border/40 text-xs text-muted-foreground"
               >
-                <Sprout v-if="task.type === 'sow'" class="w-4 h-4 shrink-0 track-sowing-text" />
-                <Leaf
-                  v-else-if="task.type === 'transplant'"
-                  class="w-3.5 h-3.5 shrink-0 track-transplant-text"
+                <ChevronDown
+                  class="w-3.5 h-3.5 transition-transform duration-200"
+                  :class="{ 'rotate-180': showHistory }"
                 />
-                <Shovel v-else class="w-3.5 h-3.5 shrink-0 track-repot-text" />
-                <span class="flex-1">{{ task.label }} - {{ formatDate(task.date) }}</span>
-              </div>
-            </template>
+                {{ pastTasks.length }} past {{ pastTasks.length === 1 ? 'task' : 'tasks' }}
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div
+                  v-for="task in pastTasks"
+                  :key="task.key"
+                  class="flex items-center gap-2.5 px-3.5 py-2.5 text-sm border-t border-border/40 opacity-50"
+                >
+                  <Sprout v-if="task.type === 'sow'" class="w-4 h-4 shrink-0 track-sowing-text" />
+                  <Leaf
+                    v-else-if="task.type === 'transplant'"
+                    class="w-3.5 h-3.5 shrink-0 track-transplant-text"
+                  />
+                  <Shovel v-else class="w-3.5 h-3.5 shrink-0 track-repot-text" />
+                  <span class="flex-1">{{ task.label }} - {{ formatDate(task.date) }}</span>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
 
             <RouterLink
               :to="`/plants/${gardenPlant!.id}/edit`"
@@ -447,14 +453,15 @@ const infoRows = computed(() => {
           <CardHeader class="border-b border-border/40">
             <CardTitle>Notes</CardTitle>
             <CardAction>
-              <button
-                class="flex items-center gap-1 text-xs text-muted-foreground disabled:opacity-50"
+              <Button
+                variant="ghost-muted"
+                size="xs"
                 :disabled="savingNotes"
                 @click="editingNotes ? saveNotes() : (editingNotes = true)"
               >
-                <component :is="editingNotes ? Check : Pencil" class="w-3.5 h-3.5" />
+                <component :is="editingNotes ? Check : Pencil" class="size-3.5" />
                 {{ editingNotes ? (savingNotes ? 'Saving…' : 'Done') : 'Edit' }}
-              </button>
+              </Button>
             </CardAction>
           </CardHeader>
           <CardContent>

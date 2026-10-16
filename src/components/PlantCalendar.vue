@@ -8,9 +8,13 @@ import { ChevronLeft, ChevronRight, ArrowUpDown, Rows3 } from '@lucide/vue'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { Toggle } from '@/components/ui/toggle'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import {
   dateToX,
   computeTracksForPlant,
@@ -66,12 +70,22 @@ const timelineMonths = Array.from({ length: 12 }, (_, i) => ({ month: i + 1 }))
 
 const showGrid = ref(false)
 
+const legendTracks: { type: TrackType; label: string }[] = [
+  { type: 'sowing', label: 'Sow' },
+  { type: 'transplant', label: 'Transplant' },
+  { type: 'harvest', label: 'Harvest' },
+]
+
 const hiddenTracks = ref<Set<TrackType>>(new Set())
 
-function toggleTrack(type: TrackType) {
-  if (hiddenTracks.value.has(type)) hiddenTracks.value.delete(type)
-  else hiddenTracks.value.add(type)
-}
+const visibleTracks = computed({
+  get: () => legendTracks.map((t) => t.type).filter((t) => !hiddenTracks.value.has(t)),
+  set: (visible: TrackType[]) => {
+    hiddenTracks.value = new Set(
+      legendTracks.map((t) => t.type).filter((t) => !visible.includes(t)),
+    )
+  },
+})
 
 type SortMode = 'sow-date' | 'transplant-date' | 'harvest-date' | 'alphabetical'
 const sortMode = ref<SortMode>('alphabetical')
@@ -221,44 +235,46 @@ const todayX = computed(() => {
   </div>
   <!-- Legend + year nav -->
   <div class="flex items-center gap-4 mb-4 px-4">
-    <div class="flex flex-wrap gap-4 text-xs text-muted-foreground">
-      <button @click="toggleTrack('sowing')" class="flex items-center gap-1.5">
+    <ToggleGroup
+      v-model="visibleTracks"
+      type="multiple"
+      :spacing="4"
+      class="flex-wrap text-muted-foreground"
+    >
+      <ToggleGroupItem
+        v-for="t in legendTracks"
+        :key="t.type"
+        :value="t.type"
+        class="h-auto px-1 py-0.5 text-xs font-normal hover:bg-transparent data-[state=on]:bg-transparent data-[state=on]:text-muted-foreground"
+      >
         <span
-          class="inline-block w-3 h-3 rounded-sm border track-sowing-border"
-          :class="{ 'track-sowing-bg': !hiddenTracks.has('sowing') }"
+          class="inline-block w-3 h-3 rounded-sm border"
+          :class="[`track-${t.type}-border`, { [`track-${t.type}-bg`]: !hiddenTracks.has(t.type) }]"
         />
-        Sow
-      </button>
-      <button @click="toggleTrack('transplant')" class="flex items-center gap-1.5">
-        <span
-          class="inline-block w-3 h-3 rounded-sm border track-transplant-border"
-          :class="{ 'track-transplant-bg': !hiddenTracks.has('transplant') }"
-        />
-        Transplant
-      </button>
-      <button @click="toggleTrack('harvest')" class="flex items-center gap-1.5">
-        <span
-          class="inline-block w-3 h-3 rounded-sm border track-harvest-border"
-          :class="{ 'track-harvest-bg': !hiddenTracks.has('harvest') }"
-        />
-        Harvest
-      </button>
-    </div>
-    <div v-if="showYearNav" class="flex items-center gap-2 text-sm ml-auto">
-      <button
+        {{ t.label }}
+      </ToggleGroupItem>
+    </ToggleGroup>
+    <div v-if="showYearNav" class="flex items-center gap-1 text-sm ml-auto">
+      <Button
         v-if="selectedYear !== today(getLocalTimeZone()).year"
-        class="text-xs text-muted-foreground hover:text-foreground transition-colors"
+        variant="ghost-muted"
+        size="xs"
         @click="selectedYear = today(getLocalTimeZone()).year"
       >
         {{ today(getLocalTimeZone()).year }}
-      </button>
-      <button class="p-0.5 rounded hover:bg-muted transition-colors" @click="selectedYear--">
-        <ChevronLeft class="w-4 h-4 text-muted-foreground" />
-      </button>
+      </Button>
+      <Button
+        variant="ghost-muted"
+        size="icon-xs"
+        aria-label="Previous year"
+        @click="selectedYear--"
+      >
+        <ChevronLeft />
+      </Button>
       <span class="font-medium tabular-nums">{{ selectedYear }}</span>
-      <button class="p-0.5 rounded hover:bg-muted transition-colors" @click="selectedYear++">
-        <ChevronRight class="w-4 h-4 text-muted-foreground" />
-      </button>
+      <Button variant="ghost-muted" size="icon-xs" aria-label="Next year" @click="selectedYear++">
+        <ChevronRight />
+      </Button>
     </div>
   </div>
 
@@ -276,31 +292,35 @@ const todayX = computed(() => {
       <div class="px-3 py-2 flex items-center justify-between">
         <span class="text-xs font-medium text-muted-foreground">Plant</span>
         <div class="flex items-center gap-1">
-          <button
-            class="p-0.5 rounded hover:bg-muted transition-colors"
-            :class="{ 'bg-accent': showGrid }"
-            @click="showGrid = !showGrid"
+          <Toggle
+            v-model="showGrid"
+            size="sm"
+            class="h-6 min-w-6 px-0.5 text-muted-foreground"
+            aria-label="Show row stripes"
           >
-            <Rows3 class="w-3 h-3 text-muted-foreground" />
-          </button>
+            <Rows3 class="size-3" />
+          </Toggle>
           <DropdownMenu>
-            <DropdownMenuTrigger class="p-0.5 rounded hover:bg-muted transition-colors">
-              <ArrowUpDown class="w-3 h-3 text-muted-foreground" />
+            <DropdownMenuTrigger as-child>
+              <Button variant="ghost-muted" size="icon-xs" aria-label="Sort plants">
+                <ArrowUpDown class="size-3" />
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem
-                v-for="mode in [
-                  'sow-date',
-                  'transplant-date',
-                  'harvest-date',
-                  'alphabetical',
-                ] as SortMode[]"
-                :key="mode"
-                :class="{ 'font-medium bg-accent': sortMode === mode }"
-                @click="sortMode = mode"
-              >
-                {{ sortLabels[mode] }}
-              </DropdownMenuItem>
+              <DropdownMenuRadioGroup v-model="sortMode">
+                <DropdownMenuRadioItem
+                  v-for="mode in [
+                    'sow-date',
+                    'transplant-date',
+                    'harvest-date',
+                    'alphabetical',
+                  ] as SortMode[]"
+                  :key="mode"
+                  :value="mode"
+                >
+                  {{ sortLabels[mode] }}
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

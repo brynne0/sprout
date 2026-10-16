@@ -4,6 +4,7 @@ import { Archive, MoreHorizontal, Pencil, Trash2 } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
 import type { Plant } from '@/types'
 import { toast } from 'vue-sonner'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,9 +50,9 @@ async function remove() {
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
       <slot>
-        <button class="p-1 rounded-md hover:bg-muted transition-colors" @click.stop>
-          <MoreHorizontal class="w-4 h-4 text-muted-foreground" />
-        </button>
+        <Button variant="ghost-muted" size="icon-sm" aria-label="Plant actions" @click.stop>
+          <MoreHorizontal />
+        </Button>
       </slot>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, ChevronDown, ChevronsUpDown, Check, Plus, X } from '@lucide/vue'
+import { ArrowLeft, ChevronDown, ChevronsUpDown, Check, Plus } from '@lucide/vue'
 import {
   Command,
   CommandEmpty,
@@ -29,6 +29,12 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  TagsInput,
+  TagsInputItem,
+  TagsInputItemDelete,
+  TagsInputItemText,
+} from '@/components/ui/tags-input'
 import type { PlantType, CataloguePlant, Window } from '@/types'
 import type { Json } from '@/types/database'
 import { supabase } from '@/lib/supabase'
@@ -105,6 +111,9 @@ function formatWindow(w: Window): string {
   const [em = 1, ed = 1] = w.end.split('-').map(Number)
   return `${sd} ${MONTHS[sm - 1]} → ${ed} ${MONTHS[em - 1]}`
 }
+
+// TagsInput types its values loosely, so narrow back to Window for display
+const displayWindow = (v: unknown) => formatWindow(v as Window)
 
 function confirmSowingWindow() {
   if (stagingSowing.value?.start && stagingSowing.value?.end) {
@@ -384,14 +393,15 @@ async function submitPlant() {
 <template>
   <main>
     <PageHeader class="grid grid-cols-[2rem_1fr_2rem] items-center gap-3">
-      <button
+      <Button
         type="button"
-        class="p-1.5 rounded-lg hover:bg-muted transition-colors"
+        variant="ghost"
+        size="icon-sm"
         aria-label="Back"
         @click="leave(plantId ? `/plants/${plantId}` : '/')"
       >
-        <ArrowLeft class="w-4.5 h-4.5" />
-      </button>
+        <ArrowLeft class="size-4.5" />
+      </Button>
       <h1 class="text-3xl font-bold tracking-tight text-primary text-center">
         {{ isEditMode ? 'Edit plant' : 'Add plant' }}
       </h1>
@@ -640,22 +650,16 @@ async function submitPlant() {
                   <!-- Sowing windows -->
                   <Field>
                     <FieldLabel>Sowing windows</FieldLabel>
-                    <div v-if="sowingWindows.length" class="flex flex-wrap gap-2">
-                      <span
-                        v-for="(w, i) in sowingWindows"
-                        :key="i"
-                        class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
-                      >
-                        {{ formatWindow(w) }}
-                        <button
-                          type="button"
-                          class="text-muted-foreground hover:text-foreground"
-                          @click="sowingWindows.splice(i, 1)"
-                        >
-                          <X class="h-3 w-3" />
-                        </button>
-                      </span>
-                    </div>
+                    <TagsInput
+                      v-if="sowingWindows.length"
+                      v-model="sowingWindows"
+                      :display-value="displayWindow"
+                    >
+                      <TagsInputItem v-for="(w, i) in sowingWindows" :key="i" :value="w">
+                        <TagsInputItemText />
+                        <TagsInputItemDelete tabindex="0" />
+                      </TagsInputItem>
+                    </TagsInput>
                     <Popover v-model:open="showSowingPicker">
                       <PopoverTrigger as-child>
                         <Button type="button" variant="outline" size="sm" class="w-full">
@@ -682,22 +686,16 @@ async function submitPlant() {
                   <!-- Transplant windows -->
                   <Field>
                     <FieldLabel>Transplant windows</FieldLabel>
-                    <div v-if="transplantWindows.length" class="flex flex-wrap gap-2">
-                      <span
-                        v-for="(w, i) in transplantWindows"
-                        :key="i"
-                        class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
-                      >
-                        {{ formatWindow(w) }}
-                        <button
-                          type="button"
-                          class="text-muted-foreground hover:text-foreground"
-                          @click="transplantWindows.splice(i, 1)"
-                        >
-                          <X class="h-3 w-3" />
-                        </button>
-                      </span>
-                    </div>
+                    <TagsInput
+                      v-if="transplantWindows.length"
+                      v-model="transplantWindows"
+                      :display-value="displayWindow"
+                    >
+                      <TagsInputItem v-for="(w, i) in transplantWindows" :key="i" :value="w">
+                        <TagsInputItemText />
+                        <TagsInputItemDelete tabindex="0" />
+                      </TagsInputItem>
+                    </TagsInput>
                     <Popover v-model:open="showTransplantPicker">
                       <PopoverTrigger as-child>
                         <Button type="button" variant="outline" size="sm" class="w-full">
@@ -724,22 +722,16 @@ async function submitPlant() {
                   <!-- Harvest windows -->
                   <Field>
                     <FieldLabel>Harvest windows</FieldLabel>
-                    <div v-if="harvestWindows.length" class="flex flex-wrap gap-2">
-                      <span
-                        v-for="(w, i) in harvestWindows"
-                        :key="i"
-                        class="flex items-center gap-1 rounded-md border px-2 py-1 text-sm"
-                      >
-                        {{ formatWindow(w) }}
-                        <button
-                          type="button"
-                          class="text-muted-foreground hover:text-foreground"
-                          @click="harvestWindows.splice(i, 1)"
-                        >
-                          <X class="h-3 w-3" />
-                        </button>
-                      </span>
-                    </div>
+                    <TagsInput
+                      v-if="harvestWindows.length"
+                      v-model="harvestWindows"
+                      :display-value="displayWindow"
+                    >
+                      <TagsInputItem v-for="(w, i) in harvestWindows" :key="i" :value="w">
+                        <TagsInputItemText />
+                        <TagsInputItemDelete tabindex="0" />
+                      </TagsInputItem>
+                    </TagsInput>
                     <Popover v-model:open="showHarvestPicker">
                       <PopoverTrigger as-child>
                         <Button type="button" variant="outline" size="sm" class="w-full">
@@ -778,7 +770,7 @@ async function submitPlant() {
           Cancel
         </Button>
         <Button type="submit" :disabled="!canSubmit || saving" class="px-4!">
-          <Spinner v-if="saving" class="animate-spin" />
+          <Spinner v-if="saving" />
           {{ saving ? 'Saving...' : isEditMode ? 'Save' : 'Add plant' }}
         </Button>
       </div>

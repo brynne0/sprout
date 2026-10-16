@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Plus, X } from '@lucide/vue'
+import { Plus } from '@lucide/vue'
 import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date'
 import type { DateValue } from 'reka-ui'
 import type { Window } from '@/types'
@@ -8,6 +8,12 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { formatDate } from '@/lib/utils'
+import {
+  TagsInput,
+  TagsInputItem,
+  TagsInputItemDelete,
+  TagsInputItemText,
+} from '@/components/ui/tags-input'
 
 // All of a plant's task dates in one list, with an add button per task type.
 const sow = defineModel<string[]>('sow', { required: true })
@@ -85,9 +91,22 @@ function add(t: DateType, v: DateValue | undefined) {
   openType.value = null
 }
 
-function remove(t: DateType, index: number) {
-  const model = models[t]
-  model.value = model.value.filter((_, i) => i !== index)
+type Entry = (typeof entries.value)[number]
+
+const entryTags = computed({
+  get: () => entries.value,
+  set: (remaining) => {
+    for (const t of types) {
+      models[t.value].value = (remaining as Entry[])
+        .filter((e) => e.value === t.value)
+        .map((e) => e.date)
+    }
+  },
+})
+
+const displayEntry = (v: unknown) => {
+  const e = v as Entry
+  return `${e.label} · ${formatDate(e.date)}`
 }
 
 function highlight(t: DateType, day: DateValue): string | false {
@@ -110,22 +129,13 @@ function highlight(t: DateType, day: DateValue): string | false {
 <template>
   <div class="flex flex-col gap-3">
     <div v-if="entries.length" class="flex flex-wrap gap-2">
-      <span
-        v-for="e in entries"
-        :key="`${e.value}-${e.index}`"
-        class="flex items-center gap-1.5 rounded-md border px-2 py-1 text-sm"
-      >
-        <span class="size-1.5 rounded-full" :class="e.dot" />
-        {{ e.label }} · {{ formatDate(e.date) }}
-        <button
-          type="button"
-          class="text-muted-foreground hover:text-foreground"
-          :aria-label="`Remove ${e.label} ${formatDate(e.date)}`"
-          @click="remove(e.value, e.index)"
-        >
-          <X class="h-3 w-3" />
-        </button>
-      </span>
+      <TagsInput v-model="entryTags" :display-value="displayEntry">
+        <TagsInputItem v-for="e in entries" :key="`${e.value}-${e.index}`" :value="e">
+          <span class="size-1.5 rounded-full" :class="e.dot" />
+          <TagsInputItemText />
+          <TagsInputItemDelete tabindex="0" />
+        </TagsInputItem>
+      </TagsInput>
     </div>
     <p v-else class="text-sm text-muted-foreground">No dates yet.</p>
 
