@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onActivated } from 'vue'
 import { useRouter } from 'vue-router'
 import { Plus, Sprout, Shovel, Scissors, Replace, ChevronDown } from '@lucide/vue'
 import PlantCalendar from '@/components/PlantCalendar.vue'
@@ -13,10 +13,10 @@ import {
 } from '@/components/ui/empty'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Plant, Window as PlantWindow } from '@/types'
 import { isDateUpcoming, handleApiError } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
-import PlantDialogue from '@/components/PlantDialogue.vue'
 import PlantActions from '@/components/PlantActions.vue'
 import PlantIcon from '@/components/PlantIcon.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
@@ -24,7 +24,6 @@ import PageHeader from '@/components/layout/PageHeader.vue'
 
 const router = useRouter()
 const plants = ref<Plant[]>([])
-const dialogOpen = ref(false)
 const loading = ref(true)
 
 // Window status utils
@@ -227,9 +226,10 @@ onMounted(async () => {
   loading.value = false
 })
 
-async function onPlantAdded() {
-  await fetchPlants()
-}
+// The page is kept alive, so refresh when coming back from adding or editing a plant
+onActivated(() => {
+  if (!loading.value) fetchPlants()
+})
 </script>
 
 <template>
@@ -243,17 +243,14 @@ async function onPlantAdded() {
         </p>
         <h1 class="text-3xl font-bold tracking-tight text-primary mt-0.5">Your Garden</h1>
       </div>
-      <PlantDialogue
+      <RouterLink
         v-if="!loading && plants.length > 0"
-        v-model:open="dialogOpen"
-        @plant-added="onPlantAdded"
+        to="/plants/new"
+        class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground"
+        aria-label="Add plant"
       >
-        <button
-          class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground"
-        >
-          <Plus :size="18" />
-        </button>
-      </PlantDialogue>
+        <Plus :size="18" />
+      </RouterLink>
     </PageHeader>
 
     <LoadingLeaves v-if="loading" />
@@ -267,31 +264,29 @@ async function onPlantAdded() {
 
         <TabsContent value="gardenList" class="px-4 flex flex-col gap-4">
           <!-- Task reminders -->
-          <section
-            v-if="tasks.length > 0"
-            class="rounded-2xl border px-3 py-2 bg-card border-border"
-          >
-            <header class="flex items-center justify-between pt-1 pb-0.5">
-              <h2 class="text-[13px] font-semibold">
+          <Card v-if="tasks.length > 0">
+            <CardHeader>
+              <CardTitle>
                 Reminders
                 <span class="ml-1.5 text-[11.5px] font-normal text-muted-foreground">{{
                   tasks.length
                 }}</span>
-              </h2>
-              <button
-                v-if="tasks.length > TASKS_MAX"
-                class="flex items-center gap-0.5 text-[11.5px] font-medium text-muted-foreground"
-                @click="tasksExpanded = !tasksExpanded"
-              >
-                {{ tasksExpanded ? 'Show less' : 'Show all' }}
-                <ChevronDown
-                  :size="12"
-                  class="transition-transform duration-200"
-                  :class="{ 'rotate-180': tasksExpanded }"
-                />
-              </button>
-            </header>
-            <div>
+              </CardTitle>
+              <CardAction v-if="tasks.length > TASKS_MAX">
+                <button
+                  class="flex items-center gap-0.5 text-[11.5px] font-medium text-muted-foreground"
+                  @click="tasksExpanded = !tasksExpanded"
+                >
+                  {{ tasksExpanded ? 'Show less' : 'Show all' }}
+                  <ChevronDown
+                    :size="12"
+                    class="transition-transform duration-200"
+                    :class="{ 'rotate-180': tasksExpanded }"
+                  />
+                </button>
+              </CardAction>
+            </CardHeader>
+            <CardContent class="pt-0">
               <template v-for="group in visibleGroups" :key="group.label">
                 <p
                   class="text-[10.5px] font-medium uppercase tracking-widest text-muted-foreground px-1 pt-2.5 pb-0.5 first:pt-1"
@@ -340,8 +335,8 @@ async function onPlantAdded() {
                   </button>
                 </div>
               </template>
-            </div>
-          </section>
+            </CardContent>
+          </Card>
 
           <!-- Plants grouped by window status -->
           <div class="flex flex-col gap-5">
@@ -386,7 +381,6 @@ async function onPlantAdded() {
                   <!-- Also keep plant actions accessible -->
                   <PlantActions
                     :plant="plant"
-                    @updated="fetchPlants"
                     @archived="plants = plants.filter((p) => p.id !== $event)"
                     @deleted="fetchPlants"
                     @click.stop
@@ -421,9 +415,9 @@ async function onPlantAdded() {
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <PlantDialogue v-model:open="dialogOpen" @plant-added="onPlantAdded">
-            <Button>Add Plant</Button>
-          </PlantDialogue>
+          <Button as-child>
+            <RouterLink to="/plants/new">Add Plant</RouterLink>
+          </Button>
         </EmptyContent>
       </Empty>
     </div>

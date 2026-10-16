@@ -30,7 +30,7 @@ router.isReady().then(() => {
   >
     <AppNav v-if="routerReady && !publicRoutes.includes(route.path)" />
     <RouterView v-slot="{ Component }">
-      <KeepAlive exclude="PlantDetailView">
+      <KeepAlive :exclude="['PlantDetailView', 'PlantFormView']">
         <component :is="Component" />
       </KeepAlive>
     </RouterView>

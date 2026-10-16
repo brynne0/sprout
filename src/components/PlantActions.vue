@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { Archive, MoreHorizontal, Pencil, Trash2 } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
 import type { Plant } from '@/types'
@@ -11,16 +11,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import PlantDialogue from '@/components/PlantDialogue.vue'
 
 const props = defineProps<{ plant: Plant }>()
 const emit = defineEmits<{
-  updated: []
   archived: [id: string]
   deleted: [id: string]
 }>()
 
-const editOpen = ref(false)
+const router = useRouter()
 
 async function archive() {
   try {
@@ -48,7 +46,6 @@ async function remove() {
 </script>
 
 <template>
-  <PlantDialogue v-model:open="editOpen" :plant="plant" @plant-added="emit('updated')" />
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
       <slot>
@@ -58,7 +55,7 @@ async function remove() {
       </slot>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
-      <DropdownMenuItem @click="editOpen = true">
+      <DropdownMenuItem @click="router.push(`/plants/${plant.id}/edit`)">
         <Pencil class="w-4 h-4" />
         Edit
       </DropdownMenuItem>

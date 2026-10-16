@@ -17,6 +17,16 @@ const router = createRouter({
       component: () => import('@/views/SettingsView.vue'),
     },
     {
+      path: '/plants/new',
+      component: () => import('@/views/PlantFormView.vue'),
+      meta: { activeNav: '/' },
+    },
+    {
+      path: '/plants/:id/edit',
+      component: () => import('@/views/PlantFormView.vue'),
+      meta: { activeNav: '/' },
+    },
+    {
       path: '/plants/:id',
       component: () => import('@/views/PlantDetailView.vue'),
       meta: { activeNav: '/' },

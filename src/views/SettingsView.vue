@@ -7,6 +7,7 @@ import { useTheme } from '@/composables/useTheme'
 import { supabase } from '@/lib/supabase'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import {
   AlertDialog,
@@ -47,38 +48,40 @@ async function deleteAccount() {
 <template>
   <main>
     <PageHeader>
-      <h1 class="text-3xl font-bold tracking-tight text-primary">Settings</h1>
+      <h1 class="text-3xl font-bold tracking-tight text-primary text-center">Settings</h1>
     </PageHeader>
 
-    <div class="mx-4 flex flex-col gap-6 max-w-xl">
+    <div class="mx-4 sm:mx-auto flex flex-col gap-6 max-w-xl">
       <section>
         <h2 class="text-[13px] font-semibold mb-2 px-0.5">Appearance</h2>
-        <div class="rounded-xl border bg-card px-4 py-3 flex items-center justify-between gap-4">
-          <span class="text-sm">Theme</span>
-          <!-- Clicking the active item emits an empty value; ignore it so one is always selected -->
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            size="sm"
-            :model-value="theme"
-            @update:model-value="(v) => v && (theme = v as typeof theme)"
-          >
-            <ToggleGroupItem v-for="t in themes" :key="t.value" :value="t.value">
-              <component :is="t.icon" />
-              {{ t.label }}
-            </ToggleGroupItem>
-          </ToggleGroup>
-        </div>
+        <Card>
+          <CardContent class="flex items-center justify-between gap-4">
+            <span class="text-sm">Theme</span>
+            <!-- Clicking the active item emits an empty value; ignore it so one is always selected -->
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              size="sm"
+              :model-value="theme"
+              @update:model-value="(v) => v && (theme = v as typeof theme)"
+            >
+              <ToggleGroupItem v-for="t in themes" :key="t.value" :value="t.value">
+                <component :is="t.icon" />
+                {{ t.label }}
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </CardContent>
+        </Card>
       </section>
 
       <section>
         <h2 class="text-[13px] font-semibold mb-2 px-0.5">Account</h2>
-        <div class="rounded-xl border bg-card divide-y">
-          <div class="px-4 py-3 min-w-0">
+        <Card class="divide-y">
+          <CardContent class="min-w-0">
             <div class="text-sm">Signed in as</div>
             <div class="text-sm text-muted-foreground truncate">{{ email }}</div>
-          </div>
-          <div class="px-4 py-3 flex items-center justify-between gap-4">
+          </CardContent>
+          <CardContent class="flex items-center justify-between gap-4">
             <div class="min-w-0">
               <div class="text-sm">Delete account</div>
               <div class="text-xs text-muted-foreground">
@@ -88,8 +91,8 @@ async function deleteAccount() {
             <Button variant="destructive" size="sm" @click="showDeleteAccount = true"
               >Delete</Button
             >
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </section>
     </div>
 

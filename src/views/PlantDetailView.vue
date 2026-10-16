@@ -29,9 +29,9 @@ import LoadingSprout from '@/components/LoadingSprout.vue'
 import PlantRow from '@/components/PlantRow.vue'
 import PlantActions from '@/components/PlantActions.vue'
 import PlantIcon from '@/components/PlantIcon.vue'
-import PlantDatesDialogue from '@/components/PlantDatesDialogue.vue'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'vue-sonner'
 
 const route = useRoute()
@@ -252,7 +252,6 @@ const infoRows = computed(() => {
           :plant="plant as Plant"
           @archived="router.back()"
           @deleted="router.back()"
-          @updated="fetchPlant(route.params.id as string)"
         >
           <button
             class="p-1.5 rounded-lg"
@@ -310,11 +309,11 @@ const infoRows = computed(() => {
     <div class="grid grid-cols-1 sm:grid-cols-[1.25fr_1fr] gap-3 sm:gap-4 p-4 sm:p-8 items-start">
       <!-- LEFT COL -->
       <div class="flex flex-col gap-3 sm:gap-4">
-        <div class="rounded-xl border bg-card">
-          <div class="px-3.5 pt-3.5 pb-2.5 border-b border-border/40">
-            <h3 class="text-sm font-semibold">Timeline</h3>
-          </div>
-          <div class="p-3.5 flex flex-col gap-0.5">
+        <Card>
+          <CardHeader class="border-b border-border/40">
+            <CardTitle>Timeline</CardTitle>
+          </CardHeader>
+          <CardContent class="flex flex-col gap-0.5">
             <div class="flex">
               <div class="w-15 shrink-0" />
               <div
@@ -337,39 +336,39 @@ const infoRows = computed(() => {
                 :today-x="todayX"
               />
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div v-if="infoRows.length" class="rounded-xl border bg-card">
-          <div class="px-3.5 pt-3.5 pb-2.5 border-b border-border/40">
-            <h3 class="text-sm font-semibold">Growing</h3>
-          </div>
-          <div
-            v-for="(row, i) in infoRows"
-            :key="row.label"
-            class="flex items-start gap-3 px-3.5 py-2.5 text-sm"
-            :class="i > 0 ? 'border-t border-border/40' : ''"
-          >
-            <component :is="row.icon" class="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground" />
-            <span class="w-27.5 shrink-0 text-muted-foreground">{{ row.label }}</span>
-            <span class="text-foreground leading-snug">{{ row.value }}</span>
-          </div>
-        </div>
+        <Card v-if="infoRows.length">
+          <CardHeader class="border-b border-border/40">
+            <CardTitle>Growing</CardTitle>
+          </CardHeader>
+          <CardContent class="p-0">
+            <div
+              v-for="(row, i) in infoRows"
+              :key="row.label"
+              class="flex items-start gap-3 px-3.5 py-2.5 text-sm"
+              :class="i > 0 ? 'border-t border-border/40' : ''"
+            >
+              <component :is="row.icon" class="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground" />
+              <span class="w-27.5 shrink-0 text-muted-foreground">{{ row.label }}</span>
+              <span class="text-foreground leading-snug">{{ row.value }}</span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <!-- RIGHT COL: garden-specific only -->
       <div v-if="!isCatalogue" class="flex flex-col gap-3 sm:gap-4">
         <!-- Tasks card -->
-        <div class="rounded-xl border bg-card">
-          <div
-            class="flex items-center justify-between px-3.5 pt-3.5 pb-2.5 border-b border-border/40 gap-4"
-          >
-            <h3 class="text-sm font-semibold">Tasks</h3>
-            <span v-if="upcomingTasks.length" class="text-xs text-muted-foreground">
+        <Card>
+          <CardHeader class="border-b border-border/40">
+            <CardTitle>Tasks</CardTitle>
+            <CardAction v-if="upcomingTasks.length" class="text-xs text-muted-foreground">
               {{ upcomingTasks.length }} upcoming
-            </span>
-          </div>
-          <div>
+            </CardAction>
+          </CardHeader>
+          <CardContent class="p-0">
             <p
               v-if="upcomingTasks.length === 0"
               class="px-3.5 py-3 text-sm italic text-muted-foreground opacity-70"
@@ -418,36 +417,32 @@ const infoRows = computed(() => {
               </div>
             </template>
 
-            <PlantDatesDialogue
-              :plant="gardenPlant!"
-              @saved="fetchPlant(route.params.id as string)"
+            <RouterLink
+              :to="`/plants/${gardenPlant!.id}/edit`"
+              class="flex items-center justify-center gap-1.5 w-full px-3.5 py-2.5 border-t border-border/40 bg-transparent text-xs text-muted-foreground"
             >
-              <button
-                class="flex items-center justify-center gap-1.5 w-full px-3.5 py-2.5 border-t border-border/40 bg-transparent text-xs text-muted-foreground"
-              >
-                <Plus class="w-3.5 h-3.5" />
-                Add date
-              </button>
-            </PlantDatesDialogue>
-          </div>
-        </div>
+              <Plus class="w-3.5 h-3.5" />
+              Add date
+            </RouterLink>
+          </CardContent>
+        </Card>
 
         <!-- Notes card -->
-        <div class="rounded-xl border bg-card">
-          <div
-            class="flex items-center justify-between px-3.5 pt-3.5 pb-2.5 border-b border-border/40"
-          >
-            <h3 class="text-sm font-semibold">Notes</h3>
-            <button
-              class="flex items-center gap-1 text-xs text-muted-foreground disabled:opacity-50"
-              :disabled="savingNotes"
-              @click="editingNotes ? saveNotes() : (editingNotes = true)"
-            >
-              <component :is="editingNotes ? Check : Pencil" class="w-3.5 h-3.5" />
-              {{ editingNotes ? (savingNotes ? 'Saving…' : 'Done') : 'Edit' }}
-            </button>
-          </div>
-          <div class="px-3.5 py-3">
+        <Card>
+          <CardHeader class="border-b border-border/40">
+            <CardTitle>Notes</CardTitle>
+            <CardAction>
+              <button
+                class="flex items-center gap-1 text-xs text-muted-foreground disabled:opacity-50"
+                :disabled="savingNotes"
+                @click="editingNotes ? saveNotes() : (editingNotes = true)"
+              >
+                <component :is="editingNotes ? Check : Pencil" class="w-3.5 h-3.5" />
+                {{ editingNotes ? (savingNotes ? 'Saving…' : 'Done') : 'Edit' }}
+              </button>
+            </CardAction>
+          </CardHeader>
+          <CardContent>
             <Textarea v-if="editingNotes" v-model="notes" />
             <p
               v-else-if="notes"
@@ -456,8 +451,8 @@ const infoRows = computed(() => {
               {{ notes }}
             </p>
             <p v-else class="text-sm italic text-muted-foreground opacity-70">No notes yet.</p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   </div>
