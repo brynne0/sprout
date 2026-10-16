@@ -31,6 +31,7 @@ import PlantActions from '@/components/PlantActions.vue'
 import PlantIcon from '@/components/PlantIcon.vue'
 import PlantDatesDialogue from '@/components/PlantDatesDialogue.vue'
 import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
 import { toast } from 'vue-sonner'
 
 const route = useRoute()
@@ -269,7 +270,7 @@ const infoRows = computed(() => {
           :name="plant.name"
           :icon="(plant as Plant).icon"
           :colour="(plant as Plant).colour"
-          class="w-16 h-16 rounded-xl sm:w-20 sm:h-20 sm:rounded-2xl text-2xl sm:text-3xl border"
+          class="w-16 h-16 rounded-xl sm:w-20 sm:h-20 sm:rounded-2xl text-2xl sm:text-3xl border [--icon-base:var(--background)]"
         />
         <div class="min-w-0 flex-1">
           <div
@@ -296,26 +297,12 @@ const infoRows = computed(() => {
         v-if="activeStatuses.length || (plant.suitability ?? []).length"
         class="mt-3.5 flex flex-wrap gap-1.5"
       >
-        <span
-          v-for="s in activeStatuses"
-          :key="s.type"
-          class="text-[11px] px-2.5 py-1 rounded-full border"
-          :class="[`track-${s.type}-bg`, `track-${s.type}-border`, `track-${s.type}-text`]"
-        >
+        <Badge v-for="s in activeStatuses" :key="s.type" :variant="s.type">
           {{ s.label }}
-        </span>
-        <span
-          v-for="s in plant.suitability ?? []"
-          :key="s"
-          class="text-[11px] px-2.5 py-1 rounded-full capitalize"
-          style="
-            background: color-mix(in oklab, var(--background) 65%, transparent);
-            border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
-            color: var(--muted-foreground);
-          "
-        >
+        </Badge>
+        <Badge v-for="s in plant.suitability ?? []" :key="s" variant="outline" class="capitalize">
           {{ s }}
-        </span>
+        </Badge>
       </div>
     </div>
 

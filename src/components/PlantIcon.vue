@@ -40,8 +40,8 @@ const colour = computed(() =>
     class="shrink-0 grid place-items-center font-semibold"
     :style="{
       color: colour,
-      background: `color-mix(in oklab, ${colour} var(--produce-tint), var(--card))`,
-      borderColor: `color-mix(in oklab, ${colour} 30%, var(--card))`,
+      background: `color-mix(in oklab, ${colour} var(--produce-tint), var(--icon-base, var(--card)))`,
+      borderColor: `color-mix(in oklab, ${colour} 30%, var(--icon-base, var(--card)))`,
     }"
   >
     <component :is="lucideIcon" v-if="lucideIcon" class="size-[56%]" />

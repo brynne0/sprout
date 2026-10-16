@@ -26,6 +26,9 @@ const router = createRouter({
       component: () => import('@/views/PlantDetailView.vue'),
       meta: { cataloguePlant: true, activeNav: '/catalogue' },
     },
+    ...(import.meta.env.DEV
+      ? [{ path: '/showcase', component: () => import('@/views/ShowcaseView.vue') }]
+      : []),
     { path: '/login', component: () => import('@/views/LoginView.vue') },
     { path: '/auth/callback', component: () => import('@/views/AuthCallback.vue') },
     { path: '/:pathMatch(.*)*', redirect: '/' },
