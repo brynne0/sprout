@@ -1,12 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import YourGarden from '@/views/YourGarden.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      component: () => import('@/views/YourGarden.vue'),
+      component: YourGarden,
     },
     {
       path: '/catalogue',

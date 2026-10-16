@@ -25,7 +25,8 @@ import type { Plant, CataloguePlant } from '@/types'
 import { handleApiError, formatDate, toLocalDateStr, localToday } from '@/lib/utils'
 import { computeTracksForPlant, dateToX } from '@/lib/trackUtils'
 import type { TrackType } from '@/lib/trackUtils'
-import LoadingSprout from '@/components/LoadingSprout.vue'
+import LoadingLeaves from '@/components/LoadingLeaves.vue'
+import { Skeleton } from '@/components/ui/skeleton'
 import PlantRow from '@/components/PlantRow.vue'
 import PlantActions from '@/components/PlantActions.vue'
 import PlantIcon from '@/components/PlantIcon.vue'
@@ -218,12 +219,8 @@ const infoRows = computed(() => {
 </script>
 
 <template>
-  <div v-if="loading" class="flex items-center justify-center min-h-[70vh]">
-    <LoadingSprout />
-  </div>
-
   <div
-    v-else-if="!plant"
+    v-if="!loading && !plant"
     class="flex items-center justify-center min-h-[70vh] text-sm text-muted-foreground"
   >
     Plant not found.
@@ -248,7 +245,7 @@ const infoRows = computed(() => {
         </button>
 
         <PlantActions
-          v-if="!isCatalogue"
+          v-if="plant && !isCatalogue"
           :plant="plant as Plant"
           @archived="router.back()"
           @deleted="router.back()"
@@ -264,49 +261,67 @@ const infoRows = computed(() => {
       </div>
 
       <!-- Plant identity -->
-      <div class="flex gap-3.5 sm:gap-5 items-center">
-        <PlantIcon
-          :name="plant.name"
-          :icon="(plant as Plant).icon"
-          :colour="(plant as Plant).colour"
-          class="w-16 h-16 rounded-xl sm:w-20 sm:h-20 sm:rounded-2xl text-2xl sm:text-3xl border [--icon-base:var(--background)]"
-        />
-        <div class="min-w-0 flex-1">
-          <div
-            v-if="(plant as Plant).category_name"
-            class="text-[10px] text-muted-foreground uppercase mb-0.5"
-            style="letter-spacing: 0.12em"
-          >
-            {{ (plant as Plant).category_name }}
-          </div>
-          <h1 class="text-[22px] sm:text-[28px] font-bold tracking-tight text-primary leading-none">
-            {{ plant.name }}
-          </h1>
-          <p
-            v-if="plant.variety"
-            class="text-sm sm:text-[15px] italic text-muted-foreground mt-0.5"
-          >
-            '{{ plant.variety }}'
-          </p>
+      <div v-if="loading" class="flex gap-3.5 sm:gap-5 items-center">
+        <Skeleton class="w-16 h-16 rounded-xl sm:w-20 sm:h-20 sm:rounded-2xl" />
+        <div class="flex-1 flex flex-col gap-1.5">
+          <Skeleton class="h-2.5 w-16" />
+          <Skeleton class="h-5.5 sm:h-7 w-40" />
+          <Skeleton class="h-4 w-24" />
         </div>
       </div>
 
-      <!-- Chips row -->
-      <div
-        v-if="activeStatuses.length || (plant.suitability ?? []).length"
-        class="mt-3.5 flex flex-wrap gap-1.5"
-      >
-        <Badge v-for="s in activeStatuses" :key="s.type" :variant="s.type">
-          {{ s.label }}
-        </Badge>
-        <Badge v-for="s in plant.suitability ?? []" :key="s" variant="outline" class="capitalize">
-          {{ s }}
-        </Badge>
-      </div>
+      <template v-else-if="plant">
+        <div class="flex gap-3.5 sm:gap-5 items-center">
+          <PlantIcon
+            :name="plant.name"
+            :icon="(plant as Plant).icon"
+            :colour="(plant as Plant).colour"
+            class="w-16 h-16 rounded-xl sm:w-20 sm:h-20 sm:rounded-2xl text-2xl sm:text-3xl border [--icon-base:var(--background)]"
+          />
+          <div class="min-w-0 flex-1">
+            <div
+              v-if="(plant as Plant).category_name"
+              class="text-[10px] text-muted-foreground uppercase mb-0.5"
+              style="letter-spacing: 0.12em"
+            >
+              {{ (plant as Plant).category_name }}
+            </div>
+            <h1
+              class="text-[22px] sm:text-[28px] font-bold tracking-tight text-primary leading-none"
+            >
+              {{ plant.name }}
+            </h1>
+            <p
+              v-if="plant.variety"
+              class="text-sm sm:text-[15px] italic text-muted-foreground mt-0.5"
+            >
+              '{{ plant.variety }}'
+            </p>
+          </div>
+        </div>
+
+        <!-- Chips row -->
+        <div
+          v-if="activeStatuses.length || (plant.suitability ?? []).length"
+          class="mt-3.5 flex flex-wrap gap-1.5"
+        >
+          <Badge v-for="s in activeStatuses" :key="s.type" :variant="s.type">
+            {{ s.label }}
+          </Badge>
+          <Badge v-for="s in plant.suitability ?? []" :key="s" variant="outline" class="capitalize">
+            {{ s }}
+          </Badge>
+        </div>
+      </template>
     </div>
 
+    <LoadingLeaves v-if="loading" />
+
     <!-- BODY -->
-    <div class="grid grid-cols-1 sm:grid-cols-[1.25fr_1fr] gap-3 sm:gap-4 p-4 sm:p-8 items-start">
+    <div
+      v-else-if="plant"
+      class="grid grid-cols-1 sm:grid-cols-[1.25fr_1fr] gap-3 sm:gap-4 p-4 sm:p-8 items-start"
+    >
       <!-- LEFT COL -->
       <div class="flex flex-col gap-3 sm:gap-4">
         <Card>

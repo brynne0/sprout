@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppNav from '@/components/layout/AppNav.vue'
-import LoadingSprout from '@/components/LoadingSprout.vue'
+import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import { Toaster } from '@/components/ui/sonner'
 import { useTheme } from '@/composables/useTheme'
 
@@ -19,9 +19,7 @@ router.isReady().then(() => {
 
 <template>
   <Toaster :theme="theme" />
-  <LoadingSprout v-if="!routerReady" />
   <div
-    v-else
     :class="
       publicRoutes.includes(route.path)
         ? 'min-w-sm'
@@ -29,7 +27,8 @@ router.isReady().then(() => {
     "
   >
     <AppNav v-if="routerReady && !publicRoutes.includes(route.path)" />
-    <RouterView v-slot="{ Component }">
+    <LoadingLeaves v-if="!routerReady" />
+    <RouterView v-else v-slot="{ Component }">
       <KeepAlive :exclude="['PlantDetailView', 'PlantFormView']">
         <component :is="Component" />
       </KeepAlive>
