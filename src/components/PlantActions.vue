@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { Archive, MoreHorizontal, Pencil, Trash2 } from '@lucide/vue'
+import { Archive, ArchiveRestore, MoreHorizontal, Pencil, Trash2 } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
-import { archivePlant } from '@/lib/plants'
+import { archivePlant, restorePlant } from '@/lib/plants'
 import type { Plant } from '@/types'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
@@ -17,6 +17,7 @@ import {
 const props = defineProps<{ plant: Plant; hideArchive?: boolean }>()
 const emit = defineEmits<{
   archived: [id: string]
+  restored: [id: string]
   deleted: [id: string]
 }>()
 
@@ -24,6 +25,10 @@ const router = useRouter()
 
 async function archive() {
   if (await archivePlant(props.plant)) emit('archived', props.plant.id)
+}
+
+async function restore() {
+  if (await restorePlant(props.plant)) emit('restored', props.plant.id)
 }
 
 async function remove() {
@@ -51,7 +56,14 @@ async function remove() {
         <Pencil class="w-4 h-4" />
         Edit
       </DropdownMenuItem>
-      <template v-if="!hideArchive">
+      <template v-if="plant.archived_at">
+        <DropdownMenuSeparator />
+        <DropdownMenuItem @click="restore">
+          <ArchiveRestore class="w-4 h-4" />
+          Restore
+        </DropdownMenuItem>
+      </template>
+      <template v-else-if="!hideArchive">
         <DropdownMenuSeparator />
         <DropdownMenuItem @click="archive">
           <Archive class="w-4 h-4" />

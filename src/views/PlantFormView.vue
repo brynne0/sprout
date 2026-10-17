@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, ChevronsUpDown, Check, Plus } from '@lucide/vue'
+import { ArrowLeft, ChevronDown, ChevronsUpDown, Check, Plus } from '@lucide/vue'
 import {
   Command,
   CommandEmpty,
@@ -21,12 +21,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { RangeCalendar } from '@/components/ui/range-calendar'
 import type { DateRange, DateValue } from 'reka-ui'
 import { CheckboxGroupRoot } from 'reka-ui'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -578,201 +573,201 @@ async function submitPlant() {
       </section>
 
       <section>
-        <Accordion type="single" collapsible>
-          <AccordionItem value="growing-details">
-            <AccordionTrigger class="gap-1 px-0.5 text-sm font-semibold">
-              <span>
-                Growing details
-                <span class="font-normal text-muted-foreground">· optional</span>
-              </span>
-            </AccordionTrigger>
-            <AccordionContent>
-              <Card class="mt-2">
-                <CardContent>
-                  <FieldGroup>
-                    <FieldDescription v-if="selectedCatalogueEntry">
-                      Pre-filled from the catalogue. Changes here only apply to your plant, not the
-                      catalogue entry.
-                    </FieldDescription>
-                    <Field>
-                      <FieldLabel for="position">Position</FieldLabel>
-                      <Textarea
-                        id="position"
-                        v-model="overrides.position"
-                        :placeholder="selectedCatalogueEntry?.position ?? ''"
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel for="hardiness">Hardiness</FieldLabel>
-                      <Textarea
-                        id="hardiness"
-                        v-model="overrides.hardiness"
-                        :placeholder="selectedCatalogueEntry?.hardiness ?? ''"
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel for="spacing">Spacing</FieldLabel>
-                      <Textarea
-                        id="spacing"
-                        v-model="overrides.spacing"
-                        :placeholder="selectedCatalogueEntry?.spacing ?? ''"
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel for="seed_to_harvest">Seed to harvest</FieldLabel>
-                      <Textarea
-                        id="seed_to_harvest"
-                        v-model="overrides.seed_to_harvest"
-                        :placeholder="selectedCatalogueEntry?.seed_to_harvest ?? ''"
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel for="sowing_to_transplant">Sowing to transplant</FieldLabel>
-                      <Textarea
-                        id="sowing_to_transplant"
-                        v-model="overrides.sowing_to_transplant"
-                        :placeholder="selectedCatalogueEntry?.sowing_to_transplant ?? ''"
-                      />
-                    </Field>
-                    <Field>
-                      <FieldLabel for="harvest">Harvest notes</FieldLabel>
-                      <Textarea
-                        id="harvest"
-                        v-model="overrides.harvest"
-                        :placeholder="selectedCatalogueEntry?.harvest ?? ''"
-                      />
-                    </Field>
+        <Collapsible>
+          <CollapsibleTrigger as-child>
+            <Button
+              variant="ghost"
+              size="sm"
+              class="-ml-2.5 font-semibold [&[data-state=open]>svg]:rotate-180"
+            >
+              <ChevronDown class="transition-transform duration-200" />
+              Growing details
+              <span class="font-normal text-muted-foreground">· optional</span>
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <Card class="mt-2">
+              <CardContent>
+                <FieldGroup>
+                  <FieldDescription v-if="selectedCatalogueEntry">
+                    Pre-filled from the catalogue. Changes here only apply to your plant, not the
+                    catalogue entry.
+                  </FieldDescription>
+                  <Field>
+                    <FieldLabel for="position">Position</FieldLabel>
+                    <Textarea
+                      id="position"
+                      v-model="overrides.position"
+                      :placeholder="selectedCatalogueEntry?.position ?? ''"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel for="hardiness">Hardiness</FieldLabel>
+                    <Textarea
+                      id="hardiness"
+                      v-model="overrides.hardiness"
+                      :placeholder="selectedCatalogueEntry?.hardiness ?? ''"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel for="spacing">Spacing</FieldLabel>
+                    <Textarea
+                      id="spacing"
+                      v-model="overrides.spacing"
+                      :placeholder="selectedCatalogueEntry?.spacing ?? ''"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel for="seed_to_harvest">Seed to harvest</FieldLabel>
+                    <Textarea
+                      id="seed_to_harvest"
+                      v-model="overrides.seed_to_harvest"
+                      :placeholder="selectedCatalogueEntry?.seed_to_harvest ?? ''"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel for="sowing_to_transplant">Sowing to transplant</FieldLabel>
+                    <Textarea
+                      id="sowing_to_transplant"
+                      v-model="overrides.sowing_to_transplant"
+                      :placeholder="selectedCatalogueEntry?.sowing_to_transplant ?? ''"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel for="harvest">Harvest notes</FieldLabel>
+                    <Textarea
+                      id="harvest"
+                      v-model="overrides.harvest"
+                      :placeholder="selectedCatalogueEntry?.harvest ?? ''"
+                    />
+                  </Field>
 
-                    <Field>
-                      <FieldLabel>Suitability</FieldLabel>
-                      <CheckboxGroupRoot
-                        v-model="overrides.suitability"
-                        class="flex flex-wrap gap-3"
+                  <Field>
+                    <FieldLabel>Suitability</FieldLabel>
+                    <CheckboxGroupRoot v-model="overrides.suitability" class="flex flex-wrap gap-3">
+                      <label
+                        v-for="tag in SUITABILITY_OPTIONS"
+                        :key="tag"
+                        class="flex items-center gap-2 text-sm"
                       >
-                        <label
-                          v-for="tag in SUITABILITY_OPTIONS"
-                          :key="tag"
-                          class="flex items-center gap-2 text-sm"
-                        >
-                          <Checkbox :value="tag" />
-                          {{ tag.charAt(0).toUpperCase() + tag.slice(1) }}
-                        </label>
-                      </CheckboxGroupRoot>
-                    </Field>
+                        <Checkbox :value="tag" />
+                        {{ tag.charAt(0).toUpperCase() + tag.slice(1) }}
+                      </label>
+                    </CheckboxGroupRoot>
+                  </Field>
 
-                    <!-- Sowing windows -->
-                    <Field>
-                      <FieldLabel>Sowing windows</FieldLabel>
-                      <TagsInput
-                        v-if="sowingWindows.length"
-                        v-model="sowingWindows"
-                        :display-value="displayWindow"
-                      >
-                        <TagsInputItem v-for="(w, i) in sowingWindows" :key="i" :value="w">
-                          <TagsInputItemText />
-                          <TagsInputItemDelete tabindex="0" />
-                        </TagsInputItem>
-                      </TagsInput>
-                      <Popover v-model:open="showSowingPicker">
-                        <PopoverTrigger as-child>
-                          <Button type="button" variant="outline" size="sm" class="w-full">
-                            <Plus /> Add sowing window
+                  <!-- Sowing windows -->
+                  <Field>
+                    <FieldLabel>Sowing windows</FieldLabel>
+                    <TagsInput
+                      v-if="sowingWindows.length"
+                      v-model="sowingWindows"
+                      :display-value="displayWindow"
+                    >
+                      <TagsInputItem v-for="(w, i) in sowingWindows" :key="i" :value="w">
+                        <TagsInputItemText />
+                        <TagsInputItemDelete tabindex="0" />
+                      </TagsInputItem>
+                    </TagsInput>
+                    <Popover v-model:open="showSowingPicker">
+                      <PopoverTrigger as-child>
+                        <Button type="button" variant="outline" size="sm" class="w-full">
+                          <Plus /> Add sowing window
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent class="w-auto p-0">
+                        <RangeCalendar v-model="stagingSowing" />
+                        <div class="p-2">
+                          <Button
+                            type="button"
+                            size="sm"
+                            class="w-full"
+                            :disabled="!stagingSowing?.start || !stagingSowing?.end"
+                            @click="confirmSowingWindow"
+                          >
+                            Add window
                           </Button>
-                        </PopoverTrigger>
-                        <PopoverContent class="w-auto p-0">
-                          <RangeCalendar v-model="stagingSowing" />
-                          <div class="p-2">
-                            <Button
-                              type="button"
-                              size="sm"
-                              class="w-full"
-                              :disabled="!stagingSowing?.start || !stagingSowing?.end"
-                              @click="confirmSowingWindow"
-                            >
-                              Add window
-                            </Button>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </Field>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </Field>
 
-                    <!-- Transplant windows -->
-                    <Field>
-                      <FieldLabel>Transplant windows</FieldLabel>
-                      <TagsInput
-                        v-if="transplantWindows.length"
-                        v-model="transplantWindows"
-                        :display-value="displayWindow"
-                      >
-                        <TagsInputItem v-for="(w, i) in transplantWindows" :key="i" :value="w">
-                          <TagsInputItemText />
-                          <TagsInputItemDelete tabindex="0" />
-                        </TagsInputItem>
-                      </TagsInput>
-                      <Popover v-model:open="showTransplantPicker">
-                        <PopoverTrigger as-child>
-                          <Button type="button" variant="outline" size="sm" class="w-full">
-                            <Plus /> Add transplant window
+                  <!-- Transplant windows -->
+                  <Field>
+                    <FieldLabel>Transplant windows</FieldLabel>
+                    <TagsInput
+                      v-if="transplantWindows.length"
+                      v-model="transplantWindows"
+                      :display-value="displayWindow"
+                    >
+                      <TagsInputItem v-for="(w, i) in transplantWindows" :key="i" :value="w">
+                        <TagsInputItemText />
+                        <TagsInputItemDelete tabindex="0" />
+                      </TagsInputItem>
+                    </TagsInput>
+                    <Popover v-model:open="showTransplantPicker">
+                      <PopoverTrigger as-child>
+                        <Button type="button" variant="outline" size="sm" class="w-full">
+                          <Plus /> Add transplant window
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent class="w-auto p-0">
+                        <RangeCalendar v-model="stagingTransplant" />
+                        <div class="p-2">
+                          <Button
+                            type="button"
+                            size="sm"
+                            class="w-full"
+                            :disabled="!stagingTransplant?.start || !stagingTransplant?.end"
+                            @click="confirmTransplantWindow"
+                          >
+                            Add window
                           </Button>
-                        </PopoverTrigger>
-                        <PopoverContent class="w-auto p-0">
-                          <RangeCalendar v-model="stagingTransplant" />
-                          <div class="p-2">
-                            <Button
-                              type="button"
-                              size="sm"
-                              class="w-full"
-                              :disabled="!stagingTransplant?.start || !stagingTransplant?.end"
-                              @click="confirmTransplantWindow"
-                            >
-                              Add window
-                            </Button>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </Field>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </Field>
 
-                    <!-- Harvest windows -->
-                    <Field>
-                      <FieldLabel>Harvest windows</FieldLabel>
-                      <TagsInput
-                        v-if="harvestWindows.length"
-                        v-model="harvestWindows"
-                        :display-value="displayWindow"
-                      >
-                        <TagsInputItem v-for="(w, i) in harvestWindows" :key="i" :value="w">
-                          <TagsInputItemText />
-                          <TagsInputItemDelete tabindex="0" />
-                        </TagsInputItem>
-                      </TagsInput>
-                      <Popover v-model:open="showHarvestPicker">
-                        <PopoverTrigger as-child>
-                          <Button type="button" variant="outline" size="sm" class="w-full">
-                            <Plus /> Add harvest window
+                  <!-- Harvest windows -->
+                  <Field>
+                    <FieldLabel>Harvest windows</FieldLabel>
+                    <TagsInput
+                      v-if="harvestWindows.length"
+                      v-model="harvestWindows"
+                      :display-value="displayWindow"
+                    >
+                      <TagsInputItem v-for="(w, i) in harvestWindows" :key="i" :value="w">
+                        <TagsInputItemText />
+                        <TagsInputItemDelete tabindex="0" />
+                      </TagsInputItem>
+                    </TagsInput>
+                    <Popover v-model:open="showHarvestPicker">
+                      <PopoverTrigger as-child>
+                        <Button type="button" variant="outline" size="sm" class="w-full">
+                          <Plus /> Add harvest window
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent class="w-auto p-0">
+                        <RangeCalendar v-model="stagingHarvest" />
+                        <div class="p-2">
+                          <Button
+                            type="button"
+                            size="sm"
+                            class="w-full"
+                            :disabled="!stagingHarvest?.start || !stagingHarvest?.end"
+                            @click="confirmHarvestWindow"
+                          >
+                            Add window
                           </Button>
-                        </PopoverTrigger>
-                        <PopoverContent class="w-auto p-0">
-                          <RangeCalendar v-model="stagingHarvest" />
-                          <div class="p-2">
-                            <Button
-                              type="button"
-                              size="sm"
-                              class="w-full"
-                              :disabled="!stagingHarvest?.start || !stagingHarvest?.end"
-                              @click="confirmHarvestWindow"
-                            >
-                              Add window
-                            </Button>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </Field>
-                  </FieldGroup>
-                </CardContent>
-              </Card>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </Field>
+                </FieldGroup>
+              </CardContent>
+            </Card>
+          </CollapsibleContent>
+        </Collapsible>
       </section>
 
       <div class="flex justify-end gap-2">

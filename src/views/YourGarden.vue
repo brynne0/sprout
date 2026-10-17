@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onActivated } from 'vue'
 import { useRouter } from 'vue-router'
-import { Archive, Plus, Sprout } from '@lucide/vue'
+import { ChevronDown, Plus, Sprout } from '@lucide/vue'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import {
   Empty,
@@ -12,15 +12,14 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
 import type { Plant, Reminder, TaskType, Window as PlantWindow } from '@/types'
 import { handleApiError } from '@/lib/utils'
 import { inWindow, todayMonthDay } from '@/lib/trackUtils'
 import { TASKS, TASK_ORDER } from '@/lib/tasks'
-import { archivePlant } from '@/lib/plants'
 import { supabase } from '@/lib/supabase'
-import PlantActions from '@/components/PlantActions.vue'
-import PlantIcon from '@/components/PlantIcon.vue'
+import GardenPlantCard from '@/components/GardenPlantCard.vue'
 import RemindersCard from '@/components/RemindersCard.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
@@ -91,9 +90,9 @@ const groupedPlants = computed(() => {
   }))
 })
 
-async function archive(plant: Plant) {
-  if (await archivePlant(plant)) fetchAll()
-}
+const archivedPlants = computed(() =>
+  plants.value.filter((p) => p.archived_at).sort((a, b) => a.name.localeCompare(b.name)),
+)
 
 // Data fetching
 async function fetchAll() {
@@ -170,52 +169,42 @@ onActivated(() => {
                 </h3>
               </header>
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5">
-                <div
+                <GardenPlantCard
                   v-for="plant in group.plants"
                   :key="plant.id"
-                  class="flex items-center gap-1 pr-2 rounded-xl border bg-card border-border transition-colors hover:bg-[color-mix(in_oklab,var(--color-foreground)_3%,transparent)]"
-                >
-                  <RouterLink
-                    :to="`/plants/${plant.id}`"
-                    class="flex flex-1 min-w-0 items-center gap-3 pl-3 py-2 rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                  >
-                    <PlantIcon
-                      :name="plant.name"
-                      :icon="plant.icon"
-                      :colour="plant.colour"
-                      :task="hint(plant, group.key)?.task"
-                      :task-label="hint(plant, group.key)?.label"
-                      class="w-8 h-8 rounded-full text-sm"
-                    />
-                    <div class="min-w-0 flex-1">
-                      <div class="text-sm font-medium line-clamp-2">
-                        {{ plant.name
-                        }}<span v-if="plant.variety" class="font-normal text-muted-foreground">
-                          · {{ plant.variety }}</span
-                        >
-                      </div>
-                    </div>
-                  </RouterLink>
-                  <Button
-                    v-if="group.key === 'lastSeason'"
-                    variant="ghost-muted"
-                    size="icon-sm"
-                    aria-label="Archive"
-                    title="Archive"
-                    @click="archive(plant)"
-                  >
-                    <Archive />
-                  </Button>
-                  <!-- Sibling of the link, not inside it, so the menu button is valid HTML -->
-                  <PlantActions
-                    :plant="plant"
-                    :hide-archive="group.key === 'lastSeason'"
-                    @archived="fetchAll"
-                    @deleted="fetchAll"
-                  />
-                </div>
+                  :plant="plant"
+                  :hint="hint(plant, group.key)"
+                  :quick-archive="group.key === 'lastSeason'"
+                  @changed="fetchAll"
+                />
               </div>
             </section>
+
+            <Collapsible v-if="archivedPlants.length" as="section">
+              <CollapsibleTrigger as-child>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  class="-ml-2.5 font-semibold [&[data-state=open]>svg]:rotate-180"
+                >
+                  <ChevronDown class="transition-transform duration-200" />
+                  Archived
+                  <span class="text-xs font-normal text-muted-foreground">{{
+                    archivedPlants.length
+                  }}</span>
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent
+                class="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5"
+              >
+                <GardenPlantCard
+                  v-for="plant in archivedPlants"
+                  :key="plant.id"
+                  :plant="plant"
+                  @changed="fetchAll"
+                />
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         </TabsContent>
 

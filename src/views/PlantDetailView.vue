@@ -267,6 +267,7 @@ const infoRows = computed(() => {
           v-if="plant && !isCatalogue"
           :plant="plant as Plant"
           @archived="router.back()"
+          @restored="router.back()"
           @deleted="router.back()"
         >
           <Button

@@ -16,3 +16,14 @@ export async function archivePlant(plant: Plant): Promise<boolean> {
     return false
   }
 }
+
+export async function restorePlant(plant: Plant): Promise<boolean> {
+  try {
+    await supabase.from('plants').update({ archived_at: null }).eq('id', plant.id).throwOnError()
+    toast.success(`${plant.name} restored`)
+    return true
+  } catch {
+    toast.error('Failed to restore plant')
+    return false
+  }
+}
