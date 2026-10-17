@@ -29,6 +29,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import PlantRow from '@/components/PlantRow.vue'
 import PlantActions from '@/components/PlantActions.vue'
 import PlantIcon from '@/components/PlantIcon.vue'
+import PlantDatesField from '@/components/PlantDatesField.vue'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -114,7 +115,12 @@ const activeStatuses = computed<StatusEntry[]>(() => {
   return result
 })
 
-type TaskEntry = { type: 'sow' | 'transplant' | 'repot'; date: string; label: string; key: string }
+type TaskEntry = {
+  type: 'sow' | 'transplant' | 'repot' | 'harvest'
+  date: string
+  label: string
+  key: string
+}
 
 const allTasks = computed<TaskEntry[]>(() => {
   if (!gardenPlant.value) return []
@@ -137,6 +143,12 @@ const allTasks = computed<TaskEntry[]>(() => {
       label: 'Repot',
       key: `${d}-repot`,
     })),
+    ...(gardenPlant.value.harvest_dates ?? []).map((d) => ({
+      type: 'harvest' as const,
+      date: d,
+      label: 'Harvest',
+      key: `${d}-harvest`,
+    })),
   ].sort((a, b) => a.date.localeCompare(b.date))
 })
 
@@ -147,6 +159,27 @@ const upcomingTasks = computed(() =>
 const pastTasks = computed(() =>
   allTasks.value.filter((t) => toLocalDateStr(t.date) < localToday()).reverse(),
 )
+
+const addingDate = ref(false)
+
+const dateWindows = computed(() => ({
+  sow: plant.value?.sowing_windows ?? [],
+  transplant: plant.value?.transplant_windows ?? [],
+  harvest: plant.value?.harvest_windows ?? [],
+}))
+
+type DateColumn = 'sow_dates' | 'repot_dates' | 'transplant_dates' | 'harvest_dates'
+
+async function saveDates(column: DateColumn, dates: string[]) {
+  if (!gardenPlant.value) return
+  const update: Partial<Record<DateColumn, string[]>> = { [column]: dates }
+  try {
+    await supabase.from('plants').update(update).eq('id', gardenPlant.value.id).throwOnError()
+    plant.value = { ...gardenPlant.value, [column]: dates }
+  } catch {
+    toast.error('Failed to save dates')
+  }
+}
 
 async function saveNotes() {
   if (!gardenPlant.value) return
@@ -409,6 +442,10 @@ const infoRows = computed(() => {
                 v-else-if="task.type === 'transplant'"
                 class="w-3.5 h-3.5 shrink-0 track-transplant-text"
               />
+              <Scissors
+                v-else-if="task.type === 'harvest'"
+                class="w-3.5 h-3.5 shrink-0 track-harvest-text"
+              />
               <Shovel v-else class="w-3.5 h-3.5 shrink-0 track-repot-text" />
               <span class="flex-1 font-medium">{{ task.label }} - {{ formatDate(task.date) }}</span>
             </div>
@@ -431,6 +468,10 @@ const infoRows = computed(() => {
                       v-else-if="task.type === 'transplant'"
                       class="w-3.5 h-3.5 shrink-0 track-transplant-text"
                     />
+                    <Scissors
+                      v-else-if="task.type === 'harvest'"
+                      class="w-3.5 h-3.5 shrink-0 track-harvest-text"
+                    />
                     <Shovel v-else class="w-3.5 h-3.5 shrink-0 track-repot-text" />
                     <span class="flex-1">{{ task.label }} - {{ formatDate(task.date) }}</span>
                   </div>
@@ -438,13 +479,29 @@ const infoRows = computed(() => {
               </AccordionItem>
             </Accordion>
 
-            <RouterLink
-              :to="`/plants/${gardenPlant!.id}/edit`"
+            <div v-if="addingDate" class="px-3.5 py-3 border-t border-border/40">
+              <PlantDatesField
+                :sow="gardenPlant!.sow_dates ?? []"
+                :repot="gardenPlant!.repot_dates ?? []"
+                :transplant="gardenPlant!.transplant_dates ?? []"
+                :harvest="gardenPlant!.harvest_dates ?? []"
+                :windows="dateWindows"
+                :year="gardenPlant!.year"
+                @update:sow="(v: string[]) => saveDates('sow_dates', v)"
+                @update:repot="(v: string[]) => saveDates('repot_dates', v)"
+                @update:transplant="(v: string[]) => saveDates('transplant_dates', v)"
+                @update:harvest="(v: string[]) => saveDates('harvest_dates', v)"
+              />
+            </div>
+
+            <button
+              type="button"
               class="flex items-center justify-center gap-1.5 w-full px-3.5 py-2.5 border-t border-border/40 bg-transparent text-xs text-muted-foreground"
+              @click="addingDate = !addingDate"
             >
-              <Plus class="w-3.5 h-3.5" />
-              Add date
-            </RouterLink>
+              <component :is="addingDate ? Check : Plus" class="w-3.5 h-3.5" />
+              {{ addingDate ? 'Done' : 'Add task' }}
+            </button>
           </CardContent>
         </Card>
 

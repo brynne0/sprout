@@ -559,7 +559,7 @@ async function submitPlant() {
       </section>
 
       <section>
-        <h2 class="text-[13px] font-semibold mb-2 px-0.5">Dates</h2>
+        <h2 class="text-[13px] font-semibold mb-2 px-0.5">Tasks</h2>
         <Card>
           <CardContent>
             <PlantDatesField

@@ -137,7 +137,7 @@ function highlight(t: DateType, day: DateValue): string | false {
         </TagsInputItem>
       </TagsInput>
     </div>
-    <p v-else class="text-sm text-muted-foreground">No dates yet.</p>
+    <p v-else class="text-sm text-muted-foreground">No tasks yet.</p>
 
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
       <Popover
