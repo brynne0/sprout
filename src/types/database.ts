@@ -122,6 +122,7 @@ export type Database = {
           id: string
           kind: Database["public"]["Enums"]["plant_kind"]
           name: string
+          perennial: boolean
         }
         Insert: {
           category_id?: number | null
@@ -130,6 +131,7 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["plant_kind"]
           name: string
+          perennial?: boolean
         }
         Update: {
           category_id?: number | null
@@ -138,6 +140,7 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["plant_kind"]
           name?: string
+          perennial?: boolean
         }
         Relationships: [
           {
@@ -218,6 +221,48 @@ export type Database = {
             columns: ["plant_type_id"]
             isOneToOne: false
             referencedRelation: "plant_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reminders: {
+        Row: {
+          created_at: string
+          due_date: string
+          id: string
+          plant_id: string
+          type: Database["public"]["Enums"]["task_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          due_date: string
+          id?: string
+          plant_id: string
+          type: Database["public"]["Enums"]["task_type"]
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          due_date?: string
+          id?: string
+          plant_id?: string
+          type?: Database["public"]["Enums"]["task_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminders_plant_id_fkey"
+            columns: ["plant_id"]
+            isOneToOne: false
+            referencedRelation: "plants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reminders_plant_id_fkey"
+            columns: ["plant_id"]
+            isOneToOne: false
+            referencedRelation: "plants_with_details"
             referencedColumns: ["id"]
           },
         ]
@@ -316,11 +361,16 @@ export type Database = {
       }
     }
     Functions: {
+      complete_reminder: {
+        Args: { done_on: string; reminder_id: string }
+        Returns: undefined
+      }
       delete_my_account: { Args: never; Returns: undefined }
     }
     Enums: {
       plant_kind: "vegetable" | "herb" | "fruit" | "flower"
       suitability_tag: "multisow" | "interplant" | "follow-on" | "intersow"
+      task_type: "sow" | "repot" | "transplant" | "harvest"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -453,6 +503,7 @@ export const Constants = {
     Enums: {
       plant_kind: ["vegetable", "herb", "fruit", "flower"],
       suitability_tag: ["multisow", "interplant", "follow-on", "intersow"],
+      task_type: ["sow", "repot", "transplant", "harvest"],
     },
   },
 } as const

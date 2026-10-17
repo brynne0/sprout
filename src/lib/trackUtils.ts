@@ -1,4 +1,4 @@
-import type { BasePlant, Window } from '@/types'
+import type { BasePlant, Reminder, TaskType, Window } from '@/types'
 import { toLocalDateStr } from '@/lib/utils'
 
 export type TrackType = 'sowing' | 'transplant' | 'harvest'
@@ -10,7 +10,7 @@ export const ROW_PADDING = 8
 const DUMMY_YEAR = 2000
 
 export type Bar = { x: number; width: number; start: string; end: string }
-export type Dot = { x: number; date: string; variant?: 'repot' }
+export type Dot = { x: number; date: string; variant?: 'repot'; planned?: boolean }
 
 export type Track = {
   type: TrackType
@@ -98,6 +98,7 @@ export function computeTracksForPlant(
   plant: BasePlant,
   monthWidth: number,
   selectedYear?: number,
+  reminders: Reminder[] = [],
 ): Track[] {
   const tracks: Track[] = []
 
@@ -154,6 +155,24 @@ export function computeTracksForPlant(
       }
     }),
   ]
+
+  // Reminders show as faded dots alongside what has been done
+  const plannedDots = (type: TaskType): Dot[] =>
+    reminders
+      .filter((r) => r.type === type)
+      .filter(
+        (r) => selectedYear === undefined || Number(r.due_date.substring(0, 4)) === selectedYear,
+      )
+      .map((r) => {
+        const md = parseDateMonthDay(r.due_date)
+        return { x: dateToX(md.month, md.day, monthWidth), date: r.due_date, planned: true }
+      })
+  sowDots.push(...plannedDots('sow'))
+  transplantDots.push(
+    ...plannedDots('transplant'),
+    ...plannedDots('repot').map((d) => ({ ...d, variant: 'repot' as const })),
+  )
+  harvestDots.push(...plannedDots('harvest'))
 
   const sowing = extractTracks((plant.sowing_windows ?? []) as WindowData[], monthWidth)
   const transplant = extractTracks((plant.transplant_windows ?? []) as WindowData[], monthWidth)

@@ -45,12 +45,23 @@ export type Plant = BasePlant & {
   harvest_dates?: string[]
   notes?: string
   year?: number
+  archived_at?: string
+}
+
+export type TaskType = 'sow' | 'repot' | 'transplant' | 'harvest'
+
+export type Reminder = {
+  id: string
+  plant_id: string
+  type: TaskType
+  due_date: string
 }
 
 export type PlantType = {
   id: string
   name: string
   category_id?: number
+  perennial?: boolean
   icon?: string
   colour?: string
 }

@@ -311,7 +311,7 @@ async function loadPlant(id: string) {
 onMounted(async () => {
   const { data } = await supabase
     .from('plant_types')
-    .select('id, name, category_id, icon')
+    .select('id, name, category_id, icon, perennial')
     .order('name')
   plantTypes.value = (data ?? []) as unknown as PlantType[]
   if (plantId.value) await loadPlant(plantId.value)
@@ -325,6 +325,9 @@ watch(selectedPlantTypeId, async (id) => {
   isCustomVariety.value = false
   catalogueEntries.value = []
   if (id) {
+    // Perennials come back every year, so default them to All years
+    const perennial = plantTypes.value.find((p) => p.id === id)?.perennial
+    year.value = perennial ? null : today(getLocalTimeZone()).year
     catalogueEntries.value = await fetchCatalogueEntries(id)
     // Auto-select if there's only one entry with no variety
     const single = catalogueEntries.value[0]

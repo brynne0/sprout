@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router'
 import { Archive, MoreHorizontal, Pencil, Trash2 } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
+import { archivePlant } from '@/lib/plants'
 import type { Plant } from '@/types'
 import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
@@ -22,17 +23,7 @@ const emit = defineEmits<{
 const router = useRouter()
 
 async function archive() {
-  try {
-    await supabase
-      .from('plants')
-      .update({ archived_at: new Date().toISOString() })
-      .eq('id', props.plant.id)
-      .throwOnError()
-    toast.success(`${props.plant.name} archived`)
-    emit('archived', props.plant.id)
-  } catch {
-    toast.error('Failed to archive plant')
-  }
+  if (await archivePlant(props.plant)) emit('archived', props.plant.id)
 }
 
 async function remove() {

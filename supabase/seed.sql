@@ -18,16 +18,17 @@ VALUES (
     'email', NOW(), NOW(), NOW()
 ) ON CONFLICT (provider_id, provider) DO NOTHING;
 
--- Dates are day offsets from today, so stages stay the same whenever this runs
+-- Dates are day offsets from today, so stages stay the same whenever this runs.
+-- Date arrays are what was done; reminders are what's planned
 DELETE FROM plants WHERE user_id = '11111111-1111-1111-1111-111111111111';
 
 WITH seed (name, cat_variety, custom_variety, year_offset, sow, repot, transplant, harvest, overrides, notes, archived) AS (
     VALUES
-    ('Garlic', NULL::text, NULL::text, 0, '{8}'::int[], '{}'::int[], '{}'::int[], '{}'::int[], NULL::jsonb, 'Planned, sow window open, reminder next week', false),
+    ('Garlic', NULL::text, NULL::text, 0, '{}'::int[], '{}'::int[], '{}'::int[], '{}'::int[], NULL::jsonb, 'Planned, sow window open, reminder next week', false),
     ('Tomato', NULL, 'Black Krim', 0, '{}', '{}', '{}', '{}', NULL, 'Custom variety, no dates', false),
-    ('Basil', NULL, NULL, 0, '{30,60}', '{}', '{}', '{}', NULL, 'Succession sowings, reminders later', false),
+    ('Basil', NULL, NULL, 0, '{}', '{}', '{}', '{}', NULL, 'Succession sowings, reminders later', false),
     ('Sunflower', NULL, NULL, 0, '{}', '{}', '{}', '{}', NULL, NULL, false),
-    ('Lettuce', NULL, NULL, 0, '{-21}', '{}', '{4}', '{}',
+    ('Lettuce', NULL, NULL, 0, '{-21}', '{}', '{}', '{}',
         jsonb_build_object('transplant_windows', jsonb_build_array(jsonb_build_object(
             'start', to_char(CURRENT_DATE - 7, 'MM-DD'), 'end', to_char(CURRENT_DATE + 21, 'MM-DD')))),
         'Sown, transplant window open (override), reminder this week', false),
@@ -35,8 +36,8 @@ WITH seed (name, cat_variety, custom_variety, year_offset, sow, repot, transplan
     ('Capsicum', NULL, NULL, 0, '{-240}', '{}', '{-150}', '{}', NULL, NULL, false),
     ('Strawberry', 'Baron Solemacher', NULL, 0, '{-220}', '{-170}', '{}', '{}', NULL, 'Growing via repot', false),
     ('Kale', NULL, NULL, 0, '{-45}', '{}', '{-45}', '{}', NULL, 'Sown and transplanted the same day', false),
-    ('Leek', NULL, NULL, 0, '{-190}', '{}', '{-3}', '{}', NULL, 'Transplanted 3 days ago, no longer a reminder', false),
-    ('Radish', 'Winter', NULL, 0, '{-90}', '{}', '{-58}', '{5}', NULL, 'Growing, harvest reminder this week', false),
+    ('Leek', NULL, NULL, 0, '{-190}', '{}', '{}', '{}', NULL, 'Seedling, transplant overdue', false),
+    ('Radish', 'Winter', NULL, 0, '{-90}', '{}', '{-58}', '{}', NULL, 'Growing, harvest reminder this week', false),
     ('Zucchini', NULL, NULL, 0, '{-180}', '{}', '{-145}', '{-100,-70,-7}', NULL, NULL, false),
     ('Calendula', NULL, NULL, 0, '{-150}', '{}', '{}', '{-20}', NULL, NULL, false),
     ('Peas', NULL, NULL, -1, '{-400}', '{}', '{}', '{-300}', NULL, 'Last season, not archived', false),
@@ -62,3 +63,16 @@ LEFT JOIN plant_catalogue pc
     ON pc.plant_type_id = pt.id
     AND pc.variety IS NOT DISTINCT FROM s.cat_variety
     AND s.custom_variety IS NULL;
+
+INSERT INTO reminders (user_id, plant_id, type, due_date)
+SELECT p.user_id, p.id, r.type::task_type, CURRENT_DATE + r.days
+FROM (VALUES
+    ('Garlic', 'sow', 8),
+    ('Basil', 'sow', 30),
+    ('Basil', 'sow', 60),
+    ('Lettuce', 'transplant', 4),
+    ('Radish', 'harvest', 5),
+    ('Leek', 'transplant', -3)
+) r (name, type, days)
+JOIN plant_types pt ON pt.name = r.name
+JOIN plants p ON p.plant_type_id = pt.id AND p.user_id = '11111111-1111-1111-1111-111111111111';

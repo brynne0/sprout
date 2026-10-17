@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { Track, TrackType } from '@/lib/trackUtils'
+import type { Dot, Track, TrackType } from '@/lib/trackUtils'
 import { TRACK_HEIGHT, TRACK_GAP, ROW_PADDING, rowHeightForTrackCount } from '@/lib/trackUtils'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { formatDate, isDateUpcoming } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 
 const props = withDefaults(
   defineProps<{
@@ -31,9 +31,9 @@ function isHidden(type: TrackType): boolean {
   return props.hiddenTracks?.has(type) ?? false
 }
 
-function dotLabel(type: TrackType, date: string, variant?: string): string {
-  const upcoming = isDateUpcoming(date)
-  if (variant === 'repot') return upcoming ? 'Repot on' : 'Repotted on'
+function dotLabel(type: TrackType, dot: Dot): string {
+  const upcoming = !!dot.planned
+  if (dot.variant === 'repot') return upcoming ? 'Repot on' : 'Repotted on'
   if (type === 'sowing') return upcoming ? 'Sow on' : 'Sown on'
   if (type === 'harvest') return upcoming ? 'Harvest on' : 'Harvested on'
   return upcoming ? 'Transplant on' : 'Transplanted on'
@@ -124,7 +124,10 @@ const openBarKey = ref<string | null>(null)
           <button
             v-show="!isHidden(track.type)"
             class="absolute w-2.5 h-2.5 rounded-full cursor-pointer border border-border"
-            :class="dot.variant === 'repot' ? 'track-repot-dot' : `track-${track.type}-dot`"
+            :class="[
+              dot.variant === 'repot' ? 'track-repot-dot' : `track-${track.type}-dot`,
+              { 'opacity-40': dot.planned },
+            ]"
             :style="{ left: dot.x - 5 + 'px', top: trackTop(ti) + TRACK_HEIGHT / 2 - 5 + 'px' }"
             @pointerenter="
               (e: PointerEvent) => {
@@ -143,7 +146,7 @@ const openBarKey = ref<string | null>(null)
           side="top"
           :side-offset="4"
         >
-          {{ dotLabel(track.type, dot.date, dot.variant) }} {{ formatDate(dot.date) }}
+          {{ dotLabel(track.type, dot) }} {{ formatDate(dot.date) }}
         </PopoverContent>
       </Popover>
     </template>

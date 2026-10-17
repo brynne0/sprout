@@ -2,7 +2,9 @@
 import { computed, ref } from 'vue'
 
 import { today, getLocalTimeZone } from '@internationalized/date'
-import type { BasePlant } from '@/types'
+import type { BasePlant, Plant, Reminder } from '@/types'
+import { toLocalDateStr } from '@/lib/utils'
+import { TASKS, TASK_ORDER } from '@/lib/tasks'
 import { useElementSize } from '@vueuse/core'
 import { ChevronLeft, ChevronRight, ArrowUpDown, Rows3 } from '@lucide/vue'
 import {
@@ -27,6 +29,7 @@ import PlantRow from '@/components/PlantRow.vue'
 const props = withDefaults(
   defineProps<{
     plants: BasePlant[]
+    reminders?: Reminder[]
     showDots?: boolean
     showYearNav?: boolean
     groupByName?: boolean
@@ -160,6 +163,18 @@ type PlantGroup = {
   rows: PlantRowData[]
 }
 
+const yearOf = (d: string) => Number(toLocalDateStr(d).substring(0, 4))
+
+function showsInYear(p: Plant, year: number): boolean {
+  if (p.archived_at && yearOf(p.archived_at) < year) return false
+  if (p.year == null || p.year === year) return true
+  const dates = [
+    ...TASK_ORDER.flatMap((t) => p[TASKS[t].column] ?? []),
+    ...(props.reminders ?? []).filter((r) => r.plant_id === p.id).map((r) => r.due_date),
+  ]
+  return dates.some((d) => yearOf(d) === year)
+}
+
 const displayGroups = computed<PlantGroup[]>(() => {
   const sorted = props.plants.slice().sort((a, b) => {
     switch (sortMode.value) {
@@ -176,12 +191,7 @@ const displayGroups = computed<PlantGroup[]>(() => {
   })
 
   const filtered = props.showYearNav
-    ? sorted.filter((p) => {
-        if ('year' in p && p.year != null) {
-          return (p.year as number) === selectedYear.value
-        }
-        return true
-      })
+    ? sorted.filter((p) => showsInYear(p as Plant, selectedYear.value))
     : sorted
 
   const groupMap = new Map<string, PlantRowData[]>()
@@ -190,6 +200,7 @@ const displayGroups = computed<PlantGroup[]>(() => {
       plant,
       monthWidth.value,
       props.showYearNav ? selectedYear.value : undefined,
+      props.reminders?.filter((r) => r.plant_id === plant.id),
     )
     const row: PlantRowData = { key: String(plant.id ?? plant.name), plant, tracks }
     const groupKey = props.groupByName ? plant.name : String(plant.id ?? plant.name)
@@ -338,7 +349,10 @@ const todayX = computed(() => {
         @click="item.kind === 'plant' && item.expandable ? toggleGroup(item.groupName) : undefined"
       >
         <template v-if="item.kind === 'plant'">
-          <div class="flex flex-col min-w-0">
+          <div
+            class="flex flex-col min-w-0"
+            :class="{ 'opacity-60': (item.row.plant as Plant).archived_at }"
+          >
             <span
               class="text-xs font-medium leading-tight transition-colors"
               :class="clickable ? 'cursor-pointer hover:text-primary' : ''"
