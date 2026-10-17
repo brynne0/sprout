@@ -1,5 +1,8 @@
--- Germination is the same for every variety, so it lives on plant_types
-ALTER TABLE plant_types ADD COLUMN germination TEXT;
+-- Germination and care (feeding, cutting back...) are the same for every variety, so they live
+-- on plant_types
+ALTER TABLE plant_types
+    ADD COLUMN germination TEXT,
+    ADD COLUMN care TEXT;
 
 -- Hardiness reads as the frost limit first ("Hardy to -5°C" or "Tender, killed by frost"),
 -- then any caveat
@@ -66,7 +69,7 @@ FROM (VALUES
 ) AS v(old, new)
 WHERE pc.hardiness = v.old;
 
--- Views are recreated rather than replaced so the new column sits next to related ones
+-- Views are recreated rather than replaced so the new columns sit next to related ones
 
 DROP VIEW plants_with_details;
 DROP VIEW catalogue_with_details;
@@ -94,6 +97,7 @@ SELECT
     COALESCE(p.overrides->>'germination', pt.germination) AS germination,
     COALESCE(p.overrides->>'seed_to_harvest', pc.seed_to_harvest) AS seed_to_harvest,
     COALESCE(p.overrides->>'sowing_to_transplant', pc.sowing_to_transplant) AS sowing_to_transplant,
+    COALESCE(p.overrides->>'care', pt.care) AS care,
     COALESCE(p.overrides->>'harvest', pc.harvest) AS harvest,
     COALESCE(p.overrides->'suitability', to_jsonb(pc.suitability)) AS suitability,
     COALESCE(p.overrides->'sowing_windows', pc.sowing_windows) AS sowing_windows,
@@ -122,6 +126,7 @@ SELECT
     pc.spacing,
     pc.height,
     pt.germination,
+    pt.care,
     pc.harvest,
     pc.source,
     pc.seed_to_harvest,

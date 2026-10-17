@@ -116,6 +116,7 @@ export type Database = {
       }
       plant_types: {
         Row: {
+          care: string | null
           category_id: number | null
           colour: string | null
           germination: string | null
@@ -126,6 +127,7 @@ export type Database = {
           perennial: boolean
         }
         Insert: {
+          care?: string | null
           category_id?: number | null
           colour?: string | null
           germination?: string | null
@@ -136,6 +138,7 @@ export type Database = {
           perennial?: boolean
         }
         Update: {
+          care?: string | null
           category_id?: number | null
           colour?: string | null
           germination?: string | null
@@ -274,6 +277,7 @@ export type Database = {
     Views: {
       catalogue_with_details: {
         Row: {
+          care: string | null
           category_name: string | null
           colour: string | null
           flowering_windows: Json | null
@@ -310,6 +314,7 @@ export type Database = {
       plants_with_details: {
         Row: {
           archived_at: string | null
+          care: string | null
           catalogue_id: string | null
           category_name: string | null
           colour: string | null

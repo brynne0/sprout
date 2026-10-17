@@ -87,6 +87,7 @@ const overrides = ref({
   germination: '',
   seed_to_harvest: '',
   sowing_to_transplant: '',
+  care: '',
   harvest: '',
   suitability: [] as string[],
 })
@@ -166,10 +167,16 @@ const namedVarieties = computed(() => catalogueEntries.value.filter((e) => e.var
 
 const hasVarieties = computed(() => namedVarieties.value.length > 0)
 
+// The entry without a variety, used when no variety is picked and as the base for custom ones
+const baseEntry = computed(() => catalogueEntries.value.find((e) => !e.variety))
+
+// A variety only has to be picked when there's no base entry to fall back on
+const varietyRequired = computed(() => hasVarieties.value && !baseEntry.value)
+
 const selectedVarietyLabel = computed(() => {
   if (isCustomVariety.value) return 'Custom'
   const entry = catalogueEntries.value.find((e) => e.id === selectedCatalogueId.value)
-  return entry?.variety ?? 'Select variety...'
+  return entry?.variety ?? (varietyRequired.value ? 'Select variety...' : 'Optional')
 })
 
 const selectedCatalogueEntry = computed(() =>
@@ -205,6 +212,7 @@ const TEXT_FIELDS = [
   'germination',
   'seed_to_harvest',
   'sowing_to_transplant',
+  'care',
   'harvest',
 ] as const
 
@@ -286,8 +294,7 @@ async function loadPlant(id: string) {
       selectedCatalogueId.value = plant.catalogue_id
     } else if (plant.custom_variety) {
       isCustomVariety.value = true
-      const baseEntry = catalogueEntries.value.find((e) => !e.variety) ?? catalogueEntries.value[0]
-      selectedCatalogueId.value = baseEntry?.id ?? ''
+      selectedCatalogueId.value = (baseEntry.value ?? catalogueEntries.value[0])?.id ?? ''
     }
     customVariety.value = plant.custom_variety ?? ''
     sowDates.value = [...plant.sow_dates]
@@ -307,6 +314,7 @@ async function loadPlant(id: string) {
       germination: text('germination'),
       seed_to_harvest: text('seed_to_harvest'),
       sowing_to_transplant: text('sowing_to_transplant'),
+      care: text('care'),
       harvest: text('harvest'),
       suitability: (o.suitability as string[] | undefined) ?? [],
     }
@@ -341,11 +349,8 @@ watch(selectedPlantTypeId, async (id) => {
     const perennial = plantTypes.value.find((p) => p.id === id)?.perennial
     year.value = perennial ? null : today(getLocalTimeZone()).year
     catalogueEntries.value = await fetchCatalogueEntries(id)
-    // Auto-select if there's only one entry with no variety
-    const single = catalogueEntries.value[0]
-    if (catalogueEntries.value.length === 1 && single && !single.variety) {
-      selectedCatalogueId.value = single.id
-    }
+    // Start on the base entry so picking a variety is optional
+    selectedCatalogueId.value = baseEntry.value?.id ?? ''
   }
 })
 
@@ -682,6 +687,14 @@ async function submitPlant() {
                       id="sowing_to_transplant"
                       v-model="overrides.sowing_to_transplant"
                       :placeholder="selectedCatalogueEntry?.sowing_to_transplant ?? ''"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel for="care">Care</FieldLabel>
+                    <Textarea
+                      id="care"
+                      v-model="overrides.care"
+                      :placeholder="selectedCatalogueEntry?.care ?? ''"
                     />
                   </Field>
                   <Field>

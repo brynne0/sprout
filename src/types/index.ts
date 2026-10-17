@@ -22,6 +22,7 @@ export type BasePlant = {
   hardiness?: string
   spacing?: string
   germination?: string
+  care?: string
   seed_to_harvest?: string
   sowing_to_transplant?: string
   harvest?: string
