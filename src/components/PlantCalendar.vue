@@ -293,10 +293,10 @@ const todayX = computed(() => {
     No plants found.
   </div>
 
-  <div v-else class="flex mt-2">
+  <div v-else class="flex mt-2 dark:bg-card">
     <!-- Fixed name column -->
     <div
-      class="shrink-0 border-y border-border relative z-10 bg-background"
+      class="shrink-0 border-y border-border relative z-10 bg-background dark:bg-card"
       :style="{ width: NAME_COL_WIDTH + 'px' }"
     >
       <!-- Header with sort -->
