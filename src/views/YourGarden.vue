@@ -124,7 +124,7 @@ onActivated(() => {
   <main>
     <PageHeader class="flex items-start justify-between">
       <div>
-        <p class="text-[11.5px] font-medium uppercase tracking-wider text-muted-foreground">
+        <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {{
             today.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' })
           }}
@@ -162,9 +162,9 @@ onActivated(() => {
           <div class="flex flex-col gap-5">
             <section v-for="group in groupedPlants" :key="group.key">
               <header class="flex items-center gap-2 mb-2 px-0.5">
-                <h3 class="text-[14px] font-semibold">
+                <h3 class="text-sm font-semibold">
                   {{ group.label }}
-                  <span class="ml-1 text-[11.5px] font-normal text-muted-foreground">{{
+                  <span class="ml-1 text-xs font-normal text-muted-foreground">{{
                     group.plants.length
                   }}</span>
                 </h3>
@@ -188,7 +188,7 @@ onActivated(() => {
                       class="w-8 h-8 rounded-full text-sm"
                     />
                     <div class="min-w-0 flex-1">
-                      <div class="text-[13.5px] font-medium line-clamp-2">
+                      <div class="text-sm font-medium line-clamp-2">
                         {{ plant.name
                         }}<span v-if="plant.variety" class="font-normal text-muted-foreground">
                           · {{ plant.variety }}</span

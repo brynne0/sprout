@@ -419,7 +419,7 @@ async function submitPlant() {
 
     <form v-else class="mx-4 sm:mx-auto flex flex-col gap-6 max-w-xl" @submit.prevent="submitPlant">
       <section>
-        <h2 class="text-[13px] font-semibold mb-2 px-0.5">Plant</h2>
+        <h2 class="text-sm font-semibold mb-2 px-0.5">Plant</h2>
         <Card>
           <CardContent>
             <FieldGroup>
@@ -562,7 +562,7 @@ async function submitPlant() {
       </section>
 
       <section>
-        <h2 class="text-[13px] font-semibold mb-2 px-0.5">Tasks</h2>
+        <h2 class="text-sm font-semibold mb-2 px-0.5">Tasks</h2>
         <Card>
           <CardContent>
             <PlantDatesField
@@ -580,7 +580,7 @@ async function submitPlant() {
       <section>
         <Accordion type="single" collapsible>
           <AccordionItem value="growing-details">
-            <AccordionTrigger class="gap-1 px-0.5 text-[13px] font-semibold">
+            <AccordionTrigger class="gap-1 px-0.5 text-sm font-semibold">
               <span>
                 Growing details
                 <span class="font-normal text-muted-foreground">· optional</span>

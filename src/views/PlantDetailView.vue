@@ -302,19 +302,16 @@ const infoRows = computed(() => {
           <div class="min-w-0 flex-1">
             <div
               v-if="(plant as Plant).category_name"
-              class="text-[10px] text-muted-foreground uppercase mb-0.5"
-              style="letter-spacing: 0.12em"
+              class="text-2xs font-semibold text-muted-foreground uppercase tracking-wider mb-0.5"
             >
               {{ (plant as Plant).category_name }}
             </div>
-            <h1
-              class="text-[22px] sm:text-[28px] font-bold tracking-tight text-primary leading-none"
-            >
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-primary leading-none">
               {{ plant.name }}
             </h1>
             <p
               v-if="plant.variety"
-              class="text-sm sm:text-[15px] italic text-muted-foreground mt-0.5"
+              class="text-sm sm:text-base italic text-muted-foreground mt-0.5"
             >
               '{{ plant.variety }}'
             </p>
@@ -354,14 +351,14 @@ const infoRows = computed(() => {
               <div class="w-15 shrink-0" />
               <div
                 ref="timelineRef"
-                class="flex flex-1 text-[10px] tracking-[0.02em] text-muted-foreground"
+                class="flex flex-1 text-2xs tracking-[0.02em] text-muted-foreground"
               >
                 <div v-for="m in MONTH_LABELS" :key="m" class="flex-1 text-center">{{ m[0] }}</div>
               </div>
             </div>
             <div v-for="row in labelledRows" :key="row.type" class="flex">
               <div
-                class="w-15 shrink-0 text-[11px] font-medium text-muted-foreground flex items-center"
+                class="w-15 shrink-0 text-xs font-medium text-muted-foreground flex items-center"
               >
                 {{ row.label }}
               </div>

@@ -361,7 +361,7 @@ const todayX = computed(() => {
             >
             <span
               v-if="'variety' in item.row.plant && (item.row.plant as { variety?: string }).variety"
-              class="text-[10px] text-muted-foreground leading-tight"
+              class="text-2xs text-muted-foreground leading-tight"
             >
               {{ (item.row.plant as { variety?: string }).variety }}
             </span>

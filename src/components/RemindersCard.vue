@@ -137,7 +137,7 @@ function completeOnOtherDay(v: DateValue | undefined) {
         To do
         <span
           v-if="visibleReminders.length"
-          class="ml-1.5 text-[11.5px] font-normal text-muted-foreground"
+          class="ml-1.5 text-xs font-medium text-muted-foreground"
           >{{ visibleReminders.length }}</span
         >
       </CardTitle>
@@ -162,7 +162,7 @@ function completeOnOtherDay(v: DateValue | undefined) {
       </p>
       <template v-for="group in visibleGroups" :key="group.label">
         <p
-          class="text-[10.5px] font-medium uppercase tracking-wider px-1 pt-2.5 pb-0.5 first:pt-1"
+          class="text-2xs font-semibold uppercase tracking-wider px-1 pt-2.5 pb-0.5 first:pt-1"
           :class="group.label === 'Overdue' ? 'text-destructive' : 'text-muted-foreground'"
         >
           {{ group.label }}
@@ -196,16 +196,16 @@ function completeOnOtherDay(v: DateValue | undefined) {
               :to="plants ? `/plants/${r.plant_id}` : undefined"
               class="min-w-0 flex-1 flex items-baseline gap-1.5"
             >
-              <span class="text-[13.5px] font-medium">{{ title(r) }}</span>
+              <span class="text-sm font-medium">{{ title(r) }}</span>
               <span
                 v-if="plantById.get(r.plant_id)?.variety"
-                class="text-[11.5px] truncate text-muted-foreground"
+                class="text-xs truncate text-muted-foreground"
               >
                 {{ plantById.get(r.plant_id)?.variety }}
               </span>
             </component>
             <span
-              class="text-[11.5px] font-medium tabular-nums shrink-0"
+              class="text-xs font-medium tabular-nums shrink-0"
               :class="daysFromToday(r) < 0 ? 'text-destructive' : 'text-muted-foreground'"
             >
               {{ fmtRelative(r) }}

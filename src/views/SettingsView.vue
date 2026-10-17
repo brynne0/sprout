@@ -53,7 +53,7 @@ async function deleteAccount() {
 
     <div class="mx-4 sm:mx-auto flex flex-col gap-6 max-w-xl">
       <section>
-        <h2 class="text-[13px] font-semibold mb-2 px-0.5">Appearance</h2>
+        <h2 class="text-sm font-semibold mb-2 px-0.5">Appearance</h2>
         <Card>
           <CardContent class="flex items-center justify-between gap-4">
             <span class="text-sm">Theme</span>
@@ -75,7 +75,7 @@ async function deleteAccount() {
       </section>
 
       <section>
-        <h2 class="text-[13px] font-semibold mb-2 px-0.5">Account</h2>
+        <h2 class="text-sm font-semibold mb-2 px-0.5">Account</h2>
         <Card class="divide-y">
           <CardContent class="min-w-0">
             <div class="text-sm">Signed in as</div>

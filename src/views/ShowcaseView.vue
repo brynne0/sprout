@@ -55,7 +55,7 @@ const toggleDemo = ref('a')
 
     <div class="mx-4 flex flex-col gap-8">
       <section>
-        <h2 class="text-[13px] font-semibold mb-3">Badges</h2>
+        <h2 class="text-sm font-semibold mb-3">Badges</h2>
         <div class="flex flex-wrap gap-1.5">
           <Badge variant="sowing">Sow now</Badge>
           <Badge variant="transplant">Transplant now</Badge>
@@ -69,7 +69,7 @@ const toggleDemo = ref('a')
       </section>
 
       <section>
-        <h2 class="text-[13px] font-semibold mb-3">Buttons</h2>
+        <h2 class="text-sm font-semibold mb-3">Buttons</h2>
         <div class="flex flex-wrap gap-2">
           <Button>Default</Button>
           <Button variant="secondary">Secondary</Button>
@@ -83,7 +83,7 @@ const toggleDemo = ref('a')
       </section>
 
       <section>
-        <h2 class="text-[13px] font-semibold mb-3">Toggle group</h2>
+        <h2 class="text-sm font-semibold mb-3">Toggle group</h2>
         <ToggleGroup
           type="single"
           variant="outline"
@@ -98,17 +98,17 @@ const toggleDemo = ref('a')
       </section>
 
       <section>
-        <h2 class="text-[13px] font-semibold mb-3">Produce colours</h2>
+        <h2 class="text-sm font-semibold mb-3">Produce colours</h2>
         <div class="flex flex-wrap gap-3">
           <div v-for="c in swatches" :key="c" class="flex flex-col items-center gap-1">
             <PlantIcon :name="c" :colour="c" class="w-10 h-10 rounded-full text-sm" />
-            <code class="text-[11px] text-muted-foreground">{{ c }}</code>
+            <code class="text-xs text-muted-foreground">{{ c }}</code>
           </div>
         </div>
       </section>
 
       <section>
-        <h2 class="text-[13px] font-semibold mb-3">
+        <h2 class="text-sm font-semibold mb-3">
           Plant icons
           <span class="font-normal text-muted-foreground">{{ plantTypes.length }}</span>
         </h2>
@@ -120,7 +120,7 @@ const toggleDemo = ref('a')
               colour="orange"
               class="w-16 h-16 rounded-xl text-2xl border [--icon-base:var(--background)]"
             />
-            <span class="text-[11px] text-muted-foreground">Detail tile</span>
+            <span class="text-xs text-muted-foreground">Detail tile</span>
           </div>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5">
@@ -136,8 +136,8 @@ const toggleDemo = ref('a')
               class="w-8 h-8 rounded-full text-sm"
             />
             <div class="min-w-0">
-              <div class="text-[13px] font-medium truncate">{{ p.name }}</div>
-              <code class="text-[11px] text-muted-foreground">{{ p.icon }} · {{ p.colour }}</code>
+              <div class="text-sm font-medium truncate">{{ p.name }}</div>
+              <code class="text-xs text-muted-foreground">{{ p.icon }} · {{ p.colour }}</code>
             </div>
           </div>
         </div>
