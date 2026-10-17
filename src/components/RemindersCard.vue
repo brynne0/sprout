@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import PlantIcon from '@/components/PlantIcon.vue'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   DropdownMenu,
@@ -161,7 +162,7 @@ function completeOnOtherDay(v: DateValue | undefined) {
       </p>
       <template v-for="group in visibleGroups" :key="group.label">
         <p
-          class="text-[10.5px] font-medium uppercase tracking-widest px-1 pt-2.5 pb-0.5 first:pt-1"
+          class="text-[10.5px] font-medium uppercase tracking-wider px-1 pt-2.5 pb-0.5 first:pt-1"
           :class="group.label === 'Overdue' ? 'text-destructive' : 'text-muted-foreground'"
         >
           {{ group.label }}
@@ -176,12 +177,20 @@ function completeOnOtherDay(v: DateValue | undefined) {
               :aria-label="`Mark ${title(r)} as done today`"
               @update:model-value="complete(r, localToday())"
             />
-            <span
-              class="grid place-items-center w-7 h-7 rounded-lg shrink-0"
-              :style="{ background: TASKS[r.type].bg, color: TASKS[r.type].color }"
-            >
-              <component :is="TASKS[r.type].icon" :size="14" />
-            </span>
+            <PlantIcon
+              v-if="plantById.get(r.plant_id)"
+              :name="plantById.get(r.plant_id)!.name"
+              :icon="plantById.get(r.plant_id)!.icon"
+              :colour="plantById.get(r.plant_id)!.colour"
+              class="w-8 h-8 rounded-full text-sm"
+            />
+            <component
+              :is="TASKS[r.type].icon"
+              v-else
+              :size="15"
+              class="shrink-0"
+              :style="{ color: TASKS[r.type].soft }"
+            />
             <component
               :is="plants ? RouterLink : 'div'"
               :to="plants ? `/plants/${r.plant_id}` : undefined"

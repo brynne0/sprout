@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onActivated } from 'vue'
 import { useRouter } from 'vue-router'
-import { Plus, Sprout } from '@lucide/vue'
+import { Archive, Plus, Sprout } from '@lucide/vue'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import {
   Empty,
@@ -38,11 +38,11 @@ type Group = 'seedlings' | 'garden' | 'planned' | 'lastSeason'
 
 const GROUP_ORDER: Group[] = ['seedlings', 'garden', 'planned', 'lastSeason']
 
-const GROUP_META: Record<Group, { label: string; color: string }> = {
-  seedlings: { label: 'Seedlings', color: 'var(--sow-dot)' },
-  garden: { label: 'In the garden', color: 'var(--transplant-dot)' },
-  planned: { label: 'Planned', color: 'var(--color-muted-foreground)' },
-  lastSeason: { label: 'Last season', color: 'var(--color-muted-foreground)' },
+const GROUP_LABELS: Record<Group, string> = {
+  seedlings: 'Seedlings',
+  garden: 'In the garden',
+  planned: 'Planned',
+  lastSeason: 'Last season',
 }
 
 function hasLog(plant: Plant, type: TaskType): boolean {
@@ -68,20 +68,16 @@ function groupFor(plant: Plant): Group {
   return 'planned'
 }
 
-// Halfway between the dark text colour and the bright dot colour
-const hintColor = (t: string) => `color-mix(in oklab, var(--${t}) 50%, var(--${t}-dot))`
-
-function hint(plant: Plant, group: Group): { label: string; color: string } | null {
+function hint(plant: Plant, group: Group): { label: string; task: TaskType } | null {
   const now = todayMonthDay()
   const open = (ws: PlantWindow[] | undefined) => (ws ?? []).some((w) => inWindow(now, w))
-  if (group === 'planned' && open(plant.sowing_windows))
-    return { label: 'Sow now', color: hintColor('sow') }
+  if (group === 'planned' && open(plant.sowing_windows)) return { label: 'Sow now', task: 'sow' }
   if (group === 'seedlings' && open(plant.transplant_windows))
-    return { label: 'Ready to transplant', color: hintColor('transplant') }
+    return { label: 'Ready to transplant', task: 'transplant' }
   if (group === 'garden' && hasLog(plant, 'harvest'))
-    return { label: 'Harvesting', color: hintColor('harvest') }
+    return { label: 'Harvesting', task: 'harvest' }
   if (group === 'garden' && open(plant.harvest_windows))
-    return { label: 'Harvest season', color: hintColor('harvest') }
+    return { label: 'Harvest season', task: 'harvest' }
   return null
 }
 
@@ -90,7 +86,7 @@ const groupedPlants = computed(() => {
   for (const p of activePlants.value) groups[groupFor(p)].push(p)
   return GROUP_ORDER.filter((k) => groups[k].length > 0).map((k) => ({
     key: k,
-    meta: GROUP_META[k],
+    label: GROUP_LABELS[k],
     plants: [...groups[k]].sort((a, b) => a.name.localeCompare(b.name)),
   }))
 })
@@ -128,7 +124,7 @@ onActivated(() => {
   <main>
     <PageHeader class="flex items-start justify-between">
       <div>
-        <p class="text-[11.5px] font-medium uppercase tracking-widest text-muted-foreground">
+        <p class="text-[11.5px] font-medium uppercase tracking-wider text-muted-foreground">
           {{
             today.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' })
           }}
@@ -166,11 +162,12 @@ onActivated(() => {
           <div class="flex flex-col gap-5">
             <section v-for="group in groupedPlants" :key="group.key">
               <header class="flex items-center gap-2 mb-2 px-0.5">
-                <span
-                  class="w-2 h-2 rounded-full shrink-0"
-                  :style="{ background: group.meta.color }"
-                />
-                <h3 class="text-[14px] font-semibold">{{ group.meta.label }}</h3>
+                <h3 class="text-[14px] font-semibold">
+                  {{ group.label }}
+                  <span class="ml-1 text-[11.5px] font-normal text-muted-foreground">{{
+                    group.plants.length
+                  }}</span>
+                </h3>
               </header>
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5">
                 <div
@@ -186,6 +183,8 @@ onActivated(() => {
                       :name="plant.name"
                       :icon="plant.icon"
                       :colour="plant.colour"
+                      :task="hint(plant, group.key)?.task"
+                      :task-label="hint(plant, group.key)?.label"
                       class="w-8 h-8 rounded-full text-sm"
                     />
                     <div class="min-w-0 flex-1">
@@ -196,24 +195,24 @@ onActivated(() => {
                         >
                       </div>
                     </div>
-                    <span
-                      v-if="hint(plant, group.key)"
-                      class="text-[11px] font-medium shrink-0"
-                      :style="{ color: hint(plant, group.key)?.color }"
-                    >
-                      {{ hint(plant, group.key)?.label }}
-                    </span>
                   </RouterLink>
                   <Button
                     v-if="group.key === 'lastSeason'"
-                    variant="outline"
-                    size="xs"
+                    variant="ghost-muted"
+                    size="icon-sm"
+                    aria-label="Archive"
+                    title="Archive"
                     @click="archive(plant)"
                   >
-                    Archive
+                    <Archive />
                   </Button>
                   <!-- Sibling of the link, not inside it, so the menu button is valid HTML -->
-                  <PlantActions :plant="plant" @archived="fetchAll" @deleted="fetchAll" />
+                  <PlantActions
+                    :plant="plant"
+                    :hide-archive="group.key === 'lastSeason'"
+                    @archived="fetchAll"
+                    @deleted="fetchAll"
+                  />
                 </div>
               </div>
             </section>

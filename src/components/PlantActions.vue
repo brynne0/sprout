@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-const props = defineProps<{ plant: Plant }>()
+const props = defineProps<{ plant: Plant; hideArchive?: boolean }>()
 const emit = defineEmits<{
   archived: [id: string]
   deleted: [id: string]
@@ -51,11 +51,13 @@ async function remove() {
         <Pencil class="w-4 h-4" />
         Edit
       </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem @click="archive">
-        <Archive class="w-4 h-4" />
-        Archive
-      </DropdownMenuItem>
+      <template v-if="!hideArchive">
+        <DropdownMenuSeparator />
+        <DropdownMenuItem @click="archive">
+          <Archive class="w-4 h-4" />
+          Archive
+        </DropdownMenuItem>
+      </template>
       <DropdownMenuSeparator />
       <DropdownMenuItem variant="destructive" @click="remove">
         <Trash2 class="w-4 h-4" />

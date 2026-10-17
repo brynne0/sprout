@@ -1,5 +1,5 @@
 import type { Component } from 'vue'
-import { Replace, Scissors, Shovel, Sprout } from '@lucide/vue'
+import { PlantPot, Scissors, Shovel, Sprout } from '@lucide/vue'
 import type { TaskType } from '@/types'
 
 export const TASK_ORDER: TaskType[] = ['sow', 'repot', 'transplant', 'harvest']
@@ -13,7 +13,7 @@ export const TASKS: Record<
     icon: Component
     dot: string
     color: string
-    bg: string
+    soft: string
   }
 > = {
   sow: {
@@ -23,16 +23,16 @@ export const TASKS: Record<
     icon: Sprout,
     dot: 'track-sowing-dot',
     color: 'var(--sow)',
-    bg: 'var(--sow-bg)',
+    soft: 'color-mix(in oklab, var(--sow) 50%, var(--sow-dot))',
   },
   repot: {
     label: 'Repot',
     done: 'Repotted',
     column: 'repot_dates',
-    icon: Replace,
+    icon: PlantPot,
     dot: 'track-repot-dot',
     color: 'var(--repot)',
-    bg: 'var(--repot-bg)',
+    soft: 'color-mix(in oklab, var(--repot) 50%, var(--repot-dot))',
   },
   transplant: {
     label: 'Transplant',
@@ -41,7 +41,7 @@ export const TASKS: Record<
     icon: Shovel,
     dot: 'track-transplant-dot',
     color: 'var(--transplant)',
-    bg: 'var(--transplant-bg)',
+    soft: 'color-mix(in oklab, var(--transplant) 50%, var(--transplant-dot))',
   },
   harvest: {
     label: 'Harvest',
@@ -50,6 +50,6 @@ export const TASKS: Record<
     icon: Scissors,
     dot: 'track-harvest-dot',
     color: 'var(--harvest)',
-    bg: 'var(--harvest-bg)',
+    soft: 'color-mix(in oklab, var(--harvest) 50%, var(--harvest-dot))',
   },
 }
