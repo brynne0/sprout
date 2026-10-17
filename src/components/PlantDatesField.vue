@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { formatDate } from '@/lib/utils'
+import { inWindow } from '@/lib/trackUtils'
 import {
   TagsInput,
   TagsInputItem,
@@ -57,15 +58,6 @@ function formatWindow(w: Window): string {
   const [sm = 1, sd = 1] = w.start.split('-').map(Number)
   const [em = 1, ed = 1] = w.end.split('-').map(Number)
   return `${sd} ${MONTHS[sm - 1]} → ${ed} ${MONTHS[em - 1]}`
-}
-
-function inWindow(day: DateValue, w: Window): boolean {
-  const [sm, sd] = w.start.split('-').map(Number)
-  const [em, ed] = w.end.split('-').map(Number)
-  const d = day.month * 100 + day.day
-  const start = sm! * 100 + sd!
-  const end = em! * 100 + ed!
-  return start > end ? d >= start || d <= end : d >= start && d <= end
 }
 
 // Open the calendar on the window in the plant's year (or today, if today is inside it),

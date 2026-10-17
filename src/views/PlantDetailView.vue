@@ -20,9 +20,9 @@ import {
   Thermometer,
 } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
-import type { Plant, CataloguePlant } from '@/types'
+import type { Plant, CataloguePlant, Window } from '@/types'
 import { handleApiError, formatDate, toLocalDateStr, localToday } from '@/lib/utils'
-import { computeTracksForPlant, dateToX } from '@/lib/trackUtils'
+import { computeTracksForPlant, dateToX, inWindow, todayMonthDay } from '@/lib/trackUtils'
 import type { TrackType } from '@/lib/trackUtils'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -96,21 +96,13 @@ type StatusEntry = { label: string; type: TrackType }
 
 const activeStatuses = computed<StatusEntry[]>(() => {
   if (!plant.value) return []
-  const now = new Date()
-  const todayNum = (now.getMonth() + 1) * 100 + now.getDate()
-  const inWindow = (w: { start: string; end: string }) => {
-    const [sm, sd] = w.start.split('-').map(Number)
-    const [em, ed] = w.end.split('-').map(Number)
-    const sn = sm! * 100 + sd!
-    const en = em! * 100 + ed!
-    return sn > en ? todayNum >= sn || todayNum <= en : todayNum >= sn && todayNum <= en
-  }
+  const today = todayMonthDay()
+  const open = (ws: Window[] | undefined) => (ws ?? []).some((w) => inWindow(today, w))
   const result: StatusEntry[] = []
-  if ((plant.value.sowing_windows ?? []).some(inWindow))
-    result.push({ label: 'Sow now', type: 'sowing' })
-  if ((plant.value.transplant_windows ?? []).some(inWindow))
+  if (open(plant.value.sowing_windows)) result.push({ label: 'Sow now', type: 'sowing' })
+  if (open(plant.value.transplant_windows))
     result.push({ label: 'Transplant now', type: 'transplant' })
-  if ((plant.value.harvest_windows ?? []).some(inWindow))
+  if (open(plant.value.harvest_windows))
     result.push({ label: 'Harvest now', type: 'harvest' })
   return result
 })

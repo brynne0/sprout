@@ -1,4 +1,4 @@
-import type { BasePlant } from '@/types'
+import type { BasePlant, Window } from '@/types'
 import { toLocalDateStr } from '@/lib/utils'
 
 export type TrackType = 'sowing' | 'transplant' | 'harvest'
@@ -33,6 +33,20 @@ export function daysInMonth(month: number): number {
 export function parseDateMonthDay(dateStr: string): { month: number; day: number } {
   const parts = toLocalDateStr(dateStr).split('-').map(Number)
   return { month: parts[1]!, day: parts[2]! }
+}
+
+export function inWindow(day: { month: number; day: number }, w: Window): boolean {
+  const [sm = 0, sd = 0] = w.start.split('-').map(Number)
+  const [em = 0, ed = 0] = w.end.split('-').map(Number)
+  const d = day.month * 100 + day.day
+  const start = sm * 100 + sd
+  const end = em * 100 + ed
+  return start <= end ? d >= start && d <= end : d >= start || d <= end
+}
+
+export function todayMonthDay(): { month: number; day: number } {
+  const now = new Date()
+  return { month: now.getMonth() + 1, day: now.getDate() }
 }
 
 export function dateToX(month: number, day: number, monthWidth: number): number {

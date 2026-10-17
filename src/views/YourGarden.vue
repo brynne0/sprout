@@ -15,7 +15,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Plant, Window as PlantWindow } from '@/types'
-import { isDateUpcoming, handleApiError } from '@/lib/utils'
+import { handleApiError, localToday, toLocalDateStr } from '@/lib/utils'
+import { inWindow, todayMonthDay } from '@/lib/trackUtils'
 import { supabase } from '@/lib/supabase'
 import PlantActions from '@/components/PlantActions.vue'
 import PlantIcon from '@/components/PlantIcon.vue'
@@ -26,44 +27,38 @@ const router = useRouter()
 const plants = ref<Plant[]>([])
 const loading = ref(true)
 
-// Window status utils
-function monthDay(d: Date): number {
-  return (d.getMonth() + 1) * 100 + d.getDate()
+type Stage = 'planned' | 'sown' | 'growing' | 'harvesting'
+
+// Later columns win same-day ties
+const STAGE_BY_COLUMN = [
+  ['sow_dates', 'sown'],
+  ['repot_dates', 'growing'],
+  ['transplant_dates', 'growing'],
+  ['harvest_dates', 'harvesting'],
+] as const
+
+function currentStage(plant: Plant): Stage {
+  const todayStr = localToday()
+  let latest = ''
+  let stage: Stage = 'planned'
+  for (const [column, s] of STAGE_BY_COLUMN) {
+    for (const d of plant[column] ?? []) {
+      const day = toLocalDateStr(d)
+      if (day <= todayStr && day >= latest) {
+        latest = day
+        stage = s
+      }
+    }
+  }
+  return stage
 }
 
-function inWindow(today: Date, w: PlantWindow): boolean {
-  const ps = w.start.split('-').map(Number)
-  const pe = w.end.split('-').map(Number)
-  const t = monthDay(today)
-  const s = (ps[0] ?? 0) * 100 + (ps[1] ?? 0)
-  const e = (pe[0] ?? 0) * 100 + (pe[1] ?? 0)
-  return s <= e ? t >= s && t <= e : t >= s || t <= e
-}
-
-function windowStatus(plant: Plant, today: Date) {
-  const sowNow = (plant.sowing_windows ?? []).some((w) => inWindow(today, w))
-  const transplantNow = (plant.transplant_windows ?? []).some((w) => inWindow(today, w))
-  const harvestNow = (plant.harvest_windows ?? []).some((w) => inWindow(today, w))
-  const hasSowed = (plant.sow_dates ?? []).some((d) => !isDateUpcoming(d))
-  const hasTransplanted = (plant.transplant_dates ?? []).some((d) => !isDateUpcoming(d))
-  return { sowNow, transplantNow, harvestNow, hasSowed, hasTransplanted }
-}
-
-function currentBucket(plant: Plant, today: Date): BucketKey {
-  const s = windowStatus(plant, today)
-  if (s.harvestNow && (s.hasSowed || s.hasTransplanted)) return 'harvest'
-  if (s.transplantNow && s.hasSowed && !s.hasTransplanted) return 'transplant'
-  if (s.sowNow && !s.hasSowed) return 'sow'
-  if (s.harvestNow) return 'harvest'
-  if (s.transplantNow) return 'transplant'
-  if (s.sowNow) return 'sow'
-  if (s.hasSowed || s.hasTransplanted) return 'growing'
-  return 'resting'
-}
-
-function plantHint(plant: Plant, today: Date): { label: string; color: string } | null {
-  const s = windowStatus(plant, today)
-  if (s.hasTransplanted) return { label: 'Transplanted', color: 'var(--color-muted-foreground)' }
+function windowHint(plant: Plant, stage: Stage): string | null {
+  const now = todayMonthDay()
+  const open = (ws: PlantWindow[] | undefined) => (ws ?? []).some((w) => inWindow(now, w))
+  if (stage === 'planned') return open(plant.sowing_windows) ? 'Sow window open' : null
+  if (stage === 'sown' && open(plant.transplant_windows)) return 'Transplant window open'
+  if (stage !== 'harvesting' && open(plant.harvest_windows)) return 'Harvest window open'
   return null
 }
 
@@ -174,34 +169,29 @@ const visibleGroups = computed((): TaskGroup[] => {
   return result
 })
 
-// Plants grouped by current window status
-type BucketKey = 'sow' | 'transplant' | 'harvest' | 'growing' | 'resting'
+// Plants grouped by stage
+const STAGE_ORDER: Stage[] = ['planned', 'sown', 'growing', 'harvesting']
 
-const BUCKET_ORDER: BucketKey[] = ['sow', 'transplant', 'growing', 'harvest', 'resting']
-
-const BUCKET_META: Record<BucketKey, { label: string; color: string }> = {
-  sow: { label: 'Sow now', color: 'var(--sow-dot)' },
-  transplant: { label: 'Transplant now', color: 'var(--transplant-dot)' },
+const STAGE_META: Record<Stage, { label: string; color: string }> = {
+  planned: { label: 'Planned', color: 'var(--color-muted-foreground)' },
+  sown: { label: 'Sown', color: 'var(--sow-dot)' },
   growing: { label: 'Growing', color: 'var(--color-secondary)' },
-  harvest: { label: 'Harvest now', color: 'var(--harvest-dot)' },
-  resting: { label: 'Off season', color: 'var(--color-muted-foreground)' },
+  harvesting: { label: 'Harvesting', color: 'var(--harvest-dot)' },
 }
 
-const groupedByWindow = computed(() => {
-  const buckets: Record<BucketKey, Plant[]> = {
-    sow: [],
-    transplant: [],
-    harvest: [],
+const groupedByStage = computed(() => {
+  const buckets: Record<Stage, Plant[]> = {
+    planned: [],
+    sown: [],
     growing: [],
-    resting: [],
+    harvesting: [],
   }
   for (const p of plants.value) {
-    const b = currentBucket(p, today)
-    buckets[b].push(p)
+    buckets[currentStage(p)].push(p)
   }
-  return BUCKET_ORDER.filter((k) => buckets[k].length > 0).map((k) => ({
+  return STAGE_ORDER.filter((k) => buckets[k].length > 0).map((k) => ({
     key: k,
-    meta: BUCKET_META[k],
+    meta: STAGE_META[k],
     plants: [...buckets[k]].sort((a, b) => a.name.localeCompare(b.name)),
   }))
 })
@@ -339,9 +329,9 @@ onActivated(() => {
             </CardContent>
           </Card>
 
-          <!-- Plants grouped by window status -->
+          <!-- Plants grouped by stage -->
           <div class="flex flex-col gap-5">
-            <section v-for="group in groupedByWindow" :key="group.key">
+            <section v-for="group in groupedByStage" :key="group.key">
               <header class="flex items-center gap-2 mb-2 px-0.5">
                 <span
                   class="w-2 h-2 rounded-full shrink-0"
@@ -374,13 +364,12 @@ onActivated(() => {
                         >
                       </div>
                     </div>
-                    <!-- Status hint -->
+                    <!-- Window hint -->
                     <span
-                      v-if="plantHint(plant, today)"
-                      class="text-[11px] font-medium shrink-0"
-                      :style="{ color: plantHint(plant, today)?.color }"
+                      v-if="windowHint(plant, group.key)"
+                      class="text-[11px] font-medium shrink-0 text-muted-foreground"
                     >
-                      {{ plantHint(plant, today)?.label }}
+                      {{ windowHint(plant, group.key) }}
                     </span>
                   </RouterLink>
                   <!-- Sibling of the link, not inside it, so the menu button is valid HTML -->
