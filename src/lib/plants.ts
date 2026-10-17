@@ -6,6 +6,7 @@ export const PRODUCE_COLOURS = [
   'red',
   'orange',
   'yellow',
+  'earth',
   'leaf',
   'deep',
   'sage',
@@ -13,7 +14,6 @@ export const PRODUCE_COLOURS = [
   'purple',
   'pink',
   'beet',
-  'earth',
 ] as const
 
 export async function archivePlant(plant: Plant): Promise<boolean> {
