@@ -116,7 +116,6 @@ export type Database = {
       }
       plant_types: {
         Row: {
-          care: string | null
           category_id: number | null
           colour: string | null
           germination: string | null
@@ -125,10 +124,8 @@ export type Database = {
           kind: Database["public"]["Enums"]["plant_kind"]
           name: string
           perennial: boolean
-          pests: string | null
         }
         Insert: {
-          care?: string | null
           category_id?: number | null
           colour?: string | null
           germination?: string | null
@@ -137,10 +134,8 @@ export type Database = {
           kind?: Database["public"]["Enums"]["plant_kind"]
           name: string
           perennial?: boolean
-          pests?: string | null
         }
         Update: {
-          care?: string | null
           category_id?: number | null
           colour?: string | null
           germination?: string | null
@@ -149,7 +144,6 @@ export type Database = {
           kind?: Database["public"]["Enums"]["plant_kind"]
           name?: string
           perennial?: boolean
-          pests?: string | null
         }
         Relationships: [
           {
@@ -280,7 +274,6 @@ export type Database = {
     Views: {
       catalogue_with_details: {
         Row: {
-          care: string | null
           category_name: string | null
           colour: string | null
           flowering_windows: Json | null
@@ -293,7 +286,6 @@ export type Database = {
           id: string | null
           kind: Database["public"]["Enums"]["plant_kind"] | null
           name: string | null
-          pests: string | null
           plant_type_id: string | null
           position: string | null
           seed_to_harvest: string | null
@@ -318,7 +310,6 @@ export type Database = {
       plants_with_details: {
         Row: {
           archived_at: string | null
-          care: string | null
           catalogue_id: string | null
           category_name: string | null
           colour: string | null
@@ -335,7 +326,6 @@ export type Database = {
           kind: Database["public"]["Enums"]["plant_kind"] | null
           name: string | null
           notes: string | null
-          pests: string | null
           plant_type_id: string | null
           position: string | null
           repot_dates: string[] | null
