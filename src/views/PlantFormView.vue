@@ -176,7 +176,7 @@ const varietyRequired = computed(() => hasVarieties.value && !baseEntry.value)
 const selectedVarietyLabel = computed(() => {
   if (isCustomVariety.value) return 'Custom'
   const entry = catalogueEntries.value.find((e) => e.id === selectedCatalogueId.value)
-  return entry?.variety ?? (varietyRequired.value ? 'Select variety...' : 'Optional')
+  return entry?.variety ?? 'Select variety...'
 })
 
 const selectedCatalogueEntry = computed(() =>
@@ -359,16 +359,17 @@ function selectPlantType(id: string) {
   plantTypeComboOpen.value = false
 }
 
+// Picking the selected variety again clears it, when there's a base entry to fall back on
 function selectCatalogueEntry(id: string) {
+  const clearing = !isCustomVariety.value && selectedCatalogueId.value === id && baseEntry.value
   isCustomVariety.value = false
-  selectedCatalogueId.value = id
+  selectedCatalogueId.value = clearing ? baseEntry.value!.id : id
   catalogueComboOpen.value = false
 }
 
 function selectCustomVariety() {
   isCustomVariety.value = true
-  const baseEntry = catalogueEntries.value.find((e) => !e.variety) ?? catalogueEntries.value[0]
-  selectedCatalogueId.value = baseEntry?.id ?? ''
+  selectedCatalogueId.value = (baseEntry.value ?? catalogueEntries.value[0])?.id ?? ''
   catalogueComboOpen.value = false
 }
 
@@ -487,7 +488,7 @@ async function submitPlant() {
 
               <!-- Variety (shown when the plant type has named varieties) -->
               <Field v-if="selectedPlantTypeId && hasVarieties">
-                <FieldLabel>Variety<span>*</span></FieldLabel>
+                <FieldLabel>Variety<span v-if="varietyRequired">*</span></FieldLabel>
                 <Popover v-model:open="catalogueComboOpen">
                   <PopoverTrigger as-child>
                     <Button
