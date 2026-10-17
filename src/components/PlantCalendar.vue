@@ -48,11 +48,11 @@ const emit = defineEmits<{
 }>()
 
 const selectedYear = ref(today(getLocalTimeZone()).year)
-const timelineContainer = ref<HTMLElement | null>(null)
-const { width: containerWidth } = useElementSize(timelineContainer)
-const monthWidth = computed(() => Math.max(40, containerWidth.value / 12))
-
 const NAME_COL_WIDTH = 112
+
+const scrollContainer = ref<HTMLElement | null>(null)
+const { width: containerWidth } = useElementSize(scrollContainer)
+const monthWidth = computed(() => Math.max(40, (containerWidth.value - NAME_COL_WIDTH) / 12))
 
 const MONTH_LABELS = [
   'Jan',
@@ -293,104 +293,53 @@ const todayX = computed(() => {
     No plants found.
   </div>
 
-  <div v-else class="flex mt-2 dark:bg-card">
-    <!-- Fixed name column -->
-    <div
-      class="shrink-0 border-y border-border relative z-10 bg-background dark:bg-card"
-      :style="{ width: NAME_COL_WIDTH + 'px' }"
-    >
-      <!-- Header with sort -->
-      <div class="px-3 py-1 flex items-center justify-between">
-        <span class="text-xs font-medium text-muted-foreground">Plant</span>
-        <div class="flex items-center gap-1">
-          <Toggle
-            v-model="showGrid"
-            size="sm"
-            class="h-6 min-w-6 px-0.5 text-muted-foreground"
-            aria-label="Show row stripes"
-          >
-            <Rows3 class="size-3" />
-          </Toggle>
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button variant="ghost-muted" size="icon-xs" aria-label="Sort plants">
-                <ArrowUpDown class="size-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuRadioGroup v-model="sortMode">
-                <DropdownMenuRadioItem
-                  v-for="mode in [
-                    'sow-date',
-                    'transplant-date',
-                    'harvest-date',
-                    'alphabetical',
-                  ] as SortMode[]"
-                  :key="mode"
-                  :value="mode"
-                >
-                  {{ sortLabels[mode] }}
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-      <!-- Rows -->
-      <div
-        v-for="(item, index) in visibleRows"
-        :key="item.row.key"
-        class="px-3 flex items-center gap-1 border-t border-border/40 first:border-t-0 justify-between"
-        :style="{ minHeight: rowHeight(item.row) + 'px' }"
-        :class="{
-          'cursor-pointer select-none': item.kind === 'plant' && item.expandable,
-          'bg-muted/50 dark:bg-muted/25': showGrid && index % 2 === 0,
-        }"
-        @click="item.kind === 'plant' && item.expandable ? toggleGroup(item.groupName) : undefined"
-      >
-        <template v-if="item.kind === 'plant'">
-          <div
-            class="flex flex-col min-w-0"
-            :class="{ 'opacity-60': (item.row.plant as Plant).archived_at }"
-          >
-            <span
-              class="text-xs font-medium leading-tight transition-colors"
-              :class="clickable ? 'cursor-pointer hover:text-primary' : ''"
-              @click.stop="clickable && emit('plantClick', item.row.plant)"
-              >{{ item.row.plant.name }}</span
+  <div
+    v-else
+    ref="scrollContainer"
+    class="mt-2 overflow-x-auto border-y border-border dark:bg-card"
+  >
+    <div class="w-max min-w-full">
+      <!-- Header row -->
+      <div class="flex">
+        <div
+          class="sticky left-0 z-30 shrink-0 px-3 py-1 flex items-center justify-between border-r border-border bg-background dark:bg-card"
+          :style="{ width: NAME_COL_WIDTH + 'px' }"
+        >
+          <span class="text-xs font-medium text-muted-foreground">Plant</span>
+          <div class="flex items-center gap-1">
+            <Toggle
+              v-model="showGrid"
+              size="sm"
+              class="h-6 min-w-6 px-0.5 text-muted-foreground"
+              aria-label="Show row stripes"
             >
-            <span
-              v-if="'variety' in item.row.plant && (item.row.plant as { variety?: string }).variety"
-              class="text-2xs text-muted-foreground leading-tight"
-            >
-              {{ (item.row.plant as { variety?: string }).variety }}
-            </span>
+              <Rows3 class="size-3" />
+            </Toggle>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="ghost-muted" size="icon-xs" aria-label="Sort plants">
+                  <ArrowUpDown class="size-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuRadioGroup v-model="sortMode">
+                  <DropdownMenuRadioItem
+                    v-for="mode in [
+                      'sow-date',
+                      'transplant-date',
+                      'harvest-date',
+                      'alphabetical',
+                    ] as SortMode[]"
+                    :key="mode"
+                    :value="mode"
+                  >
+                    {{ sortLabels[mode] }}
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <ChevronRight
-            v-if="item.expandable"
-            class="w-3 h-3 shrink-0 text-muted-foreground transition-transform duration-200"
-            :class="{ 'rotate-90': expandedGroups.has(item.groupName) }"
-          />
-        </template>
-        <template v-else>
-          <span class="text-xs text-muted-foreground leading-tight">
-            {{
-              'variety' in item.row.plant && (item.row.plant as { variety?: string }).variety
-                ? (item.row.plant as { variety?: string }).variety
-                : '(default)'
-            }}
-          </span>
-        </template>
-      </div>
-    </div>
-
-    <!-- Scrollable timeline -->
-    <div ref="timelineContainer" class="overflow-x-auto flex-1 border-y border-l border-border">
-      <div
-        :class="showGrid ? 'divide-y divide-border/40' : ''"
-        :style="{ minWidth: timelineMonths.length * monthWidth + 'px' }"
-      >
-        <!-- Month header -->
+        </div>
         <div class="flex divide-x border-b border-border/40 divide-border/40">
           <div
             v-for="m in timelineMonths"
@@ -401,34 +350,83 @@ const todayX = computed(() => {
             {{ MONTH_LABELS[m.month - 1] }}
           </div>
         </div>
+      </div>
 
-        <!-- Timeline rows -->
-        <template v-for="(item, index) in visibleRows" :key="item.row.key">
-          <div
-            class="relative flex divide-x divide-border/40 shrink-0"
-            :class="{ 'bg-muted/50 dark:bg-muted/25': showGrid && index % 2 === 0 }"
-            :style="{
-              width: timelineMonths.length * monthWidth + 'px',
-              minHeight: rowHeight(item.row) + 'px',
-            }"
-          >
+      <!-- Rows -->
+      <div v-for="(item, index) in visibleRows" :key="item.row.key" class="flex">
+        <div
+          class="sticky left-0 z-30 shrink-0 px-3 flex items-center gap-1 justify-between border-r border-border bg-background dark:bg-card"
+          :class="{
+            'border-t border-t-border/40': index > 0,
+            'bg-linear-to-r from-muted/50 to-muted/50 dark:from-muted/25 dark:to-muted/25':
+              showGrid && index % 2 === 0,
+            'cursor-pointer select-none': item.kind === 'plant' && item.expandable,
+          }"
+          :style="{ width: NAME_COL_WIDTH + 'px' }"
+          @click="
+            item.kind === 'plant' && item.expandable ? toggleGroup(item.groupName) : undefined
+          "
+        >
+          <template v-if="item.kind === 'plant'">
             <div
-              v-for="(_, i) in timelineMonths"
-              :key="`col-${i}`"
-              class="shrink-0"
-              :style="{ width: monthWidth + 'px' }"
-            />
-            <div class="absolute inset-0">
-              <PlantRow
-                :tracks="item.row.tracks"
-                :month-width="monthWidth"
-                :show-dots="showDots"
-                :hidden-tracks="hiddenTracks"
-                :today-x="selectedYear === today(getLocalTimeZone()).year ? todayX : null"
-              />
+              class="flex flex-col min-w-0"
+              :class="{ 'opacity-60': (item.row.plant as Plant).archived_at }"
+            >
+              <span
+                class="text-xs font-medium leading-tight transition-colors"
+                :class="clickable ? 'cursor-pointer hover:text-primary' : ''"
+                @click.stop="clickable && emit('plantClick', item.row.plant)"
+                >{{ item.row.plant.name }}</span
+              >
+              <span
+                v-if="
+                  'variety' in item.row.plant && (item.row.plant as { variety?: string }).variety
+                "
+                class="text-2xs text-muted-foreground leading-tight"
+              >
+                {{ (item.row.plant as { variety?: string }).variety }}
+              </span>
             </div>
+            <ChevronRight
+              v-if="item.expandable"
+              class="w-3 h-3 shrink-0 text-muted-foreground transition-transform duration-200"
+              :class="{ 'rotate-90': expandedGroups.has(item.groupName) }"
+            />
+          </template>
+          <template v-else>
+            <span class="text-xs text-muted-foreground leading-tight">
+              {{
+                'variety' in item.row.plant && (item.row.plant as { variety?: string }).variety
+                  ? (item.row.plant as { variety?: string }).variety
+                  : '(default)'
+              }}
+            </span>
+          </template>
+        </div>
+        <div
+          class="relative flex divide-x divide-border/40 shrink-0"
+          :class="{
+            'bg-muted/50 dark:bg-muted/25': showGrid && index % 2 === 0,
+            'border-t border-border/40': showGrid && index > 0,
+          }"
+          :style="{ width: 12 * monthWidth + 'px', minHeight: rowHeight(item.row) + 'px' }"
+        >
+          <div
+            v-for="(_, i) in timelineMonths"
+            :key="`col-${i}`"
+            class="shrink-0"
+            :style="{ width: monthWidth + 'px' }"
+          />
+          <div class="absolute inset-0">
+            <PlantRow
+              :tracks="item.row.tracks"
+              :month-width="monthWidth"
+              :show-dots="showDots"
+              :hidden-tracks="hiddenTracks"
+              :today-x="selectedYear === today(getLocalTimeZone()).year ? todayX : null"
+            />
           </div>
-        </template>
+        </div>
       </div>
     </div>
   </div>
