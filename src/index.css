@@ -188,6 +188,10 @@
   html {
     @apply font-sans;
   }
+  ::selection {
+    background-color: color-mix(in oklab, var(--primary) 35%, transparent);
+    color: var(--foreground);
+  }
   button,
   a {
     -webkit-tap-highlight-color: transparent;
