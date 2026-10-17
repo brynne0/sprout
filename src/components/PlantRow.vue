@@ -61,7 +61,7 @@ const openDotKey = ref<string | null>(null)
   >
     <div
       v-if="resolvedTodayX !== null"
-      class="pointer-events-none absolute top-0 bottom-0 border-l-2 border-dashed border-primary/60"
+      class="pointer-events-none absolute top-0 bottom-0 z-10 border-l-2 border-dashed border-primary/60"
       :style="{ left: resolvedTodayX + 'px' }"
     />
     <template v-for="(track, ti) in resolvedTracks" :key="`track-${ti}`">
@@ -96,7 +96,7 @@ const openDotKey = ref<string | null>(null)
         <PopoverTrigger as-child>
           <button
             v-show="!isHidden(track.type)"
-            class="absolute w-2.5 h-2.5 rounded-full cursor-pointer ring-1 ring-background dark:ring-card"
+            class="absolute z-20 w-2.5 h-2.5 rounded-full cursor-pointer ring-1 ring-background dark:ring-card"
             :class="[
               dot.variant === 'repot' ? 'track-repot-dot' : `track-${track.type}-dot`,
               { 'opacity-40': dot.planned },
