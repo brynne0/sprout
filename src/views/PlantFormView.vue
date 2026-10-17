@@ -84,8 +84,11 @@ const overrides = ref({
   position: '',
   hardiness: '',
   spacing: '',
+  germination: '',
   seed_to_harvest: '',
   sowing_to_transplant: '',
+  care: '',
+  pests: '',
   harvest: '',
   suitability: [] as string[],
 })
@@ -201,8 +204,11 @@ const TEXT_FIELDS = [
   'position',
   'hardiness',
   'spacing',
+  'germination',
   'seed_to_harvest',
   'sowing_to_transplant',
+  'care',
+  'pests',
   'harvest',
 ] as const
 
@@ -302,8 +308,11 @@ async function loadPlant(id: string) {
       position: text('position'),
       hardiness: text('hardiness'),
       spacing: text('spacing'),
+      germination: text('germination'),
       seed_to_harvest: text('seed_to_harvest'),
       sowing_to_transplant: text('sowing_to_transplant'),
+      care: text('care'),
+      pests: text('pests'),
       harvest: text('harvest'),
       suitability: (o.suitability as string[] | undefined) ?? [],
     }
@@ -658,6 +667,14 @@ async function submitPlant() {
                     />
                   </Field>
                   <Field>
+                    <FieldLabel for="germination">Germination</FieldLabel>
+                    <Textarea
+                      id="germination"
+                      v-model="overrides.germination"
+                      :placeholder="selectedCatalogueEntry?.germination ?? ''"
+                    />
+                  </Field>
+                  <Field>
                     <FieldLabel for="seed_to_harvest">Seed to harvest</FieldLabel>
                     <Textarea
                       id="seed_to_harvest"
@@ -671,6 +688,22 @@ async function submitPlant() {
                       id="sowing_to_transplant"
                       v-model="overrides.sowing_to_transplant"
                       :placeholder="selectedCatalogueEntry?.sowing_to_transplant ?? ''"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel for="care">Care</FieldLabel>
+                    <Textarea
+                      id="care"
+                      v-model="overrides.care"
+                      :placeholder="selectedCatalogueEntry?.care ?? ''"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel for="pests">Pests</FieldLabel>
+                    <Textarea
+                      id="pests"
+                      v-model="overrides.pests"
+                      :placeholder="selectedCatalogueEntry?.pests ?? ''"
                     />
                   </Field>
                   <Field>

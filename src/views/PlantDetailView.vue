@@ -6,14 +6,17 @@ import { useRoute, useRouter } from 'vue-router'
 import { useElementSize } from '@vueuse/core'
 import {
   ArrowLeft,
+  Bug,
   Check,
   Clock,
+  HandHeart,
   Leaf,
   MoreHorizontal,
   Pencil,
   Plus,
   Ruler,
   Scissors,
+  Sprout,
   Sun,
   Thermometer,
 } from '@lucide/vue'
@@ -224,13 +227,17 @@ const labelledRows = computed(() =>
 
 const infoRows = computed(() => {
   if (!plant.value) return []
+  const p = plant.value
   return [
-    { icon: Sun, label: 'Position', value: plant.value.position },
-    { icon: Thermometer, label: 'Hardiness', value: plant.value.hardiness },
-    { icon: Ruler, label: 'Spacing', value: plant.value.spacing },
-    { icon: Clock, label: 'Seed to harvest', value: plant.value.seed_to_harvest },
-    { icon: Leaf, label: 'Sow to transplant', value: plant.value.sowing_to_transplant },
-    { icon: Scissors, label: 'Harvest', value: plant.value.harvest },
+    { icon: Sun, label: 'Position', value: p.position },
+    { icon: Thermometer, label: 'Hardiness', value: p.hardiness },
+    { icon: Ruler, label: 'Spacing', value: p.spacing },
+    { icon: Sprout, label: 'Germination', value: p.germination },
+    { icon: Leaf, label: 'Sow to transplant', value: p.sowing_to_transplant },
+    { icon: Clock, label: 'Seed to harvest', value: p.seed_to_harvest },
+    { icon: HandHeart, label: 'Care', value: p.care },
+    { icon: Bug, label: 'Pests', value: p.pests },
+    { icon: Scissors, label: 'Harvest', value: p.harvest },
   ].filter((r) => r.value)
 })
 </script>

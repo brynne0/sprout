@@ -21,8 +21,11 @@ export type BasePlant = {
   position?: string
   hardiness?: string
   spacing?: string
+  germination?: string
   seed_to_harvest?: string
   sowing_to_transplant?: string
+  care?: string
+  pests?: string
   harvest?: string
   sowing_windows?: Window[]
   harvest_windows?: Window[]
