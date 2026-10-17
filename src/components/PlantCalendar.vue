@@ -289,7 +289,7 @@ const todayX = computed(() => {
       :style="{ width: NAME_COL_WIDTH + 'px' }"
     >
       <!-- Header with sort -->
-      <div class="px-3 py-2 flex items-center justify-between">
+      <div class="px-3 py-1 flex items-center justify-between">
         <span class="text-xs font-medium text-muted-foreground">Plant</span>
         <div class="flex items-center gap-1">
           <Toggle
