@@ -3,9 +3,10 @@ import { toLocalDateStr } from '@/lib/utils'
 
 export type TrackType = 'sowing' | 'transplant' | 'harvest'
 
-export const TRACK_HEIGHT = 10
+export const TRACK_HEIGHT = 8
 export const TRACK_GAP = 3
 export const ROW_PADDING = 8
+export const LABEL_HEIGHT = 11
 
 const DUMMY_YEAR = 2000
 
@@ -21,9 +22,20 @@ export type Track = {
 
 export type WindowData = { start: string; end: string; label?: string }
 
-export function rowHeightForTrackCount(count: number): number {
-  const c = Math.max(count, 1)
-  return ROW_PADDING * 2 + c * TRACK_HEIGHT + (c - 1) * TRACK_GAP
+export function trackTops(tracks: Track[]): number[] {
+  let y = ROW_PADDING
+  return tracks.map((t) => {
+    if (t.label) y += LABEL_HEIGHT
+    const top = y
+    y += TRACK_HEIGHT + TRACK_GAP
+    return top
+  })
+}
+
+export function rowHeightForTracks(tracks: Track[]): number {
+  const tops = trackTops(tracks)
+  const lastTop = tops[tops.length - 1] ?? ROW_PADDING
+  return lastTop + TRACK_HEIGHT + ROW_PADDING
 }
 
 export function daysInMonth(month: number): number {

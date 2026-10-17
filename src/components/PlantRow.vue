@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { Dot, Track, TrackType } from '@/lib/trackUtils'
-import { TRACK_HEIGHT, TRACK_GAP, ROW_PADDING, rowHeightForTrackCount } from '@/lib/trackUtils'
+import type { Bar, Dot, Track, TrackType } from '@/lib/trackUtils'
+import { TRACK_HEIGHT, LABEL_HEIGHT, trackTops, rowHeightForTracks } from '@/lib/trackUtils'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { formatDate } from '@/lib/utils'
 
@@ -20,11 +20,23 @@ const resolvedTracks = computed(() => props.tracks ?? [])
 const resolvedMonthWidth = computed(() => props.monthWidth ?? 0)
 const resolvedTodayX = computed<number | null>(() => props.todayX ?? null)
 
-const trackCount = computed(() => resolvedTracks.value.length)
-const height = computed(() => rowHeightForTrackCount(trackCount.value))
+const height = computed(() => rowHeightForTracks(resolvedTracks.value))
+const tops = computed(() => trackTops(resolvedTracks.value))
 
 function trackTop(index: number): number {
-  return ROW_PADDING + index * (TRACK_HEIGHT + TRACK_GAP)
+  return tops.value[index]!
+}
+
+const LABEL_CHAR_WIDTH = 6
+
+function labelStyle(bar: Bar, label: string, trackIndex: number) {
+  const total = 12 * resolvedMonthWidth.value
+  const top = trackTop(trackIndex) - LABEL_HEIGHT + 'px'
+  const end = bar.x + bar.width
+  if (total - bar.x >= label.length * LABEL_CHAR_WIDTH) {
+    return { left: bar.x + 'px', top, maxWidth: total - bar.x + 'px' }
+  }
+  return { right: total - end + 'px', top, maxWidth: end + 'px' }
 }
 
 function isHidden(type: TrackType): boolean {
@@ -40,7 +52,6 @@ function dotLabel(type: TrackType, dot: Dot): string {
 }
 
 const openDotKey = ref<string | null>(null)
-const openBarKey = ref<string | null>(null)
 </script>
 
 <template>
@@ -54,60 +65,22 @@ const openBarKey = ref<string | null>(null)
       :style="{ left: resolvedTodayX + 'px' }"
     />
     <template v-for="(track, ti) in resolvedTracks" :key="`track-${ti}`">
-      <template v-if="track.label && !isHidden(track.type)">
-        <Popover
-          v-for="(b, bi) in track.bars"
-          :key="`bar-${ti}-${bi}`"
-          :open="openBarKey === `${ti}-${bi}`"
-          @update:open="
-            (v) => {
-              if (v) openBarKey = `${ti}-${bi}`
-              else if (openBarKey === `${ti}-${bi}`) openBarKey = null
-            }
-          "
-        >
-          <PopoverTrigger as-child>
-            <button
-              class="absolute h-2.5 overflow-hidden flex items-center cursor-pointer border rounded-sm"
-              :class="[`track-${track.type}-bg`, `track-${track.type}-border`]"
-              :style="{ left: b.x + 'px', width: b.width + 'px', top: trackTop(ti) + 'px' }"
-              @pointerenter="
-                (e: PointerEvent) => {
-                  if (e.pointerType === 'mouse') openBarKey = `${ti}-${bi}`
-                }
-              "
-              @pointerleave="
-                (e: PointerEvent) => {
-                  if (e.pointerType === 'mouse') openBarKey = null
-                }
-              "
-            >
-              <span
-                v-if="b.width > 30"
-                class="text-[8px] leading-none truncate px-1 text-accent-foreground"
-                >{{ track.label }}</span
-              >
-            </button>
-          </PopoverTrigger>
-          <PopoverContent
-            class="w-auto px-2 py-1 text-xs rounded-sm border"
-            :class="[`track-${track.type}-bg`, `track-${track.type}-border`]"
-            side="top"
-            :side-offset="4"
-          >
-            {{ track.label }}
-          </PopoverContent>
-        </Popover>
-      </template>
-      <template v-else>
+      <template v-for="(b, bi) in track.bars" :key="`bar-${ti}-${bi}`">
         <div
-          v-for="(b, bi) in track.bars"
           v-show="!isHidden(track.type)"
-          :key="`bar-${ti}-${bi}`"
-          class="absolute h-2.5 border rounded-sm"
+          class="absolute h-2 border rounded-[4px]"
           :class="[`track-${track.type}-bg`, `track-${track.type}-border`]"
           :style="{ left: b.x + 'px', width: b.width + 'px', top: trackTop(ti) + 'px' }"
         />
+        <span
+          v-if="track.label"
+          v-show="!isHidden(track.type)"
+          class="absolute h-2.5 text-[8.5px] font-bold uppercase tracking-[0.08em] leading-2.5 truncate"
+          :class="`track-${track.type}-text`"
+          :style="labelStyle(b, track.label, ti)"
+          :title="track.label"
+          >{{ track.label }}</span
+        >
       </template>
       <Popover
         v-for="(dot, di) in showDots ? (track.dots ?? []) : []"

@@ -21,7 +21,7 @@ import {
   dateToX,
   computeTracksForPlant,
   parseDateMonthDay,
-  rowHeightForTrackCount,
+  rowHeightForTracks,
 } from '@/lib/trackUtils'
 import type { Track, TrackType } from '@/lib/trackUtils'
 import PlantRow from '@/components/PlantRow.vue'
@@ -71,7 +71,7 @@ const MONTH_LABELS = [
 
 const timelineMonths = Array.from({ length: 12 }, (_, i) => ({ month: i + 1 }))
 
-const showGrid = ref(false)
+const showGrid = ref(true)
 
 const legendTracks: { type: TrackType; label: string }[] = [
   { type: 'sowing', label: 'Sow' },
@@ -231,7 +231,7 @@ const visibleRows = computed<VisibleItem[]>(() => {
 })
 
 function rowHeight(row: PlantRowData): number {
-  return rowHeightForTrackCount(row.tracks.length)
+  return rowHeightForTracks(row.tracks)
 }
 
 const todayX = computed(() => {
@@ -344,7 +344,7 @@ const todayX = computed(() => {
         :style="{ minHeight: rowHeight(item.row) + 'px' }"
         :class="{
           'cursor-pointer select-none': item.kind === 'plant' && item.expandable,
-          'bg-muted/50': showGrid && index % 2 === 0,
+          'bg-muted/50 dark:bg-muted/25': showGrid && index % 2 === 0,
         }"
         @click="item.kind === 'plant' && item.expandable ? toggleGroup(item.groupName) : undefined"
       >
@@ -406,7 +406,7 @@ const todayX = computed(() => {
         <template v-for="(item, index) in visibleRows" :key="item.row.key">
           <div
             class="relative flex divide-x divide-border/40 shrink-0"
-            :class="{ 'bg-muted/50': showGrid && index % 2 === 0 }"
+            :class="{ 'bg-muted/50 dark:bg-muted/25': showGrid && index % 2 === 0 }"
             :style="{
               width: timelineMonths.length * monthWidth + 'px',
               minHeight: rowHeight(item.row) + 'px',

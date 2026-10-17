@@ -102,14 +102,14 @@
   --sidebar-border: oklch(1 0 0 / 12%);
   --sidebar-ring: #5f7a5c;
 
-  --transplant: #efc876;
+  --transplant: #f8e6b0;
   --harvest: #ffb3ab;
   --repot: #fcbf95;
   --sow: #addda7;
   --warning: #e9b949;
 
   --sow-bg: #223d20;
-  --transplant-bg: #573c00;
+  --transplant-bg: color-mix(in oklab, #625101 65%, transparent);
   --repot-bg: #4d2c15;
   --harvest-bg: #562421;
 
