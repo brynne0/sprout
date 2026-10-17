@@ -50,7 +50,7 @@ const colour = computed(() =>
     }"
   >
     <component :is="lucideIcon" v-if="lucideIcon" class="size-[56%]" />
-    <span v-else-if="customIcon" class="size-[56%] [&>svg]:size-full" v-html="customIcon" />
+    <span v-else-if="customIcon" class="size-[56%] [&>svg]:size-full!" v-html="customIcon" />
     <span v-else>{{ name.charAt(0).toUpperCase() }}</span>
     <span
       v-if="task"

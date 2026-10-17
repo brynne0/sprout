@@ -44,6 +44,9 @@ import { toast } from 'vue-sonner'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import PlantDatesField from '@/components/PlantDatesField.vue'
+import PlantIcon from '@/components/PlantIcon.vue'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { PRODUCE_COLOURS } from '@/lib/plants'
 
 // Add a plant (/plants/new) or edit one (/plants/:id/edit).
 const route = useRoute()
@@ -76,6 +79,7 @@ const year = ref<number | null>(today(getLocalTimeZone()).year)
 const SUITABILITY_OPTIONS = ['multisow', 'interplant', 'follow-on'] as const
 
 const overrides = ref({
+  colour: '',
   description: '',
   position: '',
   hardiness: '',
@@ -145,9 +149,16 @@ function confirmTransplantWindow() {
   }
 }
 
-const selectedPlantTypeName = computed(
-  () => plantTypes.value.find((p) => p.id === selectedPlantTypeId.value)?.name ?? 'Select plant...',
+const selectedPlantType = computed(() =>
+  plantTypes.value.find((p) => p.id === selectedPlantTypeId.value),
 )
+const selectedPlantTypeName = computed(() => selectedPlantType.value?.name ?? 'Select plant...')
+
+// Picking the plant type's own colour clears the override
+const iconColour = computed({
+  get: () => overrides.value.colour || selectedPlantType.value?.colour || '',
+  set: (v) => (overrides.value.colour = v === selectedPlantType.value?.colour ? '' : v),
+})
 
 // Catalogue entries that have a named variety
 const namedVarieties = computed(() => catalogueEntries.value.filter((e) => e.variety))
@@ -234,6 +245,7 @@ watch(selectedCatalogueEntry, (entry, old) => {
 const cleanedOverrides = computed(() => {
   const defaults = catalogueDefaults(selectedCatalogueEntry.value)
   const result: Record<string, unknown> = {}
+  if (overrides.value.colour) result.colour = overrides.value.colour
   if (overrides.value.description) result.description = overrides.value.description
   for (const k of TEXT_FIELDS) {
     const v = overrides.value[k]
@@ -285,6 +297,7 @@ async function loadPlant(id: string) {
     const o = (plant.overrides ?? {}) as Record<string, unknown>
     const text = (k: string) => (typeof o[k] === 'string' ? (o[k] as string) : '')
     overrides.value = {
+      colour: text('colour'),
       description: text('description'),
       position: text('position'),
       hardiness: text('hardiness'),
@@ -306,7 +319,7 @@ async function loadPlant(id: string) {
 onMounted(async () => {
   const { data } = await supabase
     .from('plant_types')
-    .select('id, name, category_id, icon, perennial')
+    .select('id, name, category_id, icon, colour, perennial')
     .order('name')
   plantTypes.value = (data ?? []) as unknown as PlantType[]
   if (plantId.value) await loadPlant(plantId.value)
@@ -319,6 +332,7 @@ watch(selectedPlantTypeId, async (id) => {
   customVariety.value = ''
   isCustomVariety.value = false
   catalogueEntries.value = []
+  overrides.value.colour = ''
   if (id) {
     // Perennials come back every year, so default them to All years
     const perennial = plantTypes.value.find((p) => p.id === id)?.perennial
@@ -528,6 +542,32 @@ async function submitPlant() {
                   v-model="customVariety"
                   :placeholder="hasVarieties ? 'Enter variety name' : 'Optional'"
                 />
+              </Field>
+
+              <Field v-if="selectedPlantType">
+                <FieldLabel>Icon colour</FieldLabel>
+                <ToggleGroup
+                  type="single"
+                  :spacing="1"
+                  :model-value="iconColour"
+                  class="flex-wrap"
+                  @update:model-value="(v) => v && (iconColour = v as string)"
+                >
+                  <ToggleGroupItem
+                    v-for="c in PRODUCE_COLOURS"
+                    :key="c"
+                    :value="c"
+                    :aria-label="c"
+                    class="h-auto p-0 rounded-full data-[state=on]:bg-transparent data-[state=on]:ring-2 data-[state=on]:ring-ring"
+                  >
+                    <PlantIcon
+                      :name="selectedPlantType.name"
+                      :icon="selectedPlantType.icon"
+                      :colour="c"
+                      class="w-9 h-9 rounded-full text-sm"
+                    />
+                  </ToggleGroupItem>
+                </ToggleGroup>
               </Field>
 
               <Field>

@@ -2,6 +2,20 @@ import { toast } from 'vue-sonner'
 import type { Plant } from '@/types'
 import { supabase } from '@/lib/supabase'
 
+export const PRODUCE_COLOURS = [
+  'red',
+  'orange',
+  'yellow',
+  'leaf',
+  'deep',
+  'sage',
+  'blue',
+  'purple',
+  'pink',
+  'beet',
+  'earth',
+] as const
+
 export async function archivePlant(plant: Plant): Promise<boolean> {
   try {
     await supabase

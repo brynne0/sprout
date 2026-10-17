@@ -4,6 +4,7 @@
 import { onMounted, ref } from 'vue'
 import { Plus } from '@lucide/vue'
 import { supabase } from '@/lib/supabase'
+import { PRODUCE_COLOURS } from '@/lib/plants'
 import { useTheme } from '@/composables/useTheme'
 import type { PlantType } from '@/types'
 import PageHeader from '@/components/layout/PageHeader.vue'
@@ -13,19 +14,6 @@ import { Button } from '@/components/ui/button'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 const { store: theme } = useTheme()
-
-const swatches = [
-  'red',
-  'orange',
-  'yellow',
-  'leaf',
-  'deep',
-  'sage',
-  'purple',
-  'beet',
-  'earth',
-  'pink',
-]
 
 const plantTypes = ref<PlantType[]>([])
 
@@ -100,7 +88,7 @@ const toggleDemo = ref('a')
       <section>
         <h2 class="text-sm font-semibold mb-3">Produce colours</h2>
         <div class="flex flex-wrap gap-3">
-          <div v-for="c in swatches" :key="c" class="flex flex-col items-center gap-1">
+          <div v-for="c in PRODUCE_COLOURS" :key="c" class="flex flex-col items-center gap-1">
             <PlantIcon :name="c" :colour="c" class="w-10 h-10 rounded-full text-sm" />
             <code class="text-xs text-muted-foreground">{{ c }}</code>
           </div>
