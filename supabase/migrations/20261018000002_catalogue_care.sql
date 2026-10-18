@@ -27,10 +27,10 @@ FROM (VALUES
     ('Overwintering Onion', 'Multisow 6 seeds per 3cm module, not before the last week of August', 'Mesh over winter against rabbits (fleece holds too much moisture). Hoe in spring while the leaves are upright'),
     ('Spring Onion', 'Multisow 10 seeds per 3cm module, or 3 seeds per cm in outdoor drills 2.5cm deep', 'Fleece spring plantings, mesh later if there are rabbits. Water in dry weather for better leaves'),
 -- Cucurbits
-    ('Cucumber', NULL, NULL),
-    ('Melon', NULL, NULL),
-    ('Pumpkin', NULL, NULL),
-    ('Zucchini', NULL, NULL),
+    ('Cucumber', 'Sow one seed per 5cm module, laid flat and lightly covered, no more than 4 weeks before the last frost. Needs steady warmth, ideally indoors at night. Pot on to 7cm after 2 weeks, then 10cm. Don''t overwater, as stems damp off', 'Plant 5cm deep after the last frost, even under cover. Cordons: plant on a string, twist the stem around it, remove all sideshoots, and loop the tip back down at the top. Remove fruits until 60cm tall, then every second one. Water twice a week outdoors, every 2-3 days under cover. Cut off mildewed lower leaves. Under cover, don''t wet leaves on cloudy days, to prevent downy mildew'),
+    ('Melon', 'Sow one seed per 3cm module and germinate in the house. Keep above 10°C at night once in the greenhouse. Pot on to 7cm after 3-4 weeks, and 10cm in late April. Water only when pots feel light', 'Plant 5cm deep under cover, on a string for cordons. Twist the stem around the string every 2-3 days. Pinch out sideshoots until 1-1.2m, then let them grow and pinch each tip once a melon forms. In a cool summer keep 3-4 melons and remove new sideshoots. Water moderately, more in heat, less once fruits ripen'),
+    ('Pumpkin', 'Sow one seed flat per 5cm module, a month before the last frost. Needs 20-25°C, so keep in the house for the first week. Pot on to 9cm once true leaves grow. Without a greenhouse, sow in late April-early May', 'Plant 5cm deeper than in the pot and water every 2 days in dry weather for a week. Fleece in cold, windy late May. Then little needed: no pruning or thinning, and rotting small fruits are normal. Water once or twice as fruits swell if summer is dry'),
+    ('Zucchini', 'Sow one seed per 5cm module or small pot, laid flat and lightly covered, 2-3 weeks before the last frost. Keep above 16°C at night for 5 days. Pot on to 10cm after 15-20 days', 'Plant 5cm deeper than in the pot and water every 2 days for the first week or two. Fleece if it''s cool and windy after planting. Water often in hot, dry weather or it stops fruiting. Feed weekly in containers once fruits form. Powdery mildew on older leaves after midsummer is normal; remove them if you like'),
 -- Umbellifers
     ('Bulb Fennel', NULL, NULL),
     ('Carrot', NULL, NULL),
@@ -118,11 +118,11 @@ FROM (VALUES
     ('Overwintering Onion', NULL, 'Harvest as for bulb onions in June. Use them first, as they sprout by late December', NULL),
     ('Spring Onion', NULL, 'Ready within 10 weeks; twist out the largest from each clump over about 2 months', NULL),
 -- Cucurbits
-    ('Cucumber', 'Cordon', NULL, NULL),
-    ('Cucumber', 'Ridge', NULL, NULL),
-    ('Melon', NULL, NULL, NULL),
-    ('Pumpkin', NULL, NULL, NULL),
-    ('Zucchini', NULL, NULL, NULL),
+    ('Cucumber', 'Cordon', 'Keep picking, a large fruit every other day; smaller ones are less seedy. Keeps a week in the fridge', NULL),
+    ('Cucumber', 'Ridge', 'Keep picking, up to one a day in warm weather. Peel at least half the knobbly skin. Keeps a week in the fridge', NULL),
+    ('Melon', NULL, 'Pick when it yellows and smells sweet, or cracks around the stalk. Cut with a short stalk; keeps 2 weeks somewhere cool', NULL),
+    ('Pumpkin', NULL, 'Pick before the first frost, once leaves die back, stalks turn brown and the skin sounds hollow when tapped. Keep the stalk intact. Cure on a sunny windowsill for 2 weeks; stores for months somewhere warm and dry', NULL),
+    ('Zucchini', NULL, 'Pick the first fruits very small, then before the flower at the tip dies. Cut the stalk for better storage. Flowers are edible. Wear gloves and long sleeves; leaf hairs can cause a rash. Keeps a week in the fridge', NULL),
 -- Umbellifers
     ('Bulb Fennel', NULL, NULL, NULL),
     ('Carrot', 'Early', NULL, NULL),
@@ -229,6 +229,19 @@ WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Spring Onion');
 UPDATE plant_catalogue
 SET sowing_windows = '[{"start": "10-01", "end": "10-15", "label": "from sets"}, {"start": "08-25", "end": "08-31", "label": "from seed"}]'
 WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Overwintering Onion');
+
+UPDATE plant_catalogue
+SET sowing_windows = '[{"start": "03-15", "end": "04-15", "label": "under cover"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Melon');
+
+UPDATE plant_catalogue
+SET harvest_windows = '[{"start": "07-01", "end": "09-30", "label": "under cover"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Cucumber') AND variety = 'Cordon';
+
+UPDATE plant_catalogue SET
+    sowing_windows = '[{"start": "04-15", "end": "05-15"}]',
+    transplant_windows = '[{"start": "05-15", "end": "06-15"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Pumpkin');
 
 -- Fixes the impossible 06-31 end date
 UPDATE plant_catalogue
