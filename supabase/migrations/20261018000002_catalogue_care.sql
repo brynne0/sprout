@@ -1,4 +1,4 @@
--- Germination, care, pests and harvest notes from No Dig, plus sowing windows matched to the text.
+-- Germination, care, pests and harvest notes from No Dig and Rebel Gardening, plus sowing windows matched to the text.
 -- NULLs leave the current value alone, so unfilled rows are safe to run.
 
 -- Per plant type
@@ -66,22 +66,22 @@ FROM (VALUES
     ('Sweetcorn', 'Sow under cover about a month before the last frost, one seed 1cm deep per 3-5cm module; or outdoors 1-2cm deep after the last frost. Sow early and late varieties together for a run of cobs, and choose early ones for cool summers', 'Plant after the last frost, about 4 weeks after sowing, 25-30cm apart in a block to help pollination. Fleece for 2-3 weeks if cold; plants yellow and sit still until the soil warms. Water in, then soak twice a week in dry weather as cobs swell. Sideshoots can stay or go', 'Rodents, badgers and birds take ripening cobs: harvest promptly, even slightly under-ripe. Mice eat the seeds'),
     ('Tomato', 'Sow 6-8 weeks before the last frost (not February) in warmth under cover, thinly in a small tray or one per 3cm module. Prick out at the seed-leaf stage. Pot on into 7cm pots at two true leaves (about 3 weeks), then 9cm after 10-12 days; ready to plant about 10 days later', 'Plant after the last frost, deeper than in the pot; in a damp climate grow at least half under cover. Support cordons with a stake or a string under the root ball, tie or twist the stem in, and snap off sideshoots. Cut off lower leaves from a month after planting. Remove half the first truss and the last flowers on trusses; pinch out the tops in early August. Under cover in soil, water twice a week (every 2 days in heat), on the soil not the leaves from July, and once a week from September. Irregular watering splits fruit. No feeding in no dig soil; feed and water containers daily', 'Blossom end rot (black patches under the fruit) means too little water. Spray aphids off in spring until predators arrive in late May. Leaf roll from day-night temperature swings isn''t serious. Late blight, worst outdoors: remove and compost affected leaves, and remove the whole plant once stems blacken; plants under cover suffer much less. Slugs and woodlice eat fruit lying on the ground'),
 -- Perennial vegetables
-    ('Artichoke', NULL, NULL, NULL),
+    ('Artichoke', 'Start in seed trays indoors and plant out once it has five leaves. Or ask a friend with a plant a few years old to divide it for you, which helps their plant too', 'Needs a warm, sunny, well-drained spot, in a border or the veg patch, with room to spread. Water well and keep weed-free', 'Slugs and snails love young plants; coffee grounds or eggshells keep them away. Ladybirds control aphids'),
     ('Asparagus', 'Crowns (one-year-old roots) bring harvests a year sooner. From seed, sow singly in modules in early spring, keep in the house for a week, then the greenhouse. Pot on into 7cm pots after 5-6 weeks, and into bigger pots after a couple of months', 'Plant in early spring (or late autumn) in full sun, ideally in a north-south line: make a shallow 10cm dish, domed in the middle, spread the roots over it and cover with compost. Water in the first spring only. Keep weeding; cardboard between rows helps for the first year or two. Support the tall ferns with wires between posts. With open-pollinated varieties, remove female stems with red berries in early autumn. Cut ferns to the ground once they yellow in late autumn, and mulch with compost in November. Seaweed or a little salt (100g per 10m) helps', 'Rabbits or slugs may graze the first spears, but healthy plants shrug it off. Asparagus beetle eats leaves and stems, mainly a problem in drier areas'),
     ('Chives', 'Buy pot plants or divide a clump, as seed-raised chives run to seed quickly. Do it in spring: cut a section from the edge of a clump and replant at the same depth. From seed, sow 3 per 7cm pot under cover, thin to 1-2, and plant out after about 6 weeks', 'Little care needed; thrives with a compost mulch and is more prolific in the ground than in pots. Cut back hard in early summer to stop self-seeding and get fresh leaves through summer and autumn. Water in a dry summer. Dies back in cold winters', 'Generally untroubled. Grow in containers if your plot has onion white rot or allium leaf miner'),
     ('Mint', 'Easiest to buy small pot plants. Plant in spring, 40cm apart or in a 25-30cm pot. For more plants, lift sections of root, or root 10cm cuttings of new stems in 5cm modules of 70% compost and 30% vermiculite or perlite', 'Roots spread invasively, so grow in a pot sunk into the bed with the rim just above ground. Thrives in moist soil; water regularly, especially in containers. Let the early summer flowers bloom for insects, then cut stems back hard in late summer for new growth. In late autumn, once the leaves drop, cut all stems to 5cm', 'Regular watering prevents powdery mildew on older leaves'),
-    ('Oregano', NULL, NULL, NULL),
+    ('Oregano', 'Sprinkle a few seeds on top of moist, well-drained compost in early spring, and keep somewhere warm like a sunny windowsill, moist but not waterlogged. Pot on the seedlings and keep them warm until late spring', 'Plant out after the last frost, after hardening off outside by day for about a week. Sunny, sheltered spot with very good drainage; add a handful of gravel when planting. Water sparingly, more in pots or very dry weather. Cut right back in midsummer for new growth. Repot potted plants every year or so in spring', 'No problems as long as drainage is good'),
     ('Perennial Kale', 'Doesn''t make seed: buy young plants, or root 15cm sideshoots in a glass of water or a 7cm pot of moist compost, which root within 3 weeks', 'Plant any time, best in spring or summer. Tie tall varieties to a 1.5m stake in a sheltered corner. Water new plants until growing strongly, and in dry weather for more leaves. Twist off unwanted new stems on older plants. Pick off yellow or damaged leaves', 'Cover the top of a wooden frame with bird netting against pigeons. Spray grey aphids off new leaves in spring. Caterpillars don''t kill the plant'),
-    ('Raspberry', NULL, NULL, NULL),
+    ('Raspberry', NULL, NULL, 'Net against birds, mice and other small animals'),
     ('Rhubarb', 'Easiest from a pot plant (spring to autumn) or a dormant crown (November-March). From seed, sow in 7cm pots under cover in early spring, pot on into 9cm, and plant out in summer', 'Water in dry spring or summer weather for more stems. Mulch around the crown with compost or rotted manure after the leaves die back in autumn. Cut out flower stems at ground level. If the crown gets too big, remove a section and fill the hole with compost. To force, cover part of a crown with a tall pot or bucket in late winter and harvest the pink stalks after about a month; remove the cover after 2 months at most. Force each plant only every other year', 'Crowns are remarkably resistant to pests and diseases'),
     ('Rosemary', 'Easiest to buy a pot plant in spring. Or root 10cm cuttings of new growth in early spring, in modules of compost with a third vermiculite; plant out in late spring or pot on into 9cm pots for summer', 'Plant with the root ball top a little below the surface and water in. Cut back the flowered stems over the whole plant in midsummer to keep it compact. New growth can get frost damage in cold springs. Replace after 7-10 years once bare at the base', NULL),
     ('Sorrel', 'Multisow in 3-5cm modules and thin to 1-2 plants, or sow in a tray and prick out. Or sow direct in early spring. Tiny seeds and slow early growth, but ready to plant within 5 weeks, 30cm apart. Germinates faster in warmth, so fleece sowings and plantings for about a month', 'Tolerates dry conditions, but watering gives more leaves and less bolting. Remove flower stalks from late spring to early summer, or keep picking while it flowers until early or midsummer, then cut down for a flush of new leaves: broad-leaved to 5cm in June, buckler-leaved almost to the ground in mid-July', 'Watering makes plants less prone to beetle damage. Buckler-leaved sorrel gets brown leaf spots in dry summers, increasing in autumn'),
-    ('Strawberry', NULL, NULL, NULL),
+    ('Strawberry', 'Usually started from runners in early spring, or plants in early summer. For new plants, once fruiting dwindles, pin a runner (still attached) onto a pot of compost with garden wire, keep it moist, and cut it free once rooted', 'Keep the soil moist but the plant dry, watering the soil in the morning. Feed weekly with tomato feed. Snip off runners while fruiting so the energy goes into fruit. Once it stops fruiting, cut back so it regrows next year', 'Straw around the plant deters slugs and snails, suppresses weeds and keeps the soil warm. Net against birds. Grey mould strikes in damp conditions: keep the plant dry and remove affected fruit straight away'),
     ('Thyme', 'Garden-centre plants are often soft and struggle outdoors, so home-raised ones are tougher. In March, sow 2-3 seeds per small pot or module, or push 4cm cuttings of new growth into modules of half compost, half sand or vermiculite. Keep warm under cover and plant out in early summer', 'Water summer plantings every 2 days for a week or two; at other times just water in. Cut back after flowering in midsummer, leaving a little new green wood, to keep it compact; use shears on older bushes and be quite severe. Mulch with 2cm of compost every autumn. Established thyme self-sows in late summer', NULL),
 -- Flowers
-    ('Calendula', NULL, NULL, NULL),
-    ('Nasturtium', NULL, NULL, NULL),
-    ('Sunflower', NULL, NULL, NULL)
+    ('Calendula', 'Scatter seeds among other crops in mid-spring, dust with compost and water well. Thin seedlings to about 10cm', 'Grows well in partial sun among crops like tomatoes and beans. Water in dry spells. Keep picking flowers for more', 'Untroubled by pests'),
+    ('Nasturtium', 'Sow in spring where it''s to grow, in well-drained soil: water a weeded, raked area, push seeds in 1.5cm deep and 10cm apart, and cover thinly. After a couple of weeks, thin to one every 30cm', 'Sunny spot in pots or the ground, near brassicas or beans. Needs little feeding or watering except in very dry weather; pots need occasional water. Support climbing types with a cane or trellis', 'Very attractive to caterpillars and aphids, which lures them off other veg. Grow a few plants so some stay good to eat'),
+    ('Sunflower', 'Push one seed into each cell of compost, cover, water well, and keep somewhere warm and sunny indoors. Pot into individual pots at 5cm. Plant out at 30cm tall, after the last frost', 'For height, leave them be; for more flowers, pinch out the tips. Stake against wind and rain', 'Ladybirds keep aphids down. Squirrels eat the plants; thistles around the base can deter them. Good air circulation and drainage prevent white mould')
 ) AS v(name, germination, care, pests)
 WHERE pt.name = v.name;
 
@@ -162,18 +162,18 @@ FROM (VALUES
     ('Sweetcorn', NULL, 'Ready when the tassels turn brown and the kernels inside the sheath are pale yellow-cream. Snap the cob downwards off the stem and eat as fresh as possible, before the sugar turns to starch', NULL),
     ('Tomato', NULL, 'Fully coloured fruits are sweetest; picking half-coloured ones gives higher yields. Snap the stalk upwards, leaving the calyx on; cut beefsteaks with a knife. Ripen at room temperature, away from bananas, never in the fridge. In early October, pick everything left to ripen indoors', NULL),
 -- Perennial vegetables
-    ('Artichoke', 'Green Globe', NULL, NULL),
+    ('Artichoke', 'Green Globe', 'Cut buds with secateurs at golf-ball size; more buds follow', 'Up to 1m'),
     ('Asparagus', NULL, 'Pick a few spears 2 years after planting crowns (3 from seed), with the first real harvest a year later. Cut or snap spears at 15-20cm, close to the soil; snapping leaves the fibrous part behind. Stop after the longest day so the ferns can grow. Best fresh; keeps a few days cool', NULL),
     ('Chives', NULL, 'Cut close to the ground with scissors or a knife, from early spring to late autumn. Regular cutting keeps new growth coming', NULL),
     ('Mint', NULL, 'Pinch out the tips of new shoots from mid-spring. Young leaves for salads, older ones for cooking or tea. Hang cut stems indoors to dry for winter', NULL),
-    ('Oregano', 'Hera', NULL, NULL),
+    ('Oregano', 'Hera', 'Pinch off new growth as needed, and harvest often. When you cut it back in midsummer, dry the leaves in the sun', 'Medium-sized bush'),
     ('Perennial Kale', NULL, 'Pick weekly all year, though there is little growth in winter. Push older leaves off at the base of the stalk on each stem', NULL),
     ('Raspberry', NULL, NULL, NULL),
     ('Rhubarb', NULL, 'Let new plants establish for a year before picking. The main season is March to July; stop after that so the leaves feed the roots. Grip each stalk near the base, twist and pull firmly to snap it off the crown. The leaves are inedible and slightly poisonous; compost them', NULL),
     ('Rosemary', NULL, 'Cut 4-6cm from the tips of green, tender stems as needed, all year. A small pick in the first summer', NULL),
     ('Sorrel', NULL, 'Pick once neighbouring plants touch; pick every few days for soft small leaves to eat raw. Strongest growth in spring, until flower stems appear. Leaves pull off easily and keep a week if kept moist. Cut buckler-leaved sorrel in clusters, removing discoloured leaves and flower stems', NULL),
     ('Strawberry', NULL, NULL, NULL),
-    ('Strawberry', 'Baron Solemacher', NULL, NULL),
+    ('Strawberry', 'Baron Solemacher', 'Expect at least two years of fruit before replacing', NULL),
     ('Thyme', NULL, 'Cut new growth from the stem tips with a knife or scissors. A little goes a long way, so you can pick all year, even though growth almost stops in winter', NULL),
 -- Flowers
     ('Calendula', NULL, NULL, NULL),
@@ -298,6 +298,19 @@ UPDATE plant_catalogue SET
     sowing_windows = '[{"start": "02-15", "end": "06-15"}]',
     transplant_windows = '[{"start": "04-01", "end": "08-15"}, {"start": "10-01", "end": "11-30"}]'
 WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Sorrel');
+
+UPDATE plant_catalogue SET
+    sowing_windows = '[{"start": "04-01", "end": "05-15", "label": "indoors"}, {"start": "04-01", "end": "08-31", "label": "direct"}]',
+    transplant_windows = '[{"start": "05-15", "end": "06-15"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Sunflower');
+
+UPDATE plant_catalogue
+SET transplant_windows = '[{"start": "05-15", "end": "06-15"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Oregano') AND variety = 'Hera';
+
+-- Notes for these now come from Rebel Gardening too
+UPDATE plant_catalogue SET source = 'Bingenheimer, Rebel Gardening'
+WHERE (plant_type_id, variety) IN (SELECT id, v FROM plant_types, (VALUES ('Artichoke', 'Green Globe'), ('Oregano', 'Hera')) AS x(n, v) WHERE name = n);
 
 -- Bolt-resistant varieties from mid-February; not later than mid-July, or roots have no time to swell
 UPDATE plant_catalogue SET
