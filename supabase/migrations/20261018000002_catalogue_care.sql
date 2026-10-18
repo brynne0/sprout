@@ -21,11 +21,11 @@ FROM (VALUES
     ('Swede', '2 seeds per 4cm module under cover and thin, or sow in a tray and prick out', 'Plant deep, up to the first true leaf. Mesh for the first 6-8 weeks (until mid-August), then bird netting if there are pigeons. Water until established and in a dry early autumn as roots swell. Twist off yellowing lower leaves'),
     ('Turnip', 'Multisow 5-6 seeds per 3cm module for clumps of 3-4. Germinate early sowings in the house, then move them to a cold greenhouse', 'Fleece early plantings for at least a month; mesh in late summer and autumn. Water until established, and in dry spells as roots swell'),
 -- Alliums
-    ('Bulb Onion and Shallot', NULL, NULL),
-    ('Garlic', NULL, NULL),
-    ('Leek', NULL, NULL),
-    ('Overwintering Onion', NULL, NULL),
-    ('Spring Onion', NULL, NULL),
+    ('Bulb Onion and Shallot', 'Multisow 6 seeds per 3cm module, or 6 per cm in outdoor drills to lift and transplant after 5 weeks. Plant sets with the tip about 3cm below the surface', 'Fleece spring plantings to speed growth, mesh later if there are rabbits. Water only if it''s dry as bulbs form in June. Hoe regularly in spring while the leaves are upright'),
+    ('Garlic', 'Plant the biggest cloves, flat base down, tip just below the surface; October is best', 'Little needed beyond weeding. Water in late May-early June if spring is dry. Snap off hardneck scapes before the flowers open; they''re edible'),
+    ('Leek', 'Multisow 4-5 seeds per module in the second week of April; pot on from 3cm modules into 7cm pots after about 8 weeks', 'Plant with the root ball 3-5cm deep (7cm for whiter stems), water in and don''t backfill. Keep watered in dry weather, especially late summer. Mesh from planting to early September if leek moth or leaf miner are about. Remove rust-covered lower leaves in autumn'),
+    ('Overwintering Onion', 'Multisow 6 seeds per 3cm module, not before the last week of August', 'Mesh over winter against rabbits (fleece holds too much moisture). Hoe in spring while the leaves are upright'),
+    ('Spring Onion', 'Multisow 10 seeds per 3cm module, or 3 seeds per cm in outdoor drills 2.5cm deep', 'Fleece spring plantings, mesh later if there are rabbits. Water in dry weather for better leaves'),
 -- Cucurbits
     ('Cucumber', NULL, NULL),
     ('Melon', NULL, NULL),
@@ -112,11 +112,11 @@ FROM (VALUES
     ('Swede', NULL, 'No rush, they stand all winter; finish before spring warmth toughens the roots. Or lift in December to store in a box in a shed until March', NULL),
     ('Turnip', NULL, 'Twist out the largest in each clump; sweetest between cherry and apricot size. Baby turnip leaves are edible. Larger roots store 2-3 months in a cool shed if lifted before hard frosts', NULL),
 -- Alliums
-    ('Bulb Onion and Shallot', NULL, NULL, NULL),
-    ('Garlic', NULL, NULL, NULL),
-    ('Leek', NULL, NULL, NULL),
-    ('Overwintering Onion', NULL, NULL, NULL),
-    ('Spring Onion', NULL, NULL, NULL),
+    ('Bulb Onion and Shallot', NULL, 'Once a quarter of the necks have folded, bend the rest over and leave a week. Lift with a trowel and cure until the skins are papery; they store until late spring', NULL),
+    ('Garlic', NULL, 'Don''t wait for the leaves to yellow: lift when cloves bulge under the skin. Pull some early as green garlic in late spring. Dry somewhere airy, out of direct sun, for a month', NULL),
+    ('Leek', NULL, 'Cut the largest from a clump and leave the rest growing. Summer varieties rot by October and winter ones flower in May. Where the soil freezes, lift with roots and soil into a box', NULL),
+    ('Overwintering Onion', NULL, 'Harvest as for bulb onions in June. Use them first, as they sprout by late December', NULL),
+    ('Spring Onion', NULL, 'Ready within 10 weeks; twist out the largest from each clump over about 2 months', NULL),
 -- Cucurbits
     ('Cucumber', 'Cordon', NULL, NULL),
     ('Cucumber', 'Ridge', NULL, NULL),
@@ -214,6 +214,21 @@ UPDATE plant_catalogue SET
     transplant_windows = '[{"start": "03-15", "end": "05-15"}, {"start": "09-15", "end": "10-15", "label": "autumn crop"}]',
     harvest_windows = '[{"start": "04-01", "end": "06-15"}, {"start": "10-15", "end": "11-30", "label": "autumn crop"}]'
 WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Radish') AND variety = 'Spring';
+
+-- Sets go in after the spring equinox, to reduce bolting
+UPDATE plant_catalogue SET
+    sowing_windows = '[{"start": "04-01", "end": "04-30", "label": "from sets"}, {"start": "02-15", "end": "03-31", "label": "from seed"}]',
+    transplant_windows = '[{"start": "03-15", "end": "04-30"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Bulb Onion and Shallot');
+
+UPDATE plant_catalogue
+SET sowing_windows = '[{"start": "02-15", "end": "07-15"}, {"start": "08-15", "end": "08-31", "label": "overwintering"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Spring Onion');
+
+-- Not before the last week of August, to reduce bolting
+UPDATE plant_catalogue
+SET sowing_windows = '[{"start": "10-01", "end": "10-15", "label": "from sets"}, {"start": "08-25", "end": "08-31", "label": "from seed"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Overwintering Onion');
 
 -- Fixes the impossible 06-31 end date
 UPDATE plant_catalogue
