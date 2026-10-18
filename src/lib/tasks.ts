@@ -12,7 +12,6 @@ export const TASKS: Record<
     column: 'sow_dates' | 'repot_dates' | 'transplant_dates' | 'harvest_dates'
     icon: Component
     dot: string
-    color: string
     soft: string
   }
 > = {
@@ -22,7 +21,6 @@ export const TASKS: Record<
     column: 'sow_dates',
     icon: Sprout,
     dot: 'track-sowing-dot',
-    color: 'var(--sow)',
     soft: 'color-mix(in oklab, var(--sow) 50%, var(--sow-dot))',
   },
   repot: {
@@ -31,7 +29,6 @@ export const TASKS: Record<
     column: 'repot_dates',
     icon: PlantPot,
     dot: 'track-repot-dot',
-    color: 'var(--repot)',
     soft: 'color-mix(in oklab, var(--repot) 50%, var(--repot-dot))',
   },
   transplant: {
@@ -40,7 +37,6 @@ export const TASKS: Record<
     column: 'transplant_dates',
     icon: Shovel,
     dot: 'track-transplant-dot',
-    color: 'var(--transplant)',
     soft: 'color-mix(in oklab, var(--transplant) 50%, var(--transplant-dot))',
   },
   harvest: {
@@ -49,7 +45,6 @@ export const TASKS: Record<
     column: 'harvest_dates',
     icon: Scissors,
     dot: 'track-harvest-dot',
-    color: 'var(--harvest)',
     soft: 'color-mix(in oklab, var(--harvest) 50%, var(--harvest-dot))',
   },
 }

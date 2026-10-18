@@ -461,7 +461,7 @@ const infoRows = computed(() => {
                 <component
                   :is="TASKS[entry.type].icon"
                   class="w-3.5 h-3.5 shrink-0"
-                  :style="{ color: TASKS[entry.type].color }"
+                  :style="{ color: TASKS[entry.type].soft }"
                 />
                 <span class="flex-1"
                   >{{ TASKS[entry.type].done }} · {{ formatDate(entry.date) }}</span
