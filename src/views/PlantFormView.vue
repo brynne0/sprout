@@ -659,14 +659,6 @@ async function submitPlant() {
                     />
                   </Field>
                   <Field>
-                    <FieldLabel for="spacing">Spacing</FieldLabel>
-                    <Textarea
-                      id="spacing"
-                      v-model="overrides.spacing"
-                      :placeholder="selectedCatalogueEntry?.spacing ?? ''"
-                    />
-                  </Field>
-                  <Field>
                     <FieldLabel for="germination">Germination</FieldLabel>
                     <Textarea
                       id="germination"
@@ -675,19 +667,27 @@ async function submitPlant() {
                     />
                   </Field>
                   <Field>
-                    <FieldLabel for="seed_to_harvest">Seed to harvest</FieldLabel>
-                    <Textarea
-                      id="seed_to_harvest"
-                      v-model="overrides.seed_to_harvest"
-                      :placeholder="selectedCatalogueEntry?.seed_to_harvest ?? ''"
-                    />
-                  </Field>
-                  <Field>
                     <FieldLabel for="sowing_to_transplant">Sowing to transplant</FieldLabel>
                     <Textarea
                       id="sowing_to_transplant"
                       v-model="overrides.sowing_to_transplant"
                       :placeholder="selectedCatalogueEntry?.sowing_to_transplant ?? ''"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel for="spacing">Spacing</FieldLabel>
+                    <Textarea
+                      id="spacing"
+                      v-model="overrides.spacing"
+                      :placeholder="selectedCatalogueEntry?.spacing ?? ''"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel for="seed_to_harvest">Seed to harvest</FieldLabel>
+                    <Textarea
+                      id="seed_to_harvest"
+                      v-model="overrides.seed_to_harvest"
+                      :placeholder="selectedCatalogueEntry?.seed_to_harvest ?? ''"
                     />
                   </Field>
                   <Field>

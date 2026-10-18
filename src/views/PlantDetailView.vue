@@ -230,9 +230,9 @@ const infoRows = computed(() => {
   return [
     { icon: Sun, label: 'Position', value: p.position },
     { icon: Thermometer, label: 'Hardiness', value: p.hardiness },
-    { icon: Ruler, label: 'Spacing', value: p.spacing },
     { icon: Sprout, label: 'Germination', value: p.germination },
     { icon: Leaf, label: 'Sow to transplant', value: p.sowing_to_transplant },
+    { icon: Ruler, label: 'Spacing', value: p.spacing },
     { icon: Clock, label: 'Seed to harvest', value: p.seed_to_harvest },
     { icon: HandHeart, label: 'Care', value: p.care },
     { icon: Scissors, label: 'Harvest', value: p.harvest },
