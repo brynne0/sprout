@@ -88,6 +88,7 @@ const overrides = ref({
   seed_to_harvest: '',
   sowing_to_transplant: '',
   care: '',
+  pests: '',
   harvest: '',
   suitability: [] as string[],
 })
@@ -213,6 +214,7 @@ const TEXT_FIELDS = [
   'seed_to_harvest',
   'sowing_to_transplant',
   'care',
+  'pests',
   'harvest',
 ] as const
 
@@ -315,6 +317,7 @@ async function loadPlant(id: string) {
       seed_to_harvest: text('seed_to_harvest'),
       sowing_to_transplant: text('sowing_to_transplant'),
       care: text('care'),
+      pests: text('pests'),
       harvest: text('harvest'),
       suitability: (o.suitability as string[] | undefined) ?? [],
     }
@@ -696,6 +699,14 @@ async function submitPlant() {
                       id="care"
                       v-model="overrides.care"
                       :placeholder="selectedCatalogueEntry?.care ?? ''"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel for="pests">Pests</FieldLabel>
+                    <Textarea
+                      id="pests"
+                      v-model="overrides.pests"
+                      :placeholder="selectedCatalogueEntry?.pests ?? ''"
                     />
                   </Field>
                   <Field>

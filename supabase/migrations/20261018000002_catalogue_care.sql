@@ -1,87 +1,88 @@
--- Germination, care and harvest notes from No Dig, plus sowing windows matched to the text.
+-- Germination, care, pests and harvest notes from No Dig, plus sowing windows matched to the text.
 -- NULLs leave the current value alone, so unfilled rows are safe to run.
 
 -- Per plant type
 UPDATE plant_types pt SET
     germination = COALESCE(v.germination, pt.germination),
-    care = COALESCE(v.care, pt.care)
+    care = COALESCE(v.care, pt.care),
+    pests = COALESCE(v.pests, pt.pests)
 FROM (VALUES
 -- Legumes
-    ('Broad Beans', 'Sow under cover in 5cm modules', 'Water in dry weather once flowering. Support with two levels of string around posts. Pinch out the tops once the main stem is full of flowers to deter blackfly'),
-    ('Climbing Beans', 'One seed per 5cm module, laid flat and covered to twice its thickness; no need to pre-soak', 'Twist stems around canes at first (teepee 90-120cm wide, or a double row of 2.5m sticks). Soak twice a week in dry weather once in full flower'),
-    ('Dwarf French Beans', 'One seed per 3cm module under cover, or 3cm deep outdoors for summer sowings; warmth helps germination', 'Fleece early plantings. Water twice a week in dry weather once flowering; dry roots stop pods setting. No support needed'),
-    ('Peas', '2-3 seeds per 3-5cm module, planted out as a clump; old seed germinates erratically', 'Support all but dwarf varieties from early May with stakes, pea sticks and strings every 15cm. Water regularly once flowering if dry'),
+    ('Broad Beans', 'Sow under cover in 5cm modules', 'Water in dry weather once flowering. Support with two levels of string around posts', 'Net seedlings against birds. Blackfly is worst in May-June on later sowings and dry plants; earlier sowing, watering, and pinching out the tops once the main stem is full of flowers all help, and a hose spray washes them off'),
+    ('Climbing Beans', 'One seed per 5cm module, laid flat and covered to twice its thickness; no need to pre-soak', 'Twist stems around canes at first (teepee 90-120cm wide, or a double row of 2.5m sticks). Soak twice a week in dry weather once in full flower', 'Rarely needs protection; wrap mesh around young plants if deer or rabbits bite off the tops. Watering also prevents blackfly on young growth'),
+    ('Dwarf French Beans', 'One seed per 3cm module under cover, or 3cm deep outdoors for summer sowings; warmth helps germination', 'Fleece early plantings. Water twice a week in dry weather once flowering; dry roots stop pods setting. No support needed', 'Well-watered plants resist blackfly. Pick often so pods don''t touch the soil, where slugs eat them. Yellow leaves in cool soil are from cold, not hunger, and recover when it warms'),
+    ('Peas', '2-3 seeds per 3-5cm module, planted out as a clump; old seed germinates erratically', 'Support all but dwarf varieties from early May with stakes, pea sticks and strings every 15cm. Water regularly once flowering if dry', 'Fleece early plantings against rabbits and pigeons, then bird netting once it comes off. Pea weevil notches on leaf edges are harmless in moist, mulched soil. Pea moth maggots appear in pods from July, so early sowings avoid them. Powdery mildew is mostly a problem on late sowings; Terrain resists it'),
 -- Brassicas
-    ('Broccoli', 'Sow thinly in a seed tray under cover, lightly covered; prick out into 3-5cm modules within a week. For just a few plants, sow 2 per module and thin', 'Transplant deep, burying the stem. Fleece in spring and mesh in summer for 4-6 weeks after planting; bird netting where there are pigeons. Water until established, then in dry weather as heads form. Snap off yellowing lower leaves'),
-    ('Brussels Sprouts', 'Sow thinly in a tray and prick out into 3cm modules, or 2 per module and thin; pot on into 7cm pots after a month', 'Plant deep. Mesh on hoops for 6-8 weeks after planting. Stake and tie in during late summer. Pull off yellowing lower leaves. Water at planting and in dry Septembers'),
-    ('Cabbage', 'Always under cover. Sow thinly in a tray to prick out, or 2 per 3-5cm module and thin', 'Plant deep, burying the stem. Fleece in spring and mesh later for the first 6-8 weeks; bird netting where there are pigeons. Water until established, then summer and autumn types in dry weather as hearts form. Remove yellowing lower leaves'),
-    ('Cauliflower', 'Under cover with warmth (indoors for February sowings). Sow thinly in a tray to prick out, or 2 per module and thin', 'Plant up to 5cm deep. Fleece or mesh from day one; mesh against caterpillars through summer. Water in dry weather as curds swell. Snap off yellowing outer leaves'),
-    ('Kale', '2 seeds per 3cm module and thin, or sow in a tray to prick out; multisow for salad leaves', 'Plant deep. Mesh for at least 6 weeks after planting; bird netting on hoops for pigeons. Water only in very dry weather once established. Remove yellowing lower leaves; stake tall varieties in windy gardens'),
-    ('Radish', 'Spring: multisow 5 seeds per 3cm module, keeping February sowings warm in the house before moving them to a cold greenhouse. Winter: 2 seeds per module', 'Plant deep to bury the stems. Fleece in March-April, then fine mesh; keep mesh on winter radish until late September. Water spring radish every 2 days in dry weather, winter radish only in a dry early autumn'),
-    ('Swede', '2 seeds per 4cm module under cover and thin, or sow in a tray and prick out', 'Plant deep, up to the first true leaf. Mesh for the first 6-8 weeks (until mid-August), then bird netting if there are pigeons. Water until established and in a dry early autumn as roots swell. Twist off yellowing lower leaves'),
-    ('Turnip', 'Multisow 5-6 seeds per 3cm module for clumps of 3-4. Germinate early sowings in the house, then move them to a cold greenhouse', 'Fleece early plantings for at least a month; mesh in late summer and autumn. Water until established, and in dry spells as roots swell'),
+    ('Broccoli', 'Sow thinly in a seed tray under cover, lightly covered; prick out into 3-5cm modules within a week. For just a few plants, sow 2 per module and thin', 'Transplant deep, burying the stem. Fleece in spring and mesh in summer for 4-6 weeks after planting; bird netting where there are pigeons. Water until established, then in dry weather as heads form. Snap off yellowing lower leaves', 'Covers keep off flea beetle in spring, caterpillars in summer, and cabbage root fly. Squash caterpillars; expect a few in late calabrese heads. If aphids appear, wash them off, water, and add 3cm of compost'),
+    ('Brussels Sprouts', 'Sow thinly in a tray and prick out into 3cm modules, or 2 per module and thin; pot on into 7cm pots after a month', 'Plant deep. Mesh on hoops for 6-8 weeks after planting. Stake and tie in during late summer. Pull off yellowing lower leaves. Water at planting and in dry Septembers', 'Mesh keeps off flea beetle, cabbage root fly, swede midge and caterpillars. Squash caterpillars in late summer, especially in the plant tops. Swap mesh for bird netting on a frame if there are pigeons. Compost and watering keep aphids and whitefly down in autumn and winter'),
+    ('Cabbage', 'Always under cover. Sow thinly in a tray to prick out, or 2 per 3-5cm module and thin', 'Plant deep, burying the stem. Fleece in spring and mesh later for the first 6-8 weeks; bird netting where there are pigeons. Water until established, then summer and autumn types in dry weather as hearts form. Remove yellowing lower leaves', 'Covers keep off flea beetle, cabbage root fly, birds and rabbits. Removing yellow leaves also keeps slug numbers down'),
+    ('Cauliflower', 'Under cover with warmth (indoors for February sowings). Sow thinly in a tray to prick out, or 2 per module and thin', 'Plant up to 5cm deep. Fleece or mesh from day one, and mesh through summer. Water in dry weather as curds swell. Snap off yellowing outer leaves', 'Spring covers keep off flea beetle and cabbage root fly, and summer mesh keeps off caterpillars. Late-summer plantings crop when few insects are about, but net against pigeons. Squash caterpillars. Removing yellow leaves reduces slugs'),
+    ('Kale', '2 seeds per 3cm module and thin, or sow in a tray to prick out; multisow for salad leaves', 'Plant deep. Mesh for at least 6 weeks after planting; bird netting on hoops for pigeons. Water only in very dry weather once established. Remove yellowing lower leaves; stake tall varieties in windy gardens', 'Covers keep off insects, pigeons and rabbits; support netting on hoops so pigeons can''t peck through. Removing yellow leaves reduces slugs'),
+    ('Radish', 'Spring: multisow 5 seeds per 3cm module, keeping February sowings warm in the house before moving them to a cold greenhouse. Winter: 2 seeds per module', 'Plant deep to bury the stems. Fleece in March-April, then fine mesh; keep mesh on winter radish until late September. Water spring radish every 2 days in dry weather, winter radish only in a dry early autumn', 'Fine mesh from mid-spring keeps off flea beetle and cabbage root fly'),
+    ('Swede', '2 seeds per 4cm module under cover and thin, or sow in a tray and prick out', 'Plant deep, up to the first true leaf. Mesh for the first 6-8 weeks (until mid-August), then bird netting if there are pigeons. Water until established and in a dry early autumn as roots swell. Twist off yellowing lower leaves', 'Mesh keeps off flea beetle, cabbage root fly and swede midge, which eats new leaves and stunts growth. Removing yellow leaves reduces slugs'),
+    ('Turnip', 'Multisow 5-6 seeds per 3cm module for clumps of 3-4. Germinate early sowings in the house, then move them to a cold greenhouse', 'Fleece early plantings for at least a month; mesh in late summer and autumn. Water until established, and in dry spells as roots swell', 'Covers keep off flea beetle, pigeons and cabbage root fly, including its second generation in late summer'),
 -- Alliums
-    ('Bulb Onion and Shallot', 'Multisow 6 seeds per 3cm module, or 6 per cm in outdoor drills to lift and transplant after 5 weeks. Plant sets with the tip about 3cm below the surface', 'Fleece spring plantings to speed growth, mesh later if there are rabbits. Water only if it''s dry as bulbs form in June. Hoe regularly in spring while the leaves are upright'),
-    ('Garlic', 'Plant the biggest cloves, flat base down, tip just below the surface; October is best', 'Little needed beyond weeding. Water in late May-early June if spring is dry. Snap off hardneck scapes before the flowers open; they''re edible'),
-    ('Leek', 'Multisow 4-5 seeds per module in the second week of April; pot on from 3cm modules into 7cm pots after about 8 weeks', 'Plant with the root ball 3-5cm deep (7cm for whiter stems), water in and don''t backfill. Keep watered in dry weather, especially late summer. Mesh from planting to early September if leek moth or leaf miner are about. Remove rust-covered lower leaves in autumn'),
-    ('Overwintering Onion', 'Multisow 6 seeds per 3cm module, not before the last week of August', 'Mesh over winter against rabbits (fleece holds too much moisture). Hoe in spring while the leaves are upright'),
-    ('Spring Onion', 'Multisow 10 seeds per 3cm module, or 3 seeds per cm in outdoor drills 2.5cm deep', 'Fleece spring plantings, mesh later if there are rabbits. Water in dry weather for better leaves'),
+    ('Bulb Onion and Shallot', 'Multisow 6 seeds per 3cm module, or 6 per cm in outdoor drills to lift and transplant after 5 weeks. Plant sets with the tip about 3cm below the surface', 'Fleece spring plantings to speed growth, mesh later if there are rabbits. Water only if it''s dry as bulbs form in June. Hoe regularly in spring while the leaves are upright', 'Downy mildew browns leaves in a wet late spring, and affected bulbs don''t store long. Check sets are firm with no white mould at the base (onion white rot). Where allium leaf miner is a pest, transplant in May and harvest by August to miss both generations'),
+    ('Garlic', 'Plant the biggest cloves, flat base down, tip just below the surface; October is best', 'Little needed beyond weeding. Water in late May-early June if spring is dry. Snap off hardneck scapes before the flowers open; they''re edible', 'Mesh in spring if allium leaf miner or leek moth are about. Mild rust is fine, but if leaves are covered, harvest straight away; garlic under cover gets less. Onion white rot yellows leaves and rots roots: pull affected plants and bin them, don''t compost'),
+    ('Leek', 'Multisow 4-5 seeds per module in the second week of April; pot on from 3cm modules into 7cm pots after about 8 weeks', 'Plant with the root ball 3-5cm deep (7cm for whiter stems), water in and don''t backfill. Keep watered in dry weather, especially late summer', 'Allium leaf miner leaves pale lines in leaves; mesh for the plant''s whole life prevents it. Leek moth only shows as stalled growth in late summer; if it''s about, mesh from planting to early September. Mesh also stops rabbits eating seedlings. Remove rust-covered lower leaves in autumn'),
+    ('Overwintering Onion', 'Multisow 6 seeds per 3cm module, not before the last week of August', 'Mesh over winter against rabbits (fleece holds too much moisture). Hoe in spring while the leaves are upright', 'Check sets are firm with no white mould at the base'),
+    ('Spring Onion', 'Multisow 10 seeds per 3cm module, or 3 seeds per cm in outdoor drills 2.5cm deep', 'Fleece spring plantings, mesh later if there are rabbits. Water in dry weather for better leaves', 'Later sowings get downy mildew in damp August weather'),
 -- Cucurbits
-    ('Cucumber', 'Sow one seed per 5cm module, laid flat and lightly covered, no more than 4 weeks before the last frost. Needs steady warmth, ideally indoors at night. Pot on to 7cm after 2 weeks, then 10cm. Don''t overwater, as stems damp off', 'Plant 5cm deep after the last frost, even under cover. Cordons: plant on a string, twist the stem around it, remove all sideshoots, and loop the tip back down at the top. Remove fruits until 60cm tall, then every second one. Water twice a week outdoors, every 2-3 days under cover. Cut off mildewed lower leaves. Under cover, don''t wet leaves on cloudy days, to prevent downy mildew'),
-    ('Melon', 'Sow one seed per 3cm module and germinate in the house. Keep above 10°C at night once in the greenhouse. Pot on to 7cm after 3-4 weeks, and 10cm in late April. Water only when pots feel light', 'Plant 5cm deep under cover, on a string for cordons. Twist the stem around the string every 2-3 days. Pinch out sideshoots until 1-1.2m, then let them grow and pinch each tip once a melon forms. In a cool summer keep 3-4 melons and remove new sideshoots. Water moderately, more in heat, less once fruits ripen'),
-    ('Pumpkin', 'Sow one seed flat per 5cm module, a month before the last frost. Needs 20-25°C, so keep in the house for the first week. Pot on to 9cm once true leaves grow. Without a greenhouse, sow in late April-early May', 'Plant 5cm deeper than in the pot and water every 2 days in dry weather for a week. Fleece in cold, windy late May. Then little needed: no pruning or thinning, and rotting small fruits are normal. Water once or twice as fruits swell if summer is dry'),
-    ('Zucchini', 'Sow one seed per 5cm module or small pot, laid flat and lightly covered, 2-3 weeks before the last frost. Keep above 16°C at night for 5 days. Pot on to 10cm after 15-20 days', 'Plant 5cm deeper than in the pot and water every 2 days for the first week or two. Fleece if it''s cool and windy after planting. Water often in hot, dry weather or it stops fruiting. Feed weekly in containers once fruits form. Powdery mildew on older leaves after midsummer is normal; remove them if you like'),
+    ('Cucumber', 'Sow one seed per 5cm module, laid flat and lightly covered, no more than 4 weeks before the last frost. Needs steady warmth, ideally indoors at night. Pot on to 7cm after 2 weeks, then 10cm. Don''t overwater, as stems damp off', 'Plant 5cm deep after the last frost, even under cover. Cordons: plant on a string, twist the stem around it, remove all sideshoots, and loop the tip back down at the top. Remove fruits until 60cm tall, then every second one. Water twice a week outdoors, every 2-3 days under cover', 'Slugs can damage young ridge plants in cool, wet weather. Under cover, watch for red spider mite and whitefly; the predatory mite Phytoseiulus can be released at planting. Cut off lower leaves with powdery mildew. Under cover, don''t wet leaves on cloudy days, to prevent downy mildew'),
+    ('Melon', 'Sow one seed per 3cm module and germinate in the house. Keep above 10°C at night once in the greenhouse. Pot on to 7cm after 3-4 weeks, and 10cm in late April. Water only when pots feel light', 'Plant 5cm deep under cover, on a string for cordons. Twist the stem around the string every 2-3 days. Pinch out sideshoots until 1-1.2m, then let them grow and pinch each tip once a melon forms. In a cool summer keep 3-4 melons and remove new sideshoots. Water moderately, more in heat, less once fruits ripen', 'Hose aphids off in late spring. Slug and woodlice nibbles are minor. Red spider mite is serious if it comes early'),
+    ('Pumpkin', 'Sow one seed flat per 5cm module, a month before the last frost. Needs 20-25°C, so keep in the house for the first week. Pot on to 9cm once true leaves grow. Without a greenhouse, sow in late April-early May', 'Plant 5cm deeper than in the pot and water every 2 days in dry weather for a week. Fleece in cold, windy late May. Then little needed: no pruning or thinning, and rotting small fruits are normal. Water once or twice as fruits swell if summer is dry', 'If slugs are bad, check with a torch for a few nights after planting. Powdery mildew in late summer is normal and helps ripening'),
+    ('Zucchini', 'Sow one seed per 5cm module or small pot, laid flat and lightly covered, 2-3 weeks before the last frost. Keep above 16°C at night for 5 days. Pot on to 10cm after 15-20 days', 'Plant 5cm deeper than in the pot and water every 2 days for the first week or two. Fleece if it''s cool and windy after planting. Water often in hot, dry weather or it stops fruiting. Feed weekly in containers once fruits form', 'Slugs can damage young plants, but warm-weather plantings grow away quickly. Powdery mildew on older leaves after midsummer is normal; remove them if you like'),
 -- Umbellifers
-    ('Bulb Fennel', NULL, NULL),
-    ('Carrot', NULL, NULL),
-    ('Celeriac', NULL, NULL),
-    ('Celery', NULL, NULL),
-    ('Chervil', NULL, NULL),
-    ('Coriander', NULL, NULL),
-    ('Dill', NULL, NULL),
-    ('Parsley', NULL, NULL),
-    ('Parsnip', NULL, NULL),
+    ('Bulb Fennel', 'Avoid April sowings, which bolt. Sow 2 seeds per 3cm module and thin to the strongest. Keep early sowings in the house for about a week, then under cover and frost-free. Ready to plant in 4-5 weeks', 'Plant with the module tops at least 2cm below ground. Fleece directly over spring plantings; it can stay until early May. Water until growing strongly, and while bulbs swell from late May into early summer', 'Few pests. Spring fleece keeps rabbits off, and slugs can take direct-sown seedlings at the two-leaf stage'),
+    ('Carrot', 'Sow direct, never transplant, as it breaks the tap root. Wait for warmer weather. About 3 seeds per cm in drills 1-2cm deep; water the drill first if dry. Mark rows with a radish every 5cm. Thin to 2-3 per cm after about 6 weeks', 'Fleece early sowings to speed growth. Weed carefully while small. Rarely needs water, except in a dry early summer as roots swell; drier soil gives sweeter roots', 'Carrot root fly is active mid-May through June, so swap fleece for mesh on hoops in early May and keep early sowings covered. Summer sowings can stay uncovered from late June, but cover before 10 August for the second generation. Sow away from slug hiding places and don''t leave mature roots in too long'),
+    ('Celeriac', 'Needs light to germinate, so don''t cover the seeds. Scatter on wet seed compost, mist, and cover the tray with glass or polythene at 15-20°C in the light; remove the cover when seedlings appear (about 2 weeks). Prick out into 3cm modules after 3-4 weeks. Never let seedlings get cold, or they bolt later', 'Plant the module tops 1cm below the surface and water in. Cover with fleece or mesh for about a month if cool. Water twice more after planting and in hot, dry spells. Removing yellow lower leaves is optional', 'Aphids can stunt plants; the cover after planting keeps them off. Late blight causes brown leaf patches in autumn. Avoid beds with rotting wooden edges, where slugs and woodlice hide'),
+    ('Celery', 'Needs light to germinate, so don''t cover the seeds. Sow thinly under cover on wet seed compost, mist, and cover the tray with glass or polythene at 15-20°C in the light; remove the cover at the first leaves (about 2 weeks). Avoid frosty conditions, which cause bolting. Prick out into 3cm modules after about 3 weeks and grow on for about 5 more. A second sowing in late May gives tender celery in September and October', 'Plant after the last frost, root ball tops 1cm below the surface, and water in well. Fleece May plantings if cool. Needs more water than any other vegetable: twice a week if it doesn''t rain. Modern varieties don''t need blanching. Twist off sideshoots from the base; they''re edible', 'Mesh for the first month keeps aphids off. Keep away from slug hiding places. Early blight causes light brown spots in early summer; remove damaged leaves. Late blight browns leaves in damp late summer, especially with nights of 13°C or more; remove affected leaves, harvest promptly and grow resistant varieties for autumn'),
+    ('Chervil', NULL, NULL, NULL),
+    ('Coriander', NULL, NULL, NULL),
+    ('Dill', NULL, NULL, NULL),
+    ('Parsley', NULL, NULL, NULL),
+    ('Parsnip', 'Sow direct, as transplanting breaks the tap root. Choose a still day, as the seeds blow away. 3cm drills, seeds about 1cm apart; water the drill first if dry and tamp down after. Needs moist soil for about 2 weeks to germinate. Mark rows with radishes. Fleece early sowings', 'Thin at the first true leaves: 2.5cm for small, 5cm for medium, 10cm for big roots. Remove fleece before it gets hot, often late April. Weed until the leaves close over, covering your skin as the sap irritates. Rarely needs watering. Leaves rotting in winter is normal', 'Canker rots the shoulders in wet, heavy soil; cut it off after harvest, and later sowings suffer less. Carrot fly damage is usually superficial. Lift and store if rodents chew the crowns'),
 -- Beet family
-    ('Beetroot', NULL, NULL),
-    ('Chard', NULL, NULL),
-    ('Spinach', NULL, NULL),
+    ('Beetroot', 'Sow under cover. February and March sowings need 5-7 days of warmth in the house, then the greenhouse; use bolt-resistant Boltardy or Pablo before late March. Multisow 3 multigerm or 5 monogerm seeds per 3cm module, aiming for 4 seedlings; thin the weaker ones and eat the thinnings. Not later than mid-July', 'Plant clumps 4-6 weeks after sowing, with most of the stems below the soil. Fleece early plantings for a few weeks, on hoops if nights are frosty. Water 2-3 times after planting, then not for a month or more; a little once roots reach golf-ball size. Dry weather makes roots sweeter', 'Fleece or mesh keeps off birds, rabbits and deer. Leaf miner blotches rarely matter. Harvest straight away if you see rodent teeth marks; the beets are still edible'),
+    ('Chard', 'Sow under cover no earlier than mid-April, or plants may bolt. One seed per 3cm module gives 2-3 seedlings: thin to 1-2 for cooking leaves, or multisow 2 for salad. Or sow direct 5cm apart, thinning to 5cm for salad or 15cm for cooking. Ready to plant in 3-4 weeks', 'Plant with the stems below the soil and water in. Keep watered in dry weather. Remove fading outer leaves. Later summer sowings overwinter better', 'Removing old outer leaves reduces slug damage. Net against birds if they strip the leaves'),
+    ('Spinach', 'Don''t sow between mid-April and late July, or it bolts. Multisow 2-3 seeds per 3cm module for salad clumps, or one plant for cooking leaves. Plant out after 2-3 weeks in late summer, 4 weeks in spring, 1cm deeper than the root ball. Can also sow direct in late March or August', 'Water until growing strongly (5-7 days), and twice a week in dry spring weather. Fleece or mesh spring plantings; mesh over winter boosts growth in late winter. Remove stalks and yellow leaves as you pick', 'Plant into clear ground away from slug hiding places. Leatherjackets can sever stems of early plantings: dig out the grub and keep spare plants for 2 weeks'),
 -- Leafy salad crops
-    ('Chicory', NULL, NULL),
-    ('Corn Salad', NULL, NULL),
-    ('Endive', NULL, NULL),
-    ('Land Cress', NULL, NULL),
-    ('Lettuce', NULL, NULL),
-    ('Mizuna and Mustards', NULL, NULL),
-    ('Pak Choi', NULL, NULL),
-    ('Rocket', NULL, NULL),
-    ('Winter Purslane', NULL, NULL),
-    ('Wombok', NULL, NULL),
+    ('Chicory', NULL, NULL, NULL),
+    ('Corn Salad', NULL, NULL, NULL),
+    ('Endive', NULL, NULL, NULL),
+    ('Land Cress', NULL, NULL, NULL),
+    ('Lettuce', NULL, NULL, NULL),
+    ('Mizuna and Mustards', NULL, NULL, NULL),
+    ('Pak Choi', NULL, NULL, NULL),
+    ('Rocket', NULL, NULL, NULL),
+    ('Winter Purslane', NULL, NULL, NULL),
+    ('Wombok', NULL, NULL, NULL),
 -- Solanums, basil, and sweetcorn
-    ('Basil', NULL, NULL),
-    ('Capsicum', NULL, NULL),
-    ('Chilli', NULL, NULL),
-    ('Eggplant', NULL, NULL),
-    ('Potato', NULL, NULL),
-    ('Sweetcorn', NULL, NULL),
-    ('Tomato', NULL, NULL),
+    ('Basil', NULL, NULL, NULL),
+    ('Capsicum', NULL, NULL, NULL),
+    ('Chilli', NULL, NULL, NULL),
+    ('Eggplant', NULL, NULL, NULL),
+    ('Potato', NULL, NULL, NULL),
+    ('Sweetcorn', NULL, NULL, NULL),
+    ('Tomato', NULL, NULL, NULL),
 -- Perennial vegetables
-    ('Artichoke', NULL, NULL),
-    ('Asparagus', NULL, NULL),
-    ('Chives', NULL, NULL),
-    ('Mint', NULL, NULL),
-    ('Oregano', NULL, NULL),
-    ('Perennial Kale', NULL, NULL),
-    ('Raspberry', NULL, NULL),
-    ('Rhubarb', NULL, NULL),
-    ('Rosemary', NULL, NULL),
-    ('Sorrel', NULL, NULL),
-    ('Strawberry', NULL, NULL),
-    ('Thyme', NULL, NULL),
+    ('Artichoke', NULL, NULL, NULL),
+    ('Asparagus', NULL, NULL, NULL),
+    ('Chives', NULL, NULL, NULL),
+    ('Mint', NULL, NULL, NULL),
+    ('Oregano', NULL, NULL, NULL),
+    ('Perennial Kale', NULL, NULL, NULL),
+    ('Raspberry', NULL, NULL, NULL),
+    ('Rhubarb', NULL, NULL, NULL),
+    ('Rosemary', NULL, NULL, NULL),
+    ('Sorrel', NULL, NULL, NULL),
+    ('Strawberry', NULL, NULL, NULL),
+    ('Thyme', NULL, NULL, NULL),
 -- Flowers
-    ('Calendula', NULL, NULL),
-    ('Nasturtium', NULL, NULL),
-    ('Sunflower', NULL, NULL)
-) AS v(name, germination, care)
+    ('Calendula', NULL, NULL, NULL),
+    ('Nasturtium', NULL, NULL, NULL),
+    ('Sunflower', NULL, NULL, NULL)
+) AS v(name, germination, care, pests)
 WHERE pt.name = v.name;
 
 -- Per catalogue entry (variety NULL is the general entry)
@@ -124,20 +125,20 @@ FROM (VALUES
     ('Pumpkin', NULL, 'Pick before the first frost, once leaves die back, stalks turn brown and the skin sounds hollow when tapped. Keep the stalk intact. Cure on a sunny windowsill for 2 weeks; stores for months somewhere warm and dry', NULL),
     ('Zucchini', NULL, 'Pick the first fruits very small, then before the flower at the tip dies. Cut the stalk for better storage. Flowers are edible. Wear gloves and long sleeves; leaf hairs can cause a rash. Keeps a week in the fridge', NULL),
 -- Umbellifers
-    ('Bulb Fennel', NULL, NULL, NULL),
-    ('Carrot', 'Early', NULL, NULL),
-    ('Carrot', 'Maincrop', NULL, NULL),
-    ('Celeriac', NULL, NULL, NULL),
-    ('Celery', NULL, NULL, NULL),
+    ('Bulb Fennel', NULL, 'Pick while plump, before sideshoots appear or the bulb lengthens. Slice under the bulb rather than pulling. The leaves taste of dill. Lift the last autumn bulbs before the first frost; they keep up to a month in a cool shed', NULL),
+    ('Carrot', 'Early', 'From about 10 weeks, pull roots whose shoulders show so the rest can swell. Last harvest around late July, before they turn fibrous. Keeps 1-2 weeks if cool', NULL),
+    ('Carrot', 'Maincrop', 'Harvest by thinning until early autumn, then lift big roots. Lift to store before nights drop below -5°C: twist off the leaves, leave soil on, and keep in paper sacks in a frost-free shed for 3-5 months', NULL),
+    ('Celeriac', NULL, 'Harvest from mid-October as needed until late November, then lift the rest. Cut under the root with a trowel, leaving a few fibrous roots on. Store in an open crate below 10°C; keeps until April', NULL),
+    ('Celery', NULL, 'Cut single outer stalks from about 3 months, or whole heads while small to spread the harvest. Ends at the first -2°C frost. Keeps several days in a bag in the fridge or with the stem in water. Use the leaves for stock', NULL),
     ('Chervil', NULL, NULL, NULL),
     ('Coriander', NULL, NULL, NULL),
     ('Dill', NULL, NULL, NULL),
     ('Parsley', NULL, NULL, NULL),
-    ('Parsnip', NULL, NULL, NULL),
+    ('Parsnip', NULL, 'Harvest as needed from mid-September to March, finishing before new leaves sprout at the end of winter and make roots fibrous. Lever long roots out with a spade. If the soil is sodden in winter, lift all in early December. Store unwashed, leaves removed, in a box or paper bag in a shed into early spring', NULL),
 -- Beet family
-    ('Beetroot', NULL, NULL, NULL),
-    ('Chard', NULL, NULL, NULL),
-    ('Spinach', NULL, NULL, NULL),
+    ('Beetroot', NULL, 'Twist out the largest root from each clump so the smaller ones keep growing: 6+ weeks of harvest in summer, 3 months in autumn. Lift the last before nights drop below -4°C; twist off the leaves, leave soil on, and store in a box in a cool, dark shed until early spring. Eat small beets first', NULL),
+    ('Chard', NULL, 'Pick salad leaves at 10cm, cooking leaves once plants pass 30cm. Twist outer leaves off at the base and leave the centre; pick every few days in summer. Keeps a week in a bag in the fridge', NULL),
+    ('Spinach', NULL, 'Pick small for salad or larger for cooking; leaves get smaller through spring. Once a flower stalk appears, pick for about another week, then remove the plant. Keeps 5 days in a bag in the fridge', NULL),
 -- Leafy salad crops
     ('Chicory', NULL, NULL, NULL),
     ('Corn Salad', NULL, NULL, NULL),
@@ -242,6 +243,20 @@ UPDATE plant_catalogue SET
     sowing_windows = '[{"start": "04-15", "end": "05-15"}]',
     transplant_windows = '[{"start": "05-15", "end": "06-15"}]'
 WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Pumpkin');
+
+UPDATE plant_catalogue
+SET harvest_windows = '[{"start": "03-01", "end": "05-15"}, {"start": "06-01", "end": "12-31"}, {"start": "11-01", "end": "04-30", "label": "under cover"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Chard');
+
+UPDATE plant_catalogue
+SET transplant_windows = '[{"start": "03-15", "end": "04-15"}, {"start": "08-15", "end": "09-15"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Spinach');
+
+-- Bolt-resistant varieties from mid-February; not later than mid-July, or roots have no time to swell
+UPDATE plant_catalogue SET
+    sowing_windows = '[{"start": "02-15", "end": "07-15"}]',
+    transplant_windows = '[{"start": "04-01", "end": "08-15"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Beetroot');
 
 -- Fixes the impossible 06-31 end date
 UPDATE plant_catalogue

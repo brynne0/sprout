@@ -6,6 +6,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useElementSize } from '@vueuse/core'
 import {
   ArrowLeft,
+  Bug,
   Check,
   Clock,
   HandHeart,
@@ -235,6 +236,7 @@ const infoRows = computed(() => {
     { icon: Ruler, label: 'Spacing', value: p.spacing },
     { icon: Clock, label: 'Seed to harvest', value: p.seed_to_harvest },
     { icon: HandHeart, label: 'Care', value: p.care },
+    { icon: Bug, label: 'Pests', value: p.pests },
     { icon: Scissors, label: 'Harvest', value: p.harvest },
   ].filter((r) => r.value)
 })

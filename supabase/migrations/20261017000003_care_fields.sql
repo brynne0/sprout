@@ -1,8 +1,9 @@
--- Germination and care (feeding, cutting back...) are the same for every variety, so they live
--- on plant_types
+-- Germination, care (feeding, cutting back...) and pests are the same for every variety, so they
+-- live on plant_types
 ALTER TABLE plant_types
     ADD COLUMN germination TEXT,
-    ADD COLUMN care TEXT;
+    ADD COLUMN care TEXT,
+    ADD COLUMN pests TEXT;
 
 -- Hardiness reads as the frost limit first ("Hardy to -5°C" or "Tender, killed by frost"),
 -- then any caveat
@@ -98,6 +99,7 @@ SELECT
     COALESCE(p.overrides->>'seed_to_harvest', pc.seed_to_harvest) AS seed_to_harvest,
     COALESCE(p.overrides->>'sowing_to_transplant', pc.sowing_to_transplant) AS sowing_to_transplant,
     COALESCE(p.overrides->>'care', pt.care) AS care,
+    COALESCE(p.overrides->>'pests', pt.pests) AS pests,
     COALESCE(p.overrides->>'harvest', pc.harvest) AS harvest,
     COALESCE(p.overrides->'suitability', to_jsonb(pc.suitability)) AS suitability,
     COALESCE(p.overrides->'sowing_windows', pc.sowing_windows) AS sowing_windows,
@@ -127,6 +129,7 @@ SELECT
     pc.height,
     pt.germination,
     pt.care,
+    pt.pests,
     pc.harvest,
     pc.source,
     pc.seed_to_harvest,
