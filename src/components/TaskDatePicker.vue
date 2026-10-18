@@ -23,6 +23,11 @@ const openType = ref<TaskType | null>(null)
 const staging = ref<DateValue>()
 const now = today(getLocalTimeZone())
 
+const yearRange = Array.from(
+  { length: 6 },
+  (_, i) => new CalendarDate(props.when === 'past' ? now.year - 5 + i : now.year + i, 1, 1),
+)
+
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 function windowsFor(t: TaskType): Window[] {
@@ -104,6 +109,7 @@ function highlight(t: TaskType, day: DateValue): string | false {
           :min-value="when === 'future' ? now : undefined"
           :max-value="when === 'past' ? now : undefined"
           layout="month-and-year"
+          :year-range="yearRange"
           :highlight-date="(day: DateValue) => highlight(t, day)"
           @update:model-value="(v: DateValue | undefined) => pick(t, v)"
         />

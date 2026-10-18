@@ -402,9 +402,14 @@ async function submitPlant() {
       toast.success('Plant saved')
       leave(`/plants/${plantId.value}`)
     } else {
-      await supabase.from('plants').insert(body).throwOnError()
+      const { data } = await supabase
+        .from('plants')
+        .insert(body)
+        .select('id')
+        .single()
+        .throwOnError()
       toast.success(`${selectedPlantTypeName.value} added to your garden`)
-      leave('/')
+      router.replace(`/plants/${data.id}`)
     }
   } catch (error) {
     if (error instanceof TypeError) {

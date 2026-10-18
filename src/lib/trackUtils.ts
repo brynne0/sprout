@@ -190,47 +190,35 @@ export function computeTracksForPlant(
   const transplant = extractTracks((plant.transplant_windows ?? []) as WindowData[], monthWidth)
   const harvest = extractTracks((plant.harvest_windows ?? []) as WindowData[], monthWidth)
 
-  // Sowing tracks
-  const sowLabelEntries = [...sowing.labelGroups]
-  if (sowing.unlabelledBars.length || (sowDots.length && sowLabelEntries.length === 0)) {
-    tracks.push({ type: 'sowing', bars: sowing.unlabelledBars, dots: sowDots })
-    for (const [label, bars] of sowLabelEntries) {
-      tracks.push({ type: 'sowing', label, bars })
-    }
-  } else {
-    const firstSowEntry = sowLabelEntries[0]
-    if (firstSowEntry) {
-      tracks.push({
-        type: 'sowing',
-        label: firstSowEntry[0],
-        bars: firstSowEntry[1],
-        dots: sowDots.length ? sowDots : undefined,
-      })
-    }
-    for (const [label, bars] of sowLabelEntries.slice(1)) {
-      tracks.push({ type: 'sowing', label, bars })
-    }
-  }
-
-  // Transplant tracks
-  if (transplant.unlabelledBars.length || transplantDots.length) {
-    tracks.push({ type: 'transplant', bars: transplant.unlabelledBars, dots: transplantDots })
-  }
-  for (const [label, bars] of transplant.labelGroups) {
-    tracks.push({ type: 'transplant', label, bars })
-  }
-
-  // Harvest tracks
-  if (harvest.unlabelledBars.length || harvestDots.length) {
-    tracks.push({
-      type: 'harvest',
-      bars: harvest.unlabelledBars,
-      dots: harvestDots.length ? harvestDots : undefined,
-    })
-  }
-  for (const [label, bars] of harvest.labelGroups) {
-    tracks.push({ type: 'harvest', label, bars })
-  }
+  pushTracks(tracks, 'sowing', sowing, sowDots)
+  pushTracks(tracks, 'transplant', transplant, transplantDots)
+  pushTracks(tracks, 'harvest', harvest, harvestDots)
 
   return tracks
+}
+
+// When every window is labelled, dots go on the labelled track whose window contains them
+function pushTracks(
+  tracks: Track[],
+  type: TrackType,
+  { unlabelledBars, labelGroups }: ReturnType<typeof extractTracks>,
+  dots: Dot[],
+) {
+  const labelled = [...labelGroups].map(([label, bars]) => ({
+    type,
+    label,
+    bars,
+    dots: [] as Dot[],
+  }))
+  if (unlabelledBars.length || (dots.length && !labelled.length)) {
+    tracks.push({ type, bars: unlabelledBars, dots }, ...labelled)
+    return
+  }
+  for (const dot of dots) {
+    const target =
+      labelled.find((t) => t.bars.some((b) => dot.x >= b.x && dot.x <= b.x + b.width)) ??
+      labelled[0]!
+    target.dots.push(dot)
+  }
+  tracks.push(...labelled)
 }
