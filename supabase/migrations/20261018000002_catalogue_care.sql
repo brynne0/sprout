@@ -47,16 +47,16 @@ FROM (VALUES
     ('Chard', 'Sow under cover no earlier than mid-April, or plants may bolt. One seed per 3cm module gives 2-3 seedlings: thin to 1-2 for cooking leaves, or multisow 2 for salad. Or sow direct 5cm apart, thinning to 5cm for salad or 15cm for cooking. Ready to plant in 3-4 weeks', 'Plant with the stems below the soil and water in. Keep watered in dry weather. Remove fading outer leaves. Later summer sowings overwinter better', 'Removing old outer leaves reduces slug damage. Net against birds if they strip the leaves'),
     ('Spinach', 'Don''t sow between mid-April and late July, or it bolts. Multisow 2-3 seeds per 3cm module for salad clumps, or one plant for cooking leaves. Plant out after 2-3 weeks in late summer, 4 weeks in spring, 1cm deeper than the root ball. Can also sow direct in late March or August', 'Water until growing strongly (5-7 days), and twice a week in dry spring weather. Fleece or mesh spring plantings; mesh over winter boosts growth in late winter. Remove stalks and yellow leaves as you pick', 'Plant into clear ground away from slug hiding places. Leatherjackets can sever stems of early plantings: dig out the grub and keep spare plants for 2 weeks'),
 -- Leafy salad crops
-    ('Chicory', NULL, NULL, NULL),
-    ('Corn Salad', NULL, NULL, NULL),
-    ('Endive', NULL, NULL, NULL),
-    ('Land Cress', NULL, NULL, NULL),
-    ('Lettuce', NULL, NULL, NULL),
-    ('Mizuna and Mustards', NULL, NULL, NULL),
-    ('Pak Choi', NULL, NULL, NULL),
-    ('Rocket', NULL, NULL, NULL),
-    ('Winter Purslane', NULL, NULL, NULL),
-    ('Wombok', NULL, NULL, NULL),
+    ('Chicory', 'Don''t sow in spring, or plants flower. Sow thinly in a tray to prick out into 3cm modules, or 2 seeds per module and thin to one. Later sowings give more valuable late-autumn harvests. Plant out after 3 weeks, or pot on into 7cm pots if there''s no space yet', 'Plant 30cm apart with the module top below soil level. Water every couple of days in hot weather until growing strongly. Plants heart up in autumn and grow slowly until early winter. Loose hearts stand frost best; fleece firm hearts for a late winter harvest', 'Few insect pests. Slugs eat seedlings, so raise bigger transplants in 5cm modules or 7cm pots. Keep rabbits off with bird netting or mesh, not fleece, which gets too hot'),
+    ('Corn Salad', 'Sow direct in rows 15cm apart, a seed every 1-2cm, thinning to 7-10cm; or 2-3 seeds per 3cm module under cover. Needs constant moisture and takes at least a week to come up. Plant out after 4 weeks, 10cm apart, just below the surface', 'Hardy enough to stand outside all winter; fleece in really cold spells', 'Mostly ignored by pests. Powdery mildew hits August sowings in a dry autumn; keep watered, or sow in early September'),
+    ('Endive', 'Germination is variable: sow in a small tray and prick out into 3cm modules, or 2 seeds per module and thin. Or sow direct in rows 25cm apart, 5-10cm between seeds. Plant out after 3 weeks', 'Plant 22cm apart for leaves or 30cm for hearts, root ball top below soil level. Water generously in dry weather. Blanching is optional: cover with a large pot for at most a week before cutting the whole head', 'Slugs do only minor damage and rarely eat frisée. Unlike lettuce, it doesn''t get root aphid. Rabbits and deer love it; bird netting lets more autumn light through than mesh'),
+    ('Land Cress', 'Sow in a tray to prick out into 3cm modules, or 2-3 seeds per module and thin to the strongest. Plant out 22cm apart, slightly deeper than the module', 'Water until new growth shows; outdoors it rarely needs more. Under cover, water every 2-3 weeks in winter, weekly if sunny', 'Bird netting or mesh in winter keeps pigeons off. Spring flea beetle damage doesn''t set back established plants. Small slugs hide under leaves but rarely do much harm'),
+    ('Lettuce', 'Sow in a tray to prick out into 3cm modules, or 2 seeds per module and thin to one. Seeds need light: scatter perlite or vermiculite on top, or cover with glass. Keep February sowings in the house; shade summer sowings for the first week. For year-round leaves, sow late Feb-early March, late May-early June, mid-July and early September (under cover). Direct sow mid-March to early August for cut-and-come-again. Plant out after 4 weeks (early) or 3 weeks (summer)', 'Plant 22cm apart for leaves or 30cm for hearts, root ball top 1cm below soil. Water at planting and 2 days later, then only in hot weather, a soak every 2-3 days. Water in the morning. Keep winter lettuce under cover fairly dry. Fleece early spring plantings, and keep a few spare transplants', 'From May, mesh or netting keeps rabbits and birds off. Reduce slug habitat nearby; morning watering helps too. Leatherjackets and wireworms cut young plants in spring: rummage under the plant to remove them. Root aphids in late summer make plants wilt suddenly; remove them, and keep soil moist with a compost mulch. Regular picking prevents downy mildew, which gets worse from October in damp weather'),
+    ('Mizuna and Mustards', 'Multisow 3 seeds per 3cm module under cover, or direct in drills 20cm apart (mizuna suits cutting as a thick sward). Two plants per module give bigger leaves to pick. Plant out after 2-3 weeks, burying the long stems. Thin direct sowings to 2.5cm for salad or 10cm for big leaves', 'Water the bed before planting if it''s dry, water in, and keep watering in dry weather. Fleece spring plantings', 'Mesh for about 3 weeks after planting (5 after direct sowing). Spring fleece keeps rabbits and pigeons off. Slugs love mizuna; grow mustards in slug-prone spots'),
+    ('Pak Choi', 'Always under cover: 3 seeds per 3cm module, or a small tray pricked out within 5 days at the two-leaf stage. Plant out at 2-3 weeks old, burying the spindly stems', 'Water well in dry weather, in the morning so leaves are dry by night. Fleece spring crops. Remove yellow or rotting lower leaves', 'In late summer, mesh on hoops straight after planting keeps off flea beetles, thrips, pigeons and egg-laying butterflies; the first month is critical. Removing yellow leaves and watering in the morning reduce slugs'),
+    ('Rocket', 'Sow in 3cm modules under cover; direct-sown seedlings get eaten. Salad rocket: multisow 3 seeds per module. Wild rocket: sow in a tray and prick out singly. Plant salad rocket out after 2-3 weeks, stems below ground. Overwinter wild rocket under cover in 7-9cm pots and plant out very early in spring', 'Water regularly in dry weather. Remove yellowing leaves as you pick. Hardy, but salad rocket barely grows outdoors in winter', 'Fine mesh after planting keeps off flea beetles and pigeons; keep it on wild rocket until it finishes in summer. Late-summer sowings get far less flea beetle damage than spring ones'),
+    ('Winter Purslane', 'Sow the tiny seeds in a tray to prick out into 3cm modules, or a few per module thinned to 1-3 seedlings. Barely cover them. Spring sowings flower in April. Plant out after about 4 weeks, 20cm apart', 'Water in, then little needed. Moderate frost browns older leaves. Remove stalks of white male flowers in winter, which taste poor. Remove plants by late April to stop self-seeding', 'Untroubled by pests'),
+    ('Wombok', 'Sow in late July; spring sowings bolt. Sow under cover in a tray to prick out, or 2 seeds per 3cm module and thin. Plant out at 15-21 days old, no older', 'Plant 30-35cm apart, module top 5cm below soil. In dry weather water every 2-3 days after planting, then a good soak twice a week unless it rains; less as autumn goes on', 'Fine mesh from planting until harvest, and still remove caterpillars. Gently twist off yellowing outer leaves, holding the centre, to remove slug hiding places and stop leaves rotting by October'),
 -- Solanums, basil, and sweetcorn
     ('Basil', NULL, NULL, NULL),
     ('Capsicum', NULL, NULL, NULL),
@@ -140,17 +140,17 @@ FROM (VALUES
     ('Chard', NULL, 'Pick salad leaves at 10cm, cooking leaves once plants pass 30cm. Twist outer leaves off at the base and leave the centre; pick every few days in summer. Keeps a week in a bag in the fridge', NULL),
     ('Spinach', NULL, 'Pick small for salad or larger for cooking; leaves get smaller through spring. Once a flower stalk appears, pick for about another week, then remove the plant. Keeps 5 days in a bag in the fridge', NULL),
 -- Leafy salad crops
-    ('Chicory', NULL, NULL, NULL),
-    ('Corn Salad', NULL, NULL, NULL),
-    ('Endive', NULL, NULL, NULL),
-    ('Land Cress', NULL, NULL, NULL),
-    ('Lettuce', NULL, NULL, NULL),
-    ('Mizuna and Mustards', NULL, NULL, NULL),
-    ('Pak Choi', NULL, NULL, NULL),
-    ('Rocket', 'Salad', NULL, NULL),
-    ('Rocket', 'Wild', NULL, NULL),
-    ('Winter Purslane', NULL, NULL, NULL),
-    ('Wombok', NULL, NULL, NULL),
+    ('Chicory', NULL, 'Harvest from September (early sowings) to November (later ones), and before March, when leaves turn bitter. Cut under the head and trim off tough outer leaves. If outer leaves rot, cut straight away; a good heart is usually inside. Firm hearts store 4-6 weeks in a box below 10°C', NULL),
+    ('Corn Salad', NULL, 'From mid-October, cut whole plants at the base, or cut higher for a smaller second harvest of sideshoots a month later. Little growth over winter, then new leaves in spring before it flowers from mid-April', NULL),
+    ('Endive', NULL, 'Twist medium outer leaves off at the base, always leaving the centre rosette. Or let it heart up and cut from late September to mid-November, trimming any rot. Hearts stand 2 weeks or more down to -2°C. Keeps a week in a bag in the fridge', NULL),
+    ('Land Cress', NULL, 'Once leaves touch, twist larger leaves from the base or cut a handful, leaving the centre to regrow. Crops through winter until it flowers in late April; flower stalks are edible, but it self-seeds if left. Keeps a few days cool and damp', NULL),
+    ('Lettuce', NULL, 'Once leaves touch neighbouring plants, push larger outer leaves off with your thumb at least weekly, leaving the centre. Crops for 10 weeks, or 6 months from autumn sowings. Cut heads when the centre folds in and pales, within about 2 weeks. For cut-and-come-again, cut above the smallest leaf for 2-3 cuts. Keeps a few days in a bag in the fridge', NULL),
+    ('Mizuna and Mustards', NULL, 'Pick leaves at the base of the stalk once they''re the size you like, without rocking the plant. Mustards get more pungent with size and age. Take the stalks too, so they don''t rot. Keeps 5 days in a bag in the fridge', NULL),
+    ('Pak Choi', NULL, 'Ready once neighbouring leaves nearly touch. Cut outer leaves while holding the centre, or cut whole plants at the base, biggest in a clump first. Autumn plants crop into November until frost; harvest spring plants before they flower. Keeps a few days in the fridge', NULL),
+    ('Rocket', 'Salad', 'Once plants touch, pick outer leaves every few days, less often as it cools. The first flush in September is the most tender. Overwintered plants flower in spring. Keeps a few days in the fridge', NULL),
+    ('Rocket', 'Wild', 'Pick leaves singly, or cut the whole plant above the tiniest leaves; regrows in 2-3 weeks, weekly in May and June. Pick off flower stems to prolong cropping. The first flush in April is the most tender', NULL),
+    ('Winter Purslane', NULL, 'Cut bushy plants above the small developing leaves, taking as much stalk as you can. Cut again within 4 weeks. Growth stops in midwinter and restarts in February', NULL),
+    ('Wombok', NULL, 'Usually ready in October, with about 2 weeks before outer leaves decay. Cut before hard frost, which blows heads open. Tight hearts store up to a month in a cool shed; check for slugs first', NULL),
 -- Solanums, basil, and sweetcorn
     ('Basil', NULL, NULL, NULL),
     ('Capsicum', NULL, NULL, NULL),
@@ -260,6 +260,26 @@ WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Chervil');
 UPDATE plant_catalogue
 SET harvest_windows = '[{"start": "04-15", "end": "11-30"}, {"start": "12-01", "end": "03-15", "label": "under cover"}]'
 WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Coriander');
+
+UPDATE plant_catalogue SET
+    sowing_windows = '[{"start": "08-15", "end": "09-15"}]',
+    transplant_windows = '[{"start": "09-15", "end": "10-15"}]',
+    harvest_windows = '[{"start": "10-15", "end": "04-15"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Corn Salad');
+
+UPDATE plant_catalogue SET
+    transplant_windows = '[{"start": "08-01", "end": "08-31"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Wombok');
+
+UPDATE plant_catalogue SET
+    transplant_windows = '[{"start": "03-01", "end": "03-15"}, {"start": "08-01", "end": "09-15"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Pak Choi');
+
+UPDATE plant_catalogue SET
+    sowing_windows = '[{"start": "08-15", "end": "09-15"}, {"start": "09-01", "end": "09-15", "label": "under cover"}]',
+    transplant_windows = '[{"start": "09-01", "end": "10-15"}, {"start": "10-01", "end": "10-15", "label": "under cover"}]',
+    harvest_windows = '[{"start": "11-01", "end": "04-30"}, {"start": "11-01", "end": "04-30", "label": "under cover"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Winter Purslane');
 
 -- Bolt-resistant varieties from mid-February; not later than mid-July, or roots have no time to swell
 UPDATE plant_catalogue SET
