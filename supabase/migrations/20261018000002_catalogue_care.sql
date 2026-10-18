@@ -58,13 +58,13 @@ FROM (VALUES
     ('Winter Purslane', 'Sow the tiny seeds in a tray to prick out into 3cm modules, or a few per module thinned to 1-3 seedlings. Barely cover them. Spring sowings flower in April. Plant out after about 4 weeks, 20cm apart', 'Water in, then little needed. Moderate frost browns older leaves. Remove stalks of white male flowers in winter, which taste poor. Remove plants by late April to stop self-seeding', 'Untroubled by pests'),
     ('Wombok', 'Sow in late July; spring sowings bolt. Sow under cover in a tray to prick out, or 2 seeds per 3cm module and thin. Plant out at 15-21 days old, no older', 'Plant 30-35cm apart, module top 5cm below soil. In dry weather water every 2-3 days after planting, then a good soak twice a week unless it rains; less as autumn goes on', 'Fine mesh from planting until harvest, and still remove caterpillars. Gently twist off yellowing outer leaves, holding the centre, to remove slug hiding places and stop leaves rotting by October'),
 -- Solanums, basil, and sweetcorn
-    ('Basil', NULL, NULL, NULL),
-    ('Capsicum', NULL, NULL, NULL),
-    ('Chilli', NULL, NULL, NULL),
-    ('Eggplant', NULL, NULL, NULL),
-    ('Potato', NULL, NULL, NULL),
-    ('Sweetcorn', NULL, NULL, NULL),
-    ('Tomato', NULL, NULL, NULL),
+    ('Basil', 'Sow under cover from April (on a heat mat or indoor windowsill) until June. Roots rot in soggy compost, so mix in up to 60% sand, vermiculite or perlite and water as little as you dare. Multisow 3 seeds per module and thin to 1-2 after 10 days. Or divide supermarket pots into 9cm pots', 'Plant after the last frost, once it''s warm; grows well in containers and under cover. Water twice a week in the ground, daily in containers in summer', 'Slugs eat seedlings, especially if planted out while cool. Green caterpillars do slight damage in high summer. More disease in cool, damp weather'),
+    ('Capsicum', 'Sow mid-February to mid-March with warmth, easiest in the house. Sow singly in 3cm modules, or thinly in a tray and prick out at the first true leaf. Pot on about every 3 weeks, into 7cm then 9cm pots', 'Plant 5cm deep after the last frost, once it''s warm. Water only when pots feel light, more as fruits swell, less in late summer. Feed regularly in containers. Once established, support with a loop of string tied to a cane, as stems snap under heavy fruit. From mid-August, pinch out new stems and small flowers so the last fruits ripen', 'Fairly trouble-free. Wash aphids off new growth in spring until predators arrive'),
+    ('Chilli', 'Sow mid-February to mid-March with warmth, easiest in the house. Sow singly in 3cm modules, or thinly in a tray and prick out at the first true leaf. Pot on about every 3 weeks, into 7cm then 9cm pots', 'Plant 5cm deep after the last frost, once it''s warm; grows well in 25cm pots. Water sparingly, as lush growth means fewer flowers, and less in late summer. No feeding needed. Tie the main stem to a cane if needed. From mid-August, pinch out new stems and small flowers. To overwinter, cut back by two-thirds, keep frost-free and water very sparingly', 'Fairly trouble-free. Wash aphids off new growth in spring until predators arrive'),
+    ('Eggplant', 'Sow under cover by the end of March, thinly in a small tray, and prick out into 3cm modules. Pot on into 7cm pots at about 6 weeks old or 5cm tall', 'Plant mid-May under cover, or outdoors after the last frost, burying the stem 5cm. Don''t overwater young plants; water more once fruits swell. Remove browning lower leaves. Under cover, train as a two-stem cordon on strings: remove sideshoots until 30-35cm tall, keep one strong sideshoot near the top as the second stem, twist stems around the strings, and pinch off the first flower bud. Outdoors, grow as a bush held up by a loop of string tied to a cane', 'Aphids and whitefly, mostly in late spring: hose them off and predators soon follow. Red spider mite: watch for pale, matt undersides on young leaves; wetting leaves under cover helps'),
+    ('Potato', 'Chit seed potatoes from late winter in a box on a light windowsill, not in the dark. Supermarket potatoes may be treated not to sprout. Plant with a trowel, shoots up, the top at least 5cm below the surface. Not more than 3 weeks before the last frost unless you can fleece them', 'If a night of 3°C or lower is forecast, pull compost over the leaves or use double fleece. Cover tubers that break the surface with compost so they don''t turn green. Rarely needs watering in spring; in a dry early summer, water generously twice a week for the last 2 weeks before harvest', 'Late blight in warm, wet weather turns leaves grey-brown and limp within days: cut plants at ground level straight away, compost the tops, and wait a few days before harvesting. Scab is rare in no dig beds. Blackleg comes from infected seed: stems blacken and fall over; tubers are still edible, but don''t save them for seed. Slugs chew tubers, so lift promptly and eat damaged ones first. Wireworms in former grassland: bait with half a potato on the surface overnight and remove them'),
+    ('Sweetcorn', 'Sow under cover about a month before the last frost, one seed 1cm deep per 3-5cm module; or outdoors 1-2cm deep after the last frost. Sow early and late varieties together for a run of cobs, and choose early ones for cool summers', 'Plant after the last frost, about 4 weeks after sowing, 25-30cm apart in a block to help pollination. Fleece for 2-3 weeks if cold; plants yellow and sit still until the soil warms. Water in, then soak twice a week in dry weather as cobs swell. Sideshoots can stay or go', 'Rodents, badgers and birds take ripening cobs: harvest promptly, even slightly under-ripe. Mice eat the seeds'),
+    ('Tomato', 'Sow 6-8 weeks before the last frost (not February) in warmth under cover, thinly in a small tray or one per 3cm module. Prick out at the seed-leaf stage. Pot on into 7cm pots at two true leaves (about 3 weeks), then 9cm after 10-12 days; ready to plant about 10 days later', 'Plant after the last frost, deeper than in the pot; in a damp climate grow at least half under cover. Support cordons with a stake or a string under the root ball, tie or twist the stem in, and snap off sideshoots. Cut off lower leaves from a month after planting. Remove half the first truss and the last flowers on trusses; pinch out the tops in early August. Under cover in soil, water twice a week (every 2 days in heat), on the soil not the leaves from July, and once a week from September. Irregular watering splits fruit. No feeding in no dig soil; feed and water containers daily', 'Blossom end rot (black patches under the fruit) means too little water. Spray aphids off in spring until predators arrive in late May. Leaf roll from day-night temperature swings isn''t serious. Late blight, worst outdoors: remove and compost affected leaves, and remove the whole plant once stems blacken; plants under cover suffer much less. Slugs and woodlice eat fruit lying on the ground'),
 -- Perennial vegetables
     ('Artichoke', NULL, NULL, NULL),
     ('Asparagus', NULL, NULL, NULL),
@@ -73,8 +73,8 @@ FROM (VALUES
     ('Oregano', NULL, NULL, NULL),
     ('Perennial Kale', NULL, NULL, NULL),
     ('Raspberry', NULL, NULL, NULL),
-    ('Rhubarb', NULL, NULL, NULL),
-    ('Rosemary', NULL, NULL, NULL),
+    ('Rhubarb', 'Easiest from a pot plant (spring to autumn) or a dormant crown (November-March). From seed, sow in 7cm pots under cover in early spring, pot on into 9cm, and plant out in summer', 'Water in dry spring or summer weather for more stems. Mulch around the crown with compost or rotted manure after the leaves die back in autumn. Cut out flower stems at ground level. If the crown gets too big, remove a section and fill the hole with compost', 'Crowns are remarkably resistant to pests and diseases'),
+    ('Rosemary', 'Easiest to buy a pot plant in spring. Or root 10cm cuttings of new growth in early spring, in modules of compost with a third vermiculite; plant out in late spring or pot on into 9cm pots for summer', 'Plant with the root ball top a little below the surface and water in. Cut back the flowered stems over the whole plant in midsummer to keep it compact. New growth can get frost damage in cold springs. Replace after 7-10 years once bare at the base', NULL),
     ('Sorrel', NULL, NULL, NULL),
     ('Strawberry', NULL, NULL, NULL),
     ('Thyme', NULL, NULL, NULL),
@@ -152,15 +152,15 @@ FROM (VALUES
     ('Winter Purslane', NULL, 'Cut bushy plants above the small developing leaves, taking as much stalk as you can. Cut again within 4 weeks. Growth stops in midwinter and restarts in February', NULL),
     ('Wombok', NULL, 'Usually ready in October, with about 2 weeks before outer leaves decay. Cut before hard frost, which blows heads open. Tight hearts store up to a month in a cool shed; check for slugs first', NULL),
 -- Solanums, basil, and sweetcorn
-    ('Basil', NULL, NULL, NULL),
-    ('Capsicum', NULL, NULL, NULL),
-    ('Chilli', NULL, NULL, NULL),
-    ('Eggplant', NULL, NULL, NULL),
-    ('Potato', 'First Early', NULL, NULL),
-    ('Potato', 'Maincrop', NULL, NULL),
-    ('Potato', 'Second Early', NULL, NULL),
-    ('Sweetcorn', NULL, NULL, NULL),
-    ('Tomato', NULL, NULL, NULL),
+    ('Basil', NULL, 'Before it flowers, pick 5cm from the top of each plant, then pinch out the tips of new stems every few days. Remove flower stems. Picked stems keep a few days in water, and root quickly', NULL),
+    ('Capsicum', NULL, 'Ready when pale, matt fruits turn dark, glossy green; waiting up to a month for colour gives sweeter fruit but a smaller crop. Cut stalks with secateurs. Pick before the first frost, or move pots under cover. Colouring fruits keep ripening at room temperature; eat within 2 weeks', NULL),
+    ('Chilli', NULL, 'Ready when fruits turn dark, glossy green, or leave them to colour. Snap stalks off with an upward twist, careful of the fragile stems. Pick before the first frost, or move pots under cover. Dry on a sunny windowsill or store in oil', NULL),
+    ('Eggplant', NULL, 'Pick while glossy; over-mature fruits turn matt, seedy and fibrous. Snap the stalk upwards or cut it. Keep picking for more fruit. Keeps about a week at room temperature, not in the fridge', NULL),
+    ('Potato', 'First Early', 'Ready when the leaves lose their shine and turn pale; don''t wait for the tops to die. Pull the stems gently and rummage for the rest, taking even the tiniest. Best eaten fresh, as they sprout too soon to store', NULL),
+    ('Potato', 'Maincrop', 'Lift once the leaves pale; cut tall blight-resistant varieties back at the end of August. Pull and rummage, taking even small ones. Dry the skins, then store in paper sacks somewhere dark and frost-free, checking every few weeks for rot', NULL),
+    ('Potato', 'Second Early', 'Ready when the leaves pale; don''t wait for the tops to die. Pull and rummage, taking even the tiniest. Dry the skins for a few hours in the sun or a few days in a shed, then store in paper sacks somewhere dark and frost-free; keeps until April. Rub off sprouts in late winter', NULL),
+    ('Sweetcorn', NULL, 'Ready when the tassels turn brown and the kernels inside the sheath are pale yellow-cream. Snap the cob downwards off the stem and eat as fresh as possible, before the sugar turns to starch', NULL),
+    ('Tomato', NULL, 'Fully coloured fruits are sweetest; picking half-coloured ones gives higher yields. Snap the stalk upwards, leaving the calyx on; cut beefsteaks with a knife. Ripen at room temperature, away from bananas, never in the fridge. In early October, pick everything left to ripen indoors', NULL),
 -- Perennial vegetables
     ('Artichoke', 'Green Globe', NULL, NULL),
     ('Asparagus', NULL, NULL, NULL),
@@ -170,7 +170,7 @@ FROM (VALUES
     ('Perennial Kale', NULL, NULL, NULL),
     ('Raspberry', NULL, NULL, NULL),
     ('Rhubarb', NULL, NULL, NULL),
-    ('Rosemary', NULL, NULL, NULL),
+    ('Rosemary', NULL, 'Cut 4-6cm from the tips of green, tender stems as needed, all year. A small pick in the first summer', NULL),
     ('Sorrel', NULL, NULL, NULL),
     ('Strawberry', NULL, NULL, NULL),
     ('Strawberry', 'Baron Solemacher', NULL, NULL),
@@ -280,6 +280,19 @@ UPDATE plant_catalogue SET
     transplant_windows = '[{"start": "09-01", "end": "10-15"}, {"start": "10-01", "end": "10-15", "label": "under cover"}]',
     harvest_windows = '[{"start": "11-01", "end": "04-30"}, {"start": "11-01", "end": "04-30", "label": "under cover"}]'
 WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Winter Purslane');
+
+UPDATE plant_catalogue SET
+    sowing_windows = '[{"start": "04-01", "end": "04-15"}]',
+    harvest_windows = '[{"start": "06-15", "end": "07-15"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Potato') AND variety = 'First Early';
+
+UPDATE plant_catalogue SET
+    harvest_windows = '[{"start": "08-15", "end": "09-30"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Potato') AND variety = 'Maincrop';
+
+UPDATE plant_catalogue SET
+    harvest_windows = '[{"start": "06-15", "end": "10-15", "label": "under cover"}, {"start": "08-01", "end": "09-30"}]'
+WHERE plant_type_id = (SELECT id FROM plant_types WHERE name = 'Tomato');
 
 -- Bolt-resistant varieties from mid-February; not later than mid-July, or roots have no time to swell
 UPDATE plant_catalogue SET
