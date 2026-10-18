@@ -5,9 +5,14 @@ import { supabase } from '@/lib/supabase'
 import type { CataloguePlant, PlantKind } from '@/types'
 import PlantCalendar from '@/components/PlantCalendar.vue'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
-import { Input } from '@/components/ui/input'
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from '@/components/ui/input-group'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Search } from '@lucide/vue'
+import { Search, X } from '@lucide/vue'
 import { handleApiError } from '@/lib/utils'
 import PageHeader from '@/components/layout/PageHeader.vue'
 
@@ -67,10 +72,17 @@ onMounted(async () => {
     @plant-click="(p) => router.push(`/catalogue/${p.id}`)"
   >
     <template #header>
-      <div class="relative max-w-sm">
-        <Search class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input v-model="searchQuery" placeholder="Search plants..." class="pl-8 h-8" />
-      </div>
+      <InputGroup class="max-w-sm h-8">
+        <InputGroupInput v-model="searchQuery" placeholder="Search plants..." />
+        <InputGroupAddon>
+          <Search />
+        </InputGroupAddon>
+        <InputGroupAddon v-if="searchQuery" align="inline-end">
+          <InputGroupButton size="icon-xs" aria-label="Clear search" @click="searchQuery = ''">
+            <X />
+          </InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
       <!-- Clicking the active item emits an empty value; ignore it so one is always selected -->
       <ToggleGroup
         type="single"
