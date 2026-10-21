@@ -130,14 +130,11 @@ onActivated(() => {
         </p>
         <h1 class="text-3xl font-bold tracking-tight text-primary mt-0.5">Your Garden</h1>
       </div>
-      <RouterLink
-        v-if="!loading && plants.length > 0"
-        to="/plants/new"
-        class="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground"
-        aria-label="Add plant"
-      >
-        <Plus :size="18" />
-      </RouterLink>
+      <Button v-if="!loading && plants.length > 0" as-child size="icon">
+        <RouterLink to="/plants/new" aria-label="Add plant">
+          <Plus />
+        </RouterLink>
+      </Button>
     </PageHeader>
 
     <LoadingLeaves v-if="loading" />

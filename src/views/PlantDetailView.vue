@@ -28,6 +28,8 @@ import { computeTracksForPlant, dateToX, inWindow, todayMonthDay } from '@/lib/t
 import type { TrackType } from '@/lib/trackUtils'
 import LoadingLeaves from '@/components/LoadingLeaves.vue'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Spinner } from '@/components/ui/spinner'
+import { Item, ItemContent, ItemGroup, ItemMedia, ItemSeparator } from '@/components/ui/item'
 import PlantRow from '@/components/PlantRow.vue'
 import PlantActions from '@/components/PlantActions.vue'
 import PlantIcon from '@/components/PlantIcon.vue'
@@ -38,6 +40,13 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from '@/components/ui/empty'
 import { toast } from 'vue-sonner'
 
 const route = useRoute()
@@ -243,11 +252,16 @@ const infoRows = computed(() => {
 </script>
 
 <template>
-  <div
-    v-if="!loading && !plant"
-    class="flex items-center justify-center min-h-[70vh] text-sm text-muted-foreground"
-  >
-    Plant not found.
+  <div v-if="!loading && !plant" class="flex items-center justify-center min-h-[70vh]">
+    <Empty>
+      <EmptyHeader>
+        <EmptyTitle>Plant not found</EmptyTitle>
+        <EmptyDescription>It may have been deleted.</EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button variant="outline" @click="router.back()">Go back</Button>
+      </EmptyContent>
+    </Empty>
   </div>
 
   <div v-else>
@@ -305,7 +319,7 @@ const infoRows = computed(() => {
             :name="plant.name"
             :icon="(plant as Plant).icon"
             :colour="(plant as Plant).colour"
-            class="w-16 h-16 rounded-xl sm:w-20 sm:h-20 sm:rounded-2xl text-2xl sm:text-3xl border [--icon-base:var(--background)]"
+            size="tile"
           />
           <div class="min-w-0 flex-1">
             <div
@@ -384,18 +398,18 @@ const infoRows = computed(() => {
           <CardHeader class="border-b border-border/40">
             <CardTitle>Growing</CardTitle>
           </CardHeader>
-          <CardContent class="p-0">
-            <div
-              v-for="(row, i) in infoRows"
-              :key="row.label"
-              class="flex items-start gap-3 px-3.5 py-2.5 text-sm"
-              :class="i > 0 ? 'border-t border-border/40' : ''"
-            >
-              <component :is="row.icon" class="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground" />
-              <span class="w-27.5 shrink-0 text-muted-foreground">{{ row.label }}</span>
-              <span class="text-foreground leading-snug">{{ row.value }}</span>
-            </div>
-          </CardContent>
+          <ItemGroup>
+            <template v-for="(row, i) in infoRows" :key="row.label">
+              <ItemSeparator v-if="i > 0" />
+              <Item size="sm" class="items-start">
+                <ItemMedia>
+                  <component :is="row.icon" class="size-3.5 mt-0.5 text-muted-foreground" />
+                </ItemMedia>
+                <span class="w-27.5 shrink-0 text-muted-foreground">{{ row.label }}</span>
+                <ItemContent>{{ row.value }}</ItemContent>
+              </Item>
+            </template>
+          </ItemGroup>
         </Card>
       </div>
 
@@ -452,21 +466,19 @@ const infoRows = computed(() => {
               >
                 Nothing logged yet.
               </p>
-              <div
-                v-for="(entry, i) in logEntries"
-                :key="entry.key"
-                class="flex items-center gap-2.5 px-3.5 py-2.5 text-sm"
-                :class="i > 0 ? 'border-t border-border/40' : ''"
-              >
-                <component
-                  :is="TASKS[entry.type].icon"
-                  class="w-3.5 h-3.5 shrink-0"
-                  :style="{ color: TASKS[entry.type].soft }"
-                />
-                <span class="flex-1"
-                  >{{ TASKS[entry.type].done }} · {{ formatDate(entry.date) }}</span
-                >
-              </div>
+              <ItemGroup>
+                <template v-for="(entry, i) in logEntries" :key="entry.key">
+                  <ItemSeparator v-if="i > 0" />
+                  <Item size="sm">
+                    <ItemMedia :style="{ color: TASKS[entry.type].soft }">
+                      <component :is="TASKS[entry.type].icon" class="size-3.5" />
+                    </ItemMedia>
+                    <ItemContent>
+                      {{ TASKS[entry.type].done }} · {{ formatDate(entry.date) }}
+                    </ItemContent>
+                  </Item>
+                </template>
+              </ItemGroup>
             </template>
           </CardContent>
         </Card>
@@ -482,7 +494,8 @@ const infoRows = computed(() => {
                 :disabled="savingNotes"
                 @click="editingNotes ? saveNotes() : (editingNotes = true)"
               >
-                <component :is="editingNotes ? Check : Pencil" class="size-3.5" />
+                <Spinner v-if="savingNotes" />
+                <component :is="editingNotes ? Check : Pencil" v-else class="size-3.5" />
                 {{ editingNotes ? (savingNotes ? 'Saving…' : 'Done') : 'Edit' }}
               </Button>
             </CardAction>

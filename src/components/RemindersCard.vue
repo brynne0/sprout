@@ -13,6 +13,15 @@ import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemGroup,
+  ItemMedia,
+  ItemSeparator,
+  ItemTitle,
+} from '@/components/ui/item'
 import PlantIcon from '@/components/PlantIcon.vue'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
@@ -167,68 +176,73 @@ function completeOnOtherDay(v: DateValue | undefined) {
         >
           {{ group.label }}
         </p>
-        <div
-          class="flex flex-col divide-y divide-[color-mix(in_oklab,var(--color-foreground)_6%,transparent)]"
-        >
-          <div v-for="r in group.reminders" :key="r.id" class="flex items-center gap-2.5 py-1.5">
-            <Checkbox
-              :model-value="busy.has(r.id)"
-              :disabled="busy.has(r.id)"
-              :aria-label="`Mark ${title(r)} as done today`"
-              @update:model-value="complete(r, localToday())"
-            />
-            <PlantIcon
-              v-if="plantById.get(r.plant_id)"
-              :name="plantById.get(r.plant_id)!.name"
-              :icon="plantById.get(r.plant_id)!.icon"
-              :colour="plantById.get(r.plant_id)!.colour"
-              class="w-8 h-8 rounded-full text-sm"
-            />
-            <component
-              :is="TASKS[r.type].icon"
-              v-else
-              :size="15"
-              class="shrink-0"
-              :style="{ color: TASKS[r.type].soft }"
-            />
-            <component
-              :is="plants ? RouterLink : 'div'"
-              :to="plants ? `/plants/${r.plant_id}` : undefined"
-              class="min-w-0 flex-1 flex items-baseline gap-1.5"
-            >
-              <span class="text-sm font-medium">{{ title(r) }}</span>
-              <span
-                v-if="plantById.get(r.plant_id)?.variety"
-                class="text-xs truncate text-muted-foreground"
-              >
-                {{ plantById.get(r.plant_id)?.variety }}
-              </span>
-            </component>
-            <span
-              class="text-xs font-medium tabular-nums shrink-0"
-              :class="daysFromToday(r) < 0 ? 'text-destructive' : 'text-muted-foreground'"
-            >
-              {{ fmtRelative(r) }}
-            </span>
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button variant="ghost-muted" size="icon-sm" aria-label="Reminder actions">
-                  <MoreHorizontal />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem @click="otherDayFor = r">
-                  <CalendarCheck class="w-4 h-4" />
-                  Done on another day
-                </DropdownMenuItem>
-                <DropdownMenuItem @click="skip(r)">
-                  <X class="w-4 h-4" />
-                  Skip
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
+        <ItemGroup>
+          <template v-for="(r, i) in group.reminders" :key="r.id">
+            <ItemSeparator v-if="i > 0" />
+            <Item size="xs">
+              <Checkbox
+                :model-value="busy.has(r.id)"
+                :disabled="busy.has(r.id)"
+                :aria-label="`Mark ${title(r)} as done today`"
+                @update:model-value="complete(r, localToday())"
+              />
+              <ItemMedia>
+                <PlantIcon
+                  v-if="plantById.get(r.plant_id)"
+                  :name="plantById.get(r.plant_id)!.name"
+                  :icon="plantById.get(r.plant_id)!.icon"
+                  :colour="plantById.get(r.plant_id)!.colour"
+                />
+                <component
+                  :is="TASKS[r.type].icon"
+                  v-else
+                  :size="15"
+                  :style="{ color: TASKS[r.type].soft }"
+                />
+              </ItemMedia>
+              <ItemContent>
+                <component
+                  :is="plants ? RouterLink : 'div'"
+                  :to="plants ? `/plants/${r.plant_id}` : undefined"
+                  class="flex items-baseline gap-1.5"
+                >
+                  <ItemTitle>{{ title(r) }}</ItemTitle>
+                  <span
+                    v-if="plantById.get(r.plant_id)?.variety"
+                    class="text-xs truncate text-muted-foreground"
+                  >
+                    {{ plantById.get(r.plant_id)?.variety }}
+                  </span>
+                </component>
+              </ItemContent>
+              <ItemActions>
+                <span
+                  class="text-xs font-medium tabular-nums"
+                  :class="daysFromToday(r) < 0 ? 'text-destructive' : 'text-muted-foreground'"
+                >
+                  {{ fmtRelative(r) }}
+                </span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger as-child>
+                    <Button variant="ghost-muted" size="icon-sm" aria-label="Reminder actions">
+                      <MoreHorizontal />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem @click="otherDayFor = r">
+                      <CalendarCheck class="w-4 h-4" />
+                      Done on another day
+                    </DropdownMenuItem>
+                    <DropdownMenuItem @click="skip(r)">
+                      <X class="w-4 h-4" />
+                      Skip
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </ItemActions>
+            </Item>
+          </template>
+        </ItemGroup>
       </template>
       <slot />
     </CardContent>

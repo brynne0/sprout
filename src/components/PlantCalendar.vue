@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
+import { Empty, EmptyDescription, EmptyHeader } from '@/components/ui/empty'
 import { Toggle } from '@/components/ui/toggle'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import {
@@ -289,9 +290,11 @@ const todayX = computed(() => {
     </div>
   </div>
 
-  <div v-if="plants.length === 0" class="px-4 py-8 text-sm text-muted-foreground text-center">
-    No plants found.
-  </div>
+  <Empty v-if="plants.length === 0">
+    <EmptyHeader>
+      <EmptyDescription>No plants found.</EmptyDescription>
+    </EmptyHeader>
+  </Empty>
 
   <div
     v-else

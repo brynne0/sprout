@@ -11,6 +11,7 @@ import PageHeader from '@/components/layout/PageHeader.vue'
 import PlantIcon from '@/components/PlantIcon.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Item, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 const { store: theme } = useTheme()
@@ -89,7 +90,7 @@ const toggleDemo = ref('a')
         <h2 class="text-sm font-semibold mb-3">Produce colours</h2>
         <div class="flex flex-wrap gap-3">
           <div v-for="c in PRODUCE_COLOURS" :key="c" class="flex flex-col items-center gap-1">
-            <PlantIcon :name="c" :colour="c" class="w-10 h-10 rounded-full text-sm" />
+            <PlantIcon :name="c" :colour="c" />
             <code class="text-xs text-muted-foreground">{{ c }}</code>
           </div>
         </div>
@@ -102,32 +103,20 @@ const toggleDemo = ref('a')
         </h2>
         <div class="flex gap-4 mb-4">
           <div class="flex flex-col items-center gap-1">
-            <PlantIcon
-              name="Calendula"
-              icon="flower"
-              colour="orange"
-              class="w-16 h-16 rounded-xl text-2xl border [--icon-base:var(--background)]"
-            />
+            <PlantIcon name="Calendula" icon="flower" colour="orange" size="tile" />
             <span class="text-xs text-muted-foreground">Detail tile</span>
           </div>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5">
-          <div
-            v-for="p in plantTypes"
-            :key="p.id"
-            class="flex items-center gap-3 px-3 py-2 rounded-xl border bg-card"
-          >
-            <PlantIcon
-              :name="p.name"
-              :icon="p.icon"
-              :colour="p.colour"
-              class="w-8 h-8 rounded-full text-sm"
-            />
-            <div class="min-w-0">
-              <div class="text-sm font-medium truncate">{{ p.name }}</div>
+          <Item v-for="p in plantTypes" :key="p.id" variant="outline" size="sm">
+            <ItemMedia>
+              <PlantIcon :name="p.name" :icon="p.icon" :colour="p.colour" />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>{{ p.name }}</ItemTitle>
               <code class="text-xs text-muted-foreground">{{ p.icon }} · {{ p.colour }}</code>
-            </div>
-          </div>
+            </ItemContent>
+          </Item>
         </div>
       </section>
     </div>

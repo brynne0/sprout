@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Archive } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
+import { Item, ItemActions, ItemContent, ItemMedia } from '@/components/ui/item'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Plant, TaskType } from '@/types'
 import { archivePlant } from '@/lib/plants'
 import PlantActions from '@/components/PlantActions.vue'
@@ -19,48 +21,46 @@ async function archive() {
 </script>
 
 <template>
-  <div
-    class="flex items-center gap-1 pr-2 rounded-xl border bg-card border-border transition-colors hover:bg-[color-mix(in_oklab,var(--color-foreground)_3%,transparent)]"
-    :class="{ 'opacity-60': plant.archived_at }"
-  >
+  <Item variant="outline" size="sm" :class="{ 'opacity-60': plant.archived_at }">
     <RouterLink
       :to="`/plants/${plant.id}`"
-      class="flex flex-1 min-w-0 items-center gap-3 pl-3 py-2 rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      class="flex flex-1 min-w-0 items-center gap-3 rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
     >
-      <PlantIcon
-        :name="plant.name"
-        :icon="plant.icon"
-        :colour="plant.colour"
-        :task="hint?.task"
-        :task-label="hint?.label"
-        class="w-8 h-8 rounded-full text-sm"
-      />
-      <div class="min-w-0 flex-1">
-        <div class="text-sm font-medium line-clamp-2">
+      <ItemMedia>
+        <PlantIcon
+          :name="plant.name"
+          :icon="plant.icon"
+          :colour="plant.colour"
+          :task="hint?.task"
+          :task-label="hint?.label"
+        />
+      </ItemMedia>
+      <ItemContent>
+        <div class="font-medium line-clamp-2">
           {{ plant.name
           }}<span v-if="plant.variety" class="font-normal text-muted-foreground">
             · {{ plant.variety }}</span
           >
         </div>
-      </div>
+      </ItemContent>
     </RouterLink>
-    <Button
-      v-if="quickArchive"
-      variant="ghost-muted"
-      size="icon-sm"
-      aria-label="Archive"
-      title="Archive"
-      @click="archive"
-    >
-      <Archive />
-    </Button>
     <!-- Sibling of the link, not inside it, so the menu button is valid HTML -->
-    <PlantActions
-      :plant="plant"
-      :hide-archive="quickArchive"
-      @archived="emit('changed')"
-      @restored="emit('changed')"
-      @deleted="emit('changed')"
-    />
-  </div>
+    <ItemActions>
+      <Tooltip v-if="quickArchive">
+        <TooltipTrigger as-child>
+          <Button variant="ghost-muted" size="icon-sm" aria-label="Archive" @click="archive">
+            <Archive />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Archive</TooltipContent>
+      </Tooltip>
+      <PlantActions
+        :plant="plant"
+        :hide-archive="quickArchive"
+        @archived="emit('changed')"
+        @restored="emit('changed')"
+        @deleted="emit('changed')"
+      />
+    </ItemActions>
+  </Item>
 </template>

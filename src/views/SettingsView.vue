@@ -8,6 +8,15 @@ import { supabase } from '@/lib/supabase'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemSeparator,
+  ItemTitle,
+} from '@/components/ui/item'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import {
   AlertDialog,
@@ -76,22 +85,29 @@ async function deleteAccount() {
 
       <section>
         <h2 class="text-sm font-semibold mb-2 px-0.5">Account</h2>
-        <Card class="divide-y">
-          <CardContent class="min-w-0">
-            <div class="text-sm">Signed in as</div>
-            <div class="text-sm text-muted-foreground truncate">{{ email }}</div>
-          </CardContent>
-          <CardContent class="flex items-center justify-between gap-4">
-            <div class="min-w-0">
-              <div class="text-sm">Delete account</div>
-              <div class="text-xs text-muted-foreground">
-                Permanently removes you and your plants
-              </div>
-            </div>
-            <Button variant="destructive" size="sm" @click="showDeleteAccount = true"
-              >Delete</Button
-            >
-          </CardContent>
+        <Card>
+          <ItemGroup>
+            <Item>
+              <ItemContent>
+                <ItemTitle>Signed in as</ItemTitle>
+                <ItemDescription>
+                  {{ email }}
+                </ItemDescription>
+              </ItemContent>
+            </Item>
+            <ItemSeparator />
+            <Item>
+              <ItemContent>
+                <ItemTitle>Delete account</ItemTitle>
+                <ItemDescription> Permanently removes you and your plants </ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <Button variant="destructive" size="sm" @click="showDeleteAccount = true"
+                  >Delete</Button
+                >
+              </ItemActions>
+            </Item>
+          </ItemGroup>
         </Card>
       </section>
     </div>

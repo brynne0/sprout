@@ -581,7 +581,6 @@ async function submitPlant() {
                       :name="selectedPlantType.name"
                       :icon="selectedPlantType.icon"
                       :colour="c"
-                      class="w-9 h-9 rounded-full text-sm"
                     />
                   </ToggleGroupItem>
                 </ToggleGroup>
@@ -604,9 +603,7 @@ async function submitPlant() {
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <p class="text-xs text-muted-foreground">
-                  Select "All years" to show in every year.
-                </p>
+                <FieldDescription>Select "All years" to show in every year.</FieldDescription>
               </Field>
             </FieldGroup>
           </CardContent>
@@ -725,15 +722,13 @@ async function submitPlant() {
 
                   <Field>
                     <FieldLabel>Suitability</FieldLabel>
-                    <CheckboxGroupRoot v-model="overrides.suitability" class="flex flex-wrap gap-3">
-                      <label
-                        v-for="tag in SUITABILITY_OPTIONS"
-                        :key="tag"
-                        class="flex items-center gap-2 text-sm"
-                      >
-                        <Checkbox :value="tag" />
-                        {{ tag.charAt(0).toUpperCase() + tag.slice(1) }}
-                      </label>
+                    <CheckboxGroupRoot v-model="overrides.suitability" class="flex flex-col gap-3">
+                      <Field v-for="tag in SUITABILITY_OPTIONS" :key="tag" orientation="horizontal">
+                        <Checkbox :id="`suitability-${tag}`" :value="tag" />
+                        <FieldLabel :for="`suitability-${tag}`">
+                          {{ tag.charAt(0).toUpperCase() + tag.slice(1) }}
+                        </FieldLabel>
+                      </Field>
                     </CheckboxGroupRoot>
                   </Field>
 

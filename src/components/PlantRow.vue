@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import type { Bar, Dot, Track, TrackType } from '@/lib/trackUtils'
 import { TRACK_HEIGHT, LABEL_HEIGHT, trackTops, rowHeightForTracks } from '@/lib/trackUtils'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { formatDate } from '@/lib/utils'
 
 const props = withDefaults(
@@ -72,15 +73,18 @@ const openDotKey = ref<string | null>(null)
           :class="[`track-${track.type}-bg`, `track-${track.type}-border`]"
           :style="{ left: b.x + 'px', width: b.width + 'px', top: trackTop(ti) + 'px' }"
         />
-        <span
-          v-if="track.label"
-          v-show="!isHidden(track.type)"
-          class="absolute h-2.5 text-[8.5px] font-bold uppercase tracking-[0.08em] leading-2.5 truncate"
-          :class="`track-${track.type}-text`"
-          :style="labelStyle(b, track.label, ti)"
-          :title="track.label"
-          >{{ track.label }}</span
-        >
+        <Tooltip v-if="track.label">
+          <TooltipTrigger as-child>
+            <span
+              v-show="!isHidden(track.type)"
+              class="absolute h-2.5 text-[8.5px] font-bold uppercase tracking-[0.08em] leading-2.5 truncate"
+              :class="`track-${track.type}-text`"
+              :style="labelStyle(b, track.label, ti)"
+              >{{ track.label }}</span
+            >
+          </TooltipTrigger>
+          <TooltipContent>{{ track.label }}</TooltipContent>
+        </Tooltip>
       </template>
       <Popover
         v-for="(dot, di) in showDots ? (track.dots ?? []) : []"
