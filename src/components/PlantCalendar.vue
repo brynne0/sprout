@@ -299,7 +299,7 @@ const todayX = computed(() => {
   <div
     v-else
     ref="scrollContainer"
-    class="mt-2 overflow-x-auto border-y border-border dark:bg-card"
+    class="mt-2 overflow-x-auto overscroll-x-none border-y border-border dark:bg-card"
   >
     <div class="w-max min-w-full">
       <!-- Header row -->
