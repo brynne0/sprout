@@ -110,12 +110,12 @@ async function submitCode() {
   verifying.value = true
   try {
     await verifyCode(email.value.trim(), code.value.trim())
-    router.replace('/')
+    await router.replace('/')
   } catch {
     toast.error('That code is invalid or has expired.')
     code.value = ''
+    verifying.value = false
   }
-  verifying.value = false
 }
 
 function useDifferentEmail() {
