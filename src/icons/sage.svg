@@ -1,0 +1,18 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M11.5 13.5a2.2 4-55 01-6.56-4.58 2.2 4-55 016.56 4.58" />
+  <path d="M11.74 19.67A1.8 3.2-55 016.5 16a1.8 3.2-55 015.24 3.67" />
+  <path d="M12 22V9" />
+  <path d="M12.26 19.67A1.8 3.2 55 0017.5 16a1.8 3.2 55 00-5.24 3.67" />
+  <path d="M12.5 13.5a2.2 4 55 006.56-4.58 2.2 4 55 00-6.56 4.58" />
+  <ellipse cx="12" cy="5.5" rx="2.2" ry="3.5" />
+</svg>

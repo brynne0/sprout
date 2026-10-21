@@ -23,6 +23,16 @@ onMounted(async () => {
   plantTypes.value = (data ?? []) as PlantType[]
 })
 
+const tileExamples = [
+  { name: 'Calendula', icon: 'flower', colour: 'orange' },
+  { name: 'Potato', icon: 'potato', colour: 'earth' },
+  { name: 'Tomato', icon: 'tomato', colour: 'red' },
+  { name: 'Kale', icon: 'kale', colour: 'deep' },
+  { name: 'Sage', icon: 'sage', colour: 'sage' },
+  { name: 'Lavender', icon: 'lavender', colour: 'purple' },
+  { name: 'Ginger', icon: 'ginger', colour: 'yellow' },
+]
+
 const toggleDemo = ref('a')
 </script>
 
@@ -101,10 +111,10 @@ const toggleDemo = ref('a')
           Plant icons
           <span class="font-normal text-muted-foreground">{{ plantTypes.length }}</span>
         </h2>
-        <div class="flex gap-4 mb-4">
-          <div class="flex flex-col items-center gap-1">
-            <PlantIcon name="Calendula" icon="flower" colour="orange" size="tile" />
-            <span class="text-xs text-muted-foreground">Detail tile</span>
+        <div class="flex flex-wrap gap-4 mb-4">
+          <div v-for="t in tileExamples" :key="t.name" class="flex flex-col items-center gap-1">
+            <PlantIcon :name="t.name" :icon="t.icon" :colour="t.colour" size="tile" />
+            <span class="text-xs text-muted-foreground">{{ t.name }}</span>
           </div>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5">
