@@ -17,7 +17,7 @@ export const badgeVariants = cva(
         sowing:
           'border-[color-mix(in_oklab,var(--sow-dot)_40%,var(--card))] font-medium text-(--sow) bg-[color-mix(in_oklab,var(--sow-dot)_16%,var(--card))]',
         transplant:
-          'border-[color-mix(in_oklab,var(--transplant-dot)_40%,var(--card))] font-medium text-(--transplant) bg-[color-mix(in_oklab,var(--transplant-dot)_16%,var(--card))]',
+          'border-[color-mix(in_oklab,var(--transplant-dot)_65%,var(--card))] font-medium text-(--transplant) bg-[color-mix(in_oklab,var(--transplant-dot)_16%,var(--card))]',
         harvest:
           'border-[color-mix(in_oklab,var(--harvest-dot)_40%,var(--card))] font-medium text-(--harvest) bg-[color-mix(in_oklab,var(--harvest-dot)_16%,var(--card))]',
       },

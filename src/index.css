@@ -103,10 +103,10 @@
   --sidebar-border: oklch(1 0 0 / 12%);
   --sidebar-ring: #5f7a5c;
 
-  --transplant: #f8e6b0;
+  --transplant: #dcb45a;
   --harvest: #f2836a;
   --repot: #fcbf95;
-  --sow: #addda7;
+  --sow: #88c283;
   --warning: #e9b949;
 
   --sow-bg: #223d20;
@@ -131,7 +131,7 @@
   --produce-earth: #d1ad72;
   --produce-pink: #ee90cf;
   --produce-tint: 18%;
-  --track-border-mix: 30%;
+  --track-border-mix: 35%;
 }
 
 @layer components {
