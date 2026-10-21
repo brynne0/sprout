@@ -63,7 +63,7 @@ const openDotKey = ref<string | null>(null)
     <div
       v-if="resolvedTodayX !== null"
       class="pointer-events-none absolute top-0 bottom-0 z-10 border-l-2 border-dashed border-primary/60"
-      :style="{ left: resolvedTodayX + 'px' }"
+      :style="{ left: resolvedTodayX - 1 + 'px' }"
     />
     <template v-for="(track, ti) in resolvedTracks" :key="`track-${ti}`">
       <template v-for="(b, bi) in track.bars" :key="`bar-${ti}-${bi}`">
@@ -100,12 +100,12 @@ const openDotKey = ref<string | null>(null)
         <PopoverTrigger as-child>
           <button
             v-show="!isHidden(track.type)"
-            class="absolute z-20 w-2.5 h-2.5 rounded-full cursor-pointer ring-1 ring-background dark:ring-card"
+            class="absolute z-20 w-2 h-2 rounded-full cursor-pointer ring-1 ring-background dark:ring-card"
             :class="[
               dot.variant === 'repot' ? 'track-repot-dot' : `track-${track.type}-dot`,
               { 'opacity-40': dot.planned },
             ]"
-            :style="{ left: dot.x - 5 + 'px', top: trackTop(ti) + TRACK_HEIGHT / 2 - 5 + 'px' }"
+            :style="{ left: dot.x - 4 + 'px', top: trackTop(ti) + TRACK_HEIGHT / 2 - 4 + 'px' }"
             @pointerenter="
               (e: PointerEvent) => {
                 if (e.pointerType === 'mouse') openDotKey = `${ti}-${di}`
