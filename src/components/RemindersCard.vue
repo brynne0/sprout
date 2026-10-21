@@ -110,12 +110,31 @@ async function complete(r: Reminder, doneOn: string) {
   busy.value.add(r.id)
   try {
     await supabase.rpc('complete_reminder', { reminder_id: r.id, done_on: doneOn }).throwOnError()
-    toast.success(`${title(r)} logged`)
+    toast.success(`${title(r)} logged`, {
+      action: { label: 'Undo', onClick: () => uncomplete(r, doneOn) },
+    })
     emit('changed')
   } catch {
     toast.error('Failed to update reminder')
   }
   busy.value.delete(r.id)
+}
+
+async function uncomplete(r: Reminder, doneOn: string) {
+  try {
+    await supabase
+      .rpc('uncomplete_reminder', {
+        reminder_id: r.id,
+        for_plant: r.plant_id,
+        task: r.type,
+        due: r.due_date,
+        done_on: doneOn,
+      })
+      .throwOnError()
+    emit('changed')
+  } catch {
+    toast.error('Failed to undo')
+  }
 }
 
 async function skip(r: Reminder) {

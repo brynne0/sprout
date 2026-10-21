@@ -376,11 +376,25 @@ export type Database = {
       }
     }
     Functions: {
+      array_remove_last: {
+        Args: { arr: string[]; val: string }
+        Returns: string[]
+      }
       complete_reminder: {
         Args: { done_on: string; reminder_id: string }
         Returns: undefined
       }
       delete_my_account: { Args: never; Returns: undefined }
+      uncomplete_reminder: {
+        Args: {
+          done_on: string
+          due: string
+          for_plant: string
+          reminder_id: string
+          task: Database["public"]["Enums"]["task_type"]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       plant_kind: "vegetable" | "herb" | "fruit" | "flower"

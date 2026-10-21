@@ -210,6 +210,23 @@
   }
 }
 
+[data-sonner-toast][data-styled='true'] [data-button] {
+  height: 1.75rem;
+  padding-inline: 0.625rem;
+  border-radius: calc(var(--radius) * 0.8);
+  background: transparent;
+  color: var(--primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: background-color 150ms;
+}
+[data-sonner-toast][data-styled='true'] [data-button]:hover {
+  background: var(--accent);
+}
+[data-sonner-toast][data-styled='true'] [data-button]:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
 @keyframes leaf-bounce {
   0%,
   80%,
