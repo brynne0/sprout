@@ -299,13 +299,13 @@ const todayX = computed(() => {
   <div
     v-else
     ref="scrollContainer"
-    class="mt-2 overflow-x-auto overscroll-x-none border-y border-border dark:bg-card"
+    class="mt-2 overflow-x-auto overflow-y-hidden overscroll-x-none border-y border-border dark:bg-card"
   >
     <div class="w-max min-w-full">
       <!-- Header row -->
       <div class="flex">
         <div
-          class="sticky left-0 z-30 shrink-0 px-3 py-1 flex items-center justify-between border-r border-border bg-background dark:bg-card"
+          class="sticky left-0 z-30 shrink-0 px-3 py-1 flex items-center justify-between border-r border-b border-r-border border-b-border/40 bg-background dark:bg-card"
           :style="{ width: NAME_COL_WIDTH + 'px' }"
         >
           <span class="text-xs font-medium text-muted-foreground">Plant</span>
